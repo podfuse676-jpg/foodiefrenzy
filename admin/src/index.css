@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+:root {
+	--brand-amber: #f59e0b;
+	--brand-deep: #0f4c5c;
+	--brand-cream: #fff7ed;
+	--text-primary: #2D1B0E;
+}
+
+body {
+	background: var(--brand-cream);
+	color: var(--text-primary);
+}
