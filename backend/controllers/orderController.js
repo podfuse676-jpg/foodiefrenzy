@@ -5,9 +5,15 @@ import Order from '../modals/order.js';
 
 // Helper to get a Stripe client; returns null if key is not configured.
 const getStripe = () => {
-    const key = (process.env.STRIPE_SECRET_KEY || '').replace(/^['"]|['"]$/g, '').trim();
-    if (!key) return null;
-    return new Stripe(key);
+    const key = process.env.STRIPE_SECRET_KEY;
+    if (!key) {
+        console.error('Stripe key not found in environment variables');
+        return null;
+    }
+    console.log('Initializing Stripe with key:', key.substring(0, 8) + '...');
+    return new Stripe(key, {
+        apiVersion: '2023-10-16'
+    });
 };
 
 // Create Order
@@ -83,8 +89,8 @@ export const createOrder = async (req, res) => {
                 mode: 'payment',
                 line_items: lineItems,
                 customer_email: email,
-                success_url: `${process.env.FRONTEND_URL}/checkout?payment_status=success&session_id={CHECKOUT_SESSION_ID}`,
-                cancel_url: `${process.env.FRONTEND_URL}/checkout?payment_status=cancel`,
+                success_url: `http://localhost:5173/verify-payment?success=true&session_id={CHECKOUT_SESSION_ID}`,
+                cancel_url: `http://localhost:5173/checkout?payment_status=cancel`,
                 metadata: { 
                     firstName, 
                     lastName, 
@@ -133,7 +139,8 @@ export const createOrder = async (req, res) => {
         });
 
         await newOrder.save();
-        res.status(201).json({ order: newOrder, checkoutUrl: null });
+        // Return the order object directly for COD
+        res.status(201).json({ order: newOrder });
     } catch (error) {
         console.error('createOrder error:', error);
         res.status(500).json({ message: 'Server Error', error: error.message });

@@ -1,12 +1,30 @@
-@import "tailwindcss";
+/* stylelint-disable at-rule-no-unknown */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* stylelint-enable at-rule-no-unknown */
 
 @keyframes orbit {
   0% {
-    transform: rotate(0deg) translateX(150px) rotate(0deg);
+    transform: rotate(0deg) translateX(120px) rotate(0deg);
   }
 
   100% {
-    transform: rotate(360deg) translateX(150px) rotate(-360deg);
+    transform: rotate(360deg) translateX(120px) rotate(-360deg);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) translateX(20px);
+    opacity: 0;
   }
 }
 
@@ -42,7 +60,14 @@ body {
 .brand-gradient {
   background: linear-gradient(90deg, var(--brand-amber), var(--brand-orange));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.text-stroke-gold {
+  -webkit-text-stroke: 2px #f59e0b;
+  text-stroke: 2px #f59e0b;
+  color: transparent;
 }
 
 /* Add new classes for the logo colors */
@@ -60,4 +85,27 @@ body {
 
 .text-dark-brown {
   color: #2D1B0E;
+}
+
+/* Responsive adjustments for orbiting images */
+@media (max-width: 640px) {
+  @keyframes orbit {
+    0% {
+      transform: rotate(0deg) translateX(80px) rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg) translateX(80px) rotate(-360deg);
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  @keyframes orbit {
+    0% {
+      transform: rotate(0deg) translateX(150px) rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg) translateX(150px) rotate(-360deg);
+    }
+  }
 }

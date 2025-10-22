@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import apiConfig from '../../utils/apiConfig';
 import { FaStar, FaHeart, FaPlus, FaFire } from 'react-icons/fa';
 import { HiMinus, HiPlus } from 'react-icons/hi';
 import { useCart } from '../../CartContext/CartContext';
@@ -17,9 +18,23 @@ const SpecialOffer = () => {
   // Fetch menu items
   useEffect(() => {
     axios
-      .get('http://localhost:4000/api/items')
-      .then(res => setItems(res.data.items ?? res.data))
-      .catch(err => console.error(err));
+      .get(`${apiConfig.baseURL}/api/items`)
+      .then(res => {
+        const data = res.data;
+        // Handle different response formats and ensure we always have an array
+        if (data && Array.isArray(data)) {
+          setItems(data);
+        } else if (data && Array.isArray(data.items)) {
+          setItems(data.items);
+        } else {
+          setItems([]);
+          console.warn('Unexpected data format from API:', data);
+        }
+      })
+      .catch(err => {
+        console.error('Error fetching items:', err);
+        setItems([]); // Set empty array on error
+      });
   }, []);
 
   const displayList = Array.isArray(items) ? items.slice(0, showAll ? 8 : 4) : [];
@@ -40,9 +55,10 @@ const SpecialOffer = () => {
         {/* Offers Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {displayList.map(item => {
-            const cartItem = cartItems.find(ci => ci.item?._id === item._id);
-            const qty = cartItem?.quantity ?? 0;
-            const cartId = cartItem?._id;
+            // Add additional null checks to prevent errors
+            const cartItem = cartItems.find(ci => ci && ci.item && ci.item._id === item._id);
+            const qty = cartItem && cartItem.quantity ? cartItem.quantity : 0;
+            const cartId = cartItem && cartItem._id ? cartItem._id : null;
 
             return (
               <div
@@ -52,9 +68,12 @@ const SpecialOffer = () => {
                 {/* Image & Stats */}
                 <div className="relative h-72 overflow-hidden">
                   <img
-                    src={item.imageUrl}
+                    src={item.imageUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='}
                     alt={item.name}
                     className="w-full h-full object-cover brightness-90 group-hover:brightness-110 duration-500"
+                    onError={(e) => {
+                      e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIEVycm9yPC90ZXh0Pjwvc3ZnPg==';
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/90" />
                   <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center bg-black/40 backdrop-blur-sm px-4 py-2 rounded-full">
@@ -100,7 +119,17 @@ const SpecialOffer = () => {
                       </div>
                     ) : (
                       <button
-                        onClick={() => addToCart(item, 1)}
+                        onClick={() => {
+                          try {
+                            if (item && item._id) {
+                              addToCart(item, 1);
+                            } else {
+                              console.error('Cannot add item to cart: Invalid item data');
+                            }
+                          } catch (error) {
+                            console.error('Error adding to cart:', error);
+                          }
+                        }}
                         className="flex items-center gap-2 bg-gradient-to-r from-red-600 to-amber-600 text-white px-5 py-2.5 rounded-xl font-bold"
                       >
                         <FaPlus />

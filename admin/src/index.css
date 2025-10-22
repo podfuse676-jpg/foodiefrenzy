@@ -1,13 +1,88 @@
-@import "tailwindcss";
+/* stylelint-disable at-rule-no-unknown */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* stylelint-enable at-rule-no-unknown */
+
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg) translateX(150px) rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg) translateX(150px) rotate(-360deg);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) translateX(20px);
+    opacity: 0;
+  }
+}
+
+.orbit {
+  animation: orbit 20s linear infinite;
+}
+
+.orbit-delay-5 {
+  animation: orbit 20s linear infinite -5s;
+}
+
+.orbit-delay-10 {
+  animation: orbit 20s linear infinite -10s;
+}
+
+.orbit-delay-15 {
+  animation: orbit 20s linear infinite -15s;
+}
 
 :root {
-	--brand-amber: #f59e0b;
-	--brand-deep: #0f4c5c;
-	--brand-cream: #fff7ed;
-	--text-primary: #2D1B0E;
+  --brand-amber: #f59e0b; /* warm amber from logo */
+  --brand-deep: #0ea5a4; /* teal from logo circle */
+  --brand-cream: #fff7ed; /* soft background from logo */
+  --text-primary: #2D1B0E; /* dark brown text from logo */
+  --brand-orange: #d97706; /* orange from "CONVENIENCE" text */
 }
 
 body {
-	background: var(--brand-cream);
-	color: var(--text-primary);
+  background: var(--brand-cream);
+  color: var(--text-primary);
+}
+
+.brand-gradient {
+  background: linear-gradient(90deg, var(--brand-amber), var(--brand-orange));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-stroke-gold {
+  -webkit-text-stroke: 2px #f59e0b;
+  text-stroke: 2px #f59e0b;
+  color: transparent;
+}
+
+/* Add new classes for the logo colors */
+.bg-teal {
+  background-color: #0ea5a4;
+}
+
+.text-teal {
+  color: #0ea5a4;
+}
+
+.bg-dark-brown {
+  background-color: #2D1B0E;
+}
+
+.text-dark-brown {
+  color: #2D1B0E;
 }

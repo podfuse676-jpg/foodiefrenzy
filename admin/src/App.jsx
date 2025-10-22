@@ -12,7 +12,7 @@ function App() {
       <Route path="/list" element={<ListItems />} />
       <Route path="/orders" element={<Orders />} />
     </Routes>
-
   );
 }
+
 export default App;

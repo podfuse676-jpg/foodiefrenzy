@@ -87,7 +87,7 @@ const OurMenuHome = () => {
               >
                 <div className="relative h-48 sm:h-56 md:h-60 flex items-center justify-center bg-black/10">
                   <img
-                    src={item.imageUrl || item.image || ''}
+                    src={item.imageUrl || item.image || null}
                     alt={item.name}
                     className="max-h-full max-w-full object-contain transition-all duration-700"
                   />

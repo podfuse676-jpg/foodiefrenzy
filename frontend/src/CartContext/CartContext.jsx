@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import apiConfig from '../utils/apiConfig';
 
 const CartContext = createContext();
 
@@ -60,18 +61,30 @@ export const CartProvider = ({ children }) => {
     if (!token) return;
     
     axios
-      .get('http://localhost:4000/api/cart', {
+      .get(`${apiConfig.baseURL}/api/cart`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then(res => dispatch({ type: 'HYDRATE_CART', payload: res.data }))
-      .catch(err => { if (err.response?.status !== 401) console.error(err); });
+      .catch(err => { 
+        if (err.response?.status === 403) {
+          console.warn('Access forbidden to cart API. User may need to re-authenticate.');
+        } else if (err.response?.status !== 401) {
+          console.error('Error hydrating cart:', err);
+        }
+      });
   }, []);
 
   const addToCart = useCallback(async (item, qty, selectedSize = null) => {
     try {
       const token = localStorage.getItem('authToken') || localStorage.getItem('token');
       if (!token) {
-        console.error('No authentication token found');
+        console.warn('No authentication token found. Adding item to local cart only.');
+        // Add item to local cart even without token
+        const _id = Date.now().toString() + Math.random().toString(36).substr(2, 9); // Generate unique ID
+        dispatch({ 
+          type: 'ADD_ITEM', 
+          payload: { _id, item, quantity: qty, selectedSize } 
+        });
         return;
       }
       
@@ -94,7 +107,7 @@ export const CartProvider = ({ children }) => {
       }
       
       const res = await axios.post(
-        'http://localhost:4000/api/cart',
+        `${apiConfig.baseURL}/api/cart`,
         requestData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -102,7 +115,7 @@ export const CartProvider = ({ children }) => {
     } catch (error) {
       console.error('Error adding to cart:', error);
       // Add item to local cart even if API call fails
-      const _id = Date.now().toString(); // Generate temporary ID
+      const _id = Date.now().toString() + Math.random().toString(36).substr(2, 9); // Generate unique ID
       dispatch({ 
         type: 'ADD_ITEM', 
         payload: { _id, item, quantity: qty, selectedSize } 
@@ -114,7 +127,12 @@ export const CartProvider = ({ children }) => {
     try {
       const token = localStorage.getItem('authToken') || localStorage.getItem('token');
       if (!token) {
-        console.error('No authentication token found');
+        console.warn('No authentication token found. Updating local cart only.');
+        // Update local cart even without token
+        dispatch({ 
+          type: 'UPDATE_ITEM', 
+          payload: { _id, quantity: qty, selectedSize } 
+        });
         return;
       }
       
@@ -126,7 +144,7 @@ export const CartProvider = ({ children }) => {
       }
       
       const res = await axios.put(
-        `http://localhost:4000/api/cart/${_id}`,
+        `${apiConfig.baseURL}/api/cart/${_id}`,
         requestData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -134,23 +152,32 @@ export const CartProvider = ({ children }) => {
       dispatch({ type: 'UPDATE_ITEM', payload: res.data });
     } catch (error) {
       console.error('Error updating cart item:', error);
+      // Update local cart even if API call fails
+      dispatch({ 
+        type: 'UPDATE_ITEM', 
+        payload: { _id, quantity: qty, selectedSize } 
+      });
     }
   }, []);
 
-  const removeFromCart = useCallback(async _id => {
+  const removeFromCart = useCallback(async (_id) => {
     try {
       const token = localStorage.getItem('authToken') || localStorage.getItem('token');
       if (!token) {
-        console.error('No authentication token found');
+        console.warn('No authentication token found. Removing from local cart only.');
+        // Remove from local cart even without token
+        dispatch({ type: 'REMOVE_ITEM', payload: _id });
         return;
       }
       await axios.delete(
-        `http://localhost:4000/api/cart/${_id}`,
+        `${apiConfig.baseURL}/api/cart/${_id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       dispatch({ type: 'REMOVE_ITEM', payload: _id });
     } catch (error) {
       console.error('Error removing from cart:', error);
+      // Remove from local cart even if API call fails
+      dispatch({ type: 'REMOVE_ITEM', payload: _id });
     }
   }, []);
 
@@ -158,25 +185,31 @@ export const CartProvider = ({ children }) => {
     try {
       const token = localStorage.getItem('authToken') || localStorage.getItem('token');
       if (!token) {
-        console.error('No authentication token found');
+        console.warn('No authentication token found. Clearing local cart only.');
+        dispatch({ type: 'CLEAR_CART' });
         return;
       }
       await axios.post(
-        'http://localhost:4000/api/cart/clear',
+        `${apiConfig.baseURL}/api/cart/clear`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
       dispatch({ type: 'CLEAR_CART' });
     } catch (error) {
       console.error('Error clearing cart:', error);
+      // Clear local cart even if API call fails
+      dispatch({ type: 'CLEAR_CART' });
     }
   }, []);
 
   const totalItems = cartItems.reduce((sum, ci) => sum + ci.quantity, 0);
   const totalAmount = cartItems.reduce((sum, ci) => {
     // Use selected size price if available, otherwise use item price
-    const price = ci?.selectedSize?.price ?? ci?.item?.price ?? 0;
-    const qty = ci?.quantity ?? 0;
+    // Add additional null checks to prevent errors
+    const price = ci && ci.selectedSize && ci.selectedSize.price 
+      ? ci.selectedSize.price 
+      : (ci && ci.item && ci.item.price ? ci.item.price : 0);
+    const qty = ci && ci.quantity ? ci.quantity : 0;
     return sum + price * qty;
   }, 0);
 

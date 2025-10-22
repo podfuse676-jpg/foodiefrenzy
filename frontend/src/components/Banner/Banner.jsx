@@ -24,9 +24,9 @@ const Banner = () => {
       <div className="bg-gradient-to-br from-[#2D1B0E] via-[#d97706] to-[#f59e0b] text-white py-16 px-4 sm:px-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-[#2D1B0E]/20 to-[#0ea5a4]/10" />
 
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12 relative z-10">
+        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-12 relative z-10">
           {/* Left Content */}
-          <div className="flex-1 space-y-8 relative md:pr-8 lg:pr-19 text-center md:text-left">
+          <div className="flex-1 space-y-8 relative md:pr-8 text-center lg:text-left">
             <h1 className="text-4xl sm:text-5xl md:text-4xl lg:text-6xl font-bold leading-tight font-serif drop-shadow-md">
               We're Serious <br />
               <span className="text-[#fff7ed] bg-gradient-to-r from-[#fff7ed] to-amber-100 bg-clip-text">
@@ -34,11 +34,11 @@ const Banner = () => {
               </span>
             </h1>
 
-            <p className="text-lg md:text-lg lg:text-xl font-playfair italic sm:text-xl text-amber-100 max-w-xl opacity-90 mx-auto md:mx-0">
+            <p className="text-lg md:text-lg lg:text-xl font-playfair italic sm:text-xl text-amber-100 max-w-xl opacity-90 mx-auto lg:mx-0">
               Best cooks and best delivery guys all at your service. Hot tasty food will reach you in 60 minutes.
             </p>
 
-            <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto md:mx-0 group">
+            <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto lg:mx-0 group">
               <div className="relative flex items-center bg-[#2D1B0E]/30 rounded-xl border-2 border-[#0ea5a4]/30 shadow-2xl hover:border-[#fff7ed]/50 transition-all duration-300">
                 <div className="pl-6 pr-3 py-4">
                   <FaSearch className="text-xl text-[#0ea5a4]/80" />
@@ -59,7 +59,7 @@ const Banner = () => {
               </div>
             </form>
 
-            <div className="flex flex-wrap gap-4 justify-center md:justify-start mt-6">
+            <div className="flex flex-wrap gap-4 justify-center lg:justify-start mt-6">
               <button className="group flex items-center gap-3 bg-[#2D1B0E]/30 hover:bg-[#2D1B0E]/50 px-6 py-3 rounded-xl transition-all duration-300 border-2 border-[#0ea5a4]/50 hover:border-[#fff7ed]/50 backdrop-blur-sm">
                 <FaDownload className="text-xl text-[#0ea5a4] group-hover:animate-bounce" />
                 <span className="text-lg">Download App</span>
@@ -76,9 +76,9 @@ const Banner = () => {
           </div>
 
           {/* Right Image Container with Orbiting Images */}
-          <div className="flex-1 relative group mt-8 md:mt-0 min-h-[300px] sm:min-h-[400px]">
+          <div className="flex-1 relative group mt-8 lg:mt-0 min-h-[300px] sm:min-h-[400px]">
             {/* Main Banner Image */}
-            <div className="relative rounded-full p-1 bg-gradient-to-br from-[#0ea5a4] via-[#d97706] to-[#f59e0b] shadow-2xl z-20 w-[250px] xs:w-[300px] sm:w-[350px] h-[250px] xs:h-[300px] sm:h-[350px] mx-auto">
+            <div className="relative rounded-full p-1 bg-gradient-to-br from-[#0ea5a4] via-[#d97706] to-[#f59e0b] shadow-2xl z-20 w-[200px] xs:w-[250px] sm:w-[300px] md:w-[350px] h-[200px] xs:h-[250px] sm:h-[300px] md:h-[350px] mx-auto">
               <img
                 src={bannerImage}
                 alt="Girl Banner"
@@ -93,12 +93,12 @@ const Banner = () => {
                 key={index}
                 className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 
                   ${index === 0 ? 'orbit' : `orbit-delay-${index * 5}`} 
-                  w-[80px] xs:w-[100px] sm:w-[150px] h-[80px] xs:h-[100px] sm:h-[150px]`}
+                  w-[60px] xs:w-[80px] sm:w-[100px] md:w-[120px] h-[60px] xs:h-[80px] sm:h-[100px] md:h-[120px]`}
               >
                 <img
                   src={imgSrc}
                   alt={`Orbiting ${index + 1}`}
-                  className="w-full h-full rounded-full border border-[#0ea5a4]/30 shadow-lg bg-[#2D1B0E]/20 p-1 object-cover"
+                  className="w-full h-full rounded-full border-2 border-[#0ea5a4]/30 shadow-lg bg-[#2D1B0E]/20 p-1 object-cover"
                 />
               </div>
             ))}

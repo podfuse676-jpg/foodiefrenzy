@@ -1,117 +1,161 @@
-# Foodie Frenzy - Deployment Guide
+# Foodie Frenzy Deployment Guide
 
-This guide will help you deploy the full-stack Foodie Frenzy application (frontend, admin panel, and backend) to free hosting platforms.
+This guide provides instructions for deploying the Foodie Frenzy application to production environments.
 
-## Architecture Overview
+## Deployment Architecture
 
-- **Frontend**: React + Vite application (customer-facing)
-- **Admin Panel**: React + Vite application (admin dashboard)
-- **Backend**: Node.js + Express API with MongoDB
-- **Database**: MongoDB Atlas (cloud-hosted)
+The application is designed for deployment across multiple platforms:
 
-## Deployment Plan
-
-1. **Database**: MongoDB Atlas (free tier)
-2. **Backend API**: Render.com (free tier)
-3. **Frontend**: Netlify (free tier)
-4. **Admin Panel**: Netlify (free tier)
+- **Frontend**: Netlify
+- **Admin Panel**: Netlify
+- **Backend API**: Render
+- **Database**: MongoDB Atlas
 
 ## Prerequisites
 
-1. GitHub account
-2. MongoDB Atlas account
-3. Render.com account
-4. Netlify account
+Before deployment, ensure you have:
 
-## Step 1: Set up MongoDB Atlas
+1. Accounts on Netlify and Render
+2. MongoDB Atlas cluster set up
+3. Twilio account for SMS functionality
+4. Domain names (optional but recommended)
 
-1. Sign up at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-2. Create a new project
-3. Deploy a free cluster (M0 Sandbox tier)
-4. Create a database user:
-   - Go to "Database Access" in the left menu
-   - Click "Add New Database User"
-   - Choose "Password" authentication
-   - Enter a username and secure password
-   - Grant "Read and write to any database" permissions
-5. Configure network access:
-   - Go to "Network Access" in the left menu
-   - Click "Add IP Address"
-   - Add "0.0.0.0/0" to allow connections from anywhere (for development)
-6. Get your connection string:
-   - Go to "Clusters" and click "Connect"
-   - Choose "Connect your application"
-   - Copy the connection string
+## Environment Setup
 
-## Step 2: Prepare Backend for Deployment
+### 1. MongoDB Atlas Configuration
 
-### Update Environment Variables
+1. Create a MongoDB Atlas account
+2. Create a new cluster
+3. Configure database access:
+   - Add a database user
+   - Add your IP address to the whitelist (or allow access from anywhere for development)
+4. Get your connection string:
+   ```
+   mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/foodiefrenzy
+   ```
 
-Create a `.env` file in the backend directory with:
+### 2. Twilio Configuration
+
+1. Create a Twilio account
+2. Get your Account SID and Auth Token
+3. Purchase a phone number (or use the trial number)
+4. Note down the phone number for SMS sending
+
+## Backend Deployment (Render)
+
+### 1. Prepare Environment Variables
+
+Create a `.env` file for production:
 
 ```env
-MONGO_URI=mongodb+srv://<username>:<password>@<cluster-url>/<dbname>?retryWrites=true&w=majority
-JWT_SECRET=your_secure_jwt_secret
-STRIPE_SECRET_KEY=your_stripe_secret_key
+MONGO_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/foodiefrenzy
+PORT=4000
+JWT_SECRET=your_production_jwt_secret
 TWILIO_ACCOUNT_SID=your_twilio_account_sid
 TWILIO_AUTH_TOKEN=your_twilio_auth_token
 TWILIO_PHONE_NUMBER=your_twilio_phone_number
-TWILIO_VERIFIED_NUMBER=your_verified_phone_number
-NODE_ENV=production
 ```
 
-### Update package.json
+### 2. Deploy to Render
 
-Update the backend `package.json` scripts section:
+1. Create a new Web Service on Render
+2. Connect your GitHub repository
+3. Set the following build command:
+   ```
+   npm install
+   ```
+4. Set the start command:
+   ```
+   npm start
+   ```
+5. Add environment variables from your `.env` file
+6. Deploy the service
 
-```json
-{
-  "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
-  }
-}
+### 3. Verify Backend Deployment
+
+After deployment, verify the backend is working:
+
+```bash
+curl https://your-backend-url.onrender.com/
 ```
 
-## Step 3: Deploy Backend to Render
+## Frontend Deployment (Netlify)
 
-1. Push your backend code to a GitHub repository
-2. Sign up at [Render](https://render.com)
-3. Create a new "Web Service"
-4. Connect your GitHub repository
-5. Configure the service:
-   - Name: foodiefrenzy-backend
-   - Root Directory: backend
-   - Runtime: Node
-   - Build Command: `npm install`
-   - Start Command: `npm start`
-6. Add environment variables in the Render dashboard
-7. Deploy the service
+### 1. Update API Configuration
 
-Note the deployed URL (e.g., https://foodiefrenzy-backend.onrender.com)
+Update `frontend/src/utils/apiConfig.js`:
 
-## Step 4: Update API URLs in Frontend and Admin
+```javascript
+const apiConfig = {
+  baseURL: "https://your-backend-url.onrender.com",
+};
 
-Before deploying the frontend and admin panel, you need to update the API URLs:
+export default apiConfig;
+```
 
-### Frontend Updates
+### 2. Set Environment Variables
 
-1. In `frontend/src/CartContext/CartContext.jsx`, replace all instances of `http://localhost:4000` with your Render backend URL
-2. In `frontend/src/components/CartPage/CartPage.jsx`, update the `API_URL` constant
-3. In `frontend/src/components/Checkout/Checkout.jsx`, replace all instances of `http://localhost:4000` with your Render backend URL
-4. In `frontend/src/components/Login/Login.jsx`, update the `url` constant
-5. In `frontend/src/components/MyOredrsPage/MyOrdersPage.jsx`, replace all instances of `http://localhost:4000` with your Render backend URL
-6. In `frontend/src/components/OurMenu/OurMenu.jsx`, replace `http://localhost:4000` with your Render backend URL
+In Netlify, set the following environment variables:
 
-### Admin Panel Updates
+```
+REACT_APP_API_URL=https://your-backend-url.onrender.com
+REACT_APP_FRONTEND_URL=https://your-frontend-url.netlify.app
+REACT_APP_ADMIN_URL=https://your-admin-url.netlify.app
+```
 
-1. In `admin/src/components/AddItems/AddItems.jsx`, replace `http://localhost:4000` with your Render backend URL
-2. In `admin/src/components/ListItems/ListItems.jsx`, replace all instances of `http://localhost:4000` with your Render backend URL
-3. In `admin/src/components/Orders/Orders.jsx`, replace all instances of `http://localhost:4000` with your Render backend URL
+### 3. Deploy to Netlify
 
-## Step 5: Update CORS Configuration
+1. Create a new site on Netlify
+2. Connect your GitHub repository
+3. Set the build settings:
+   - Build command: `npm run build`
+   - Publish directory: `dist`
+4. Deploy the site
 
-Update the CORS configuration in `backend/server.js` to include your deployed frontend and admin URLs:
+### 4. Custom Domain (Optional)
+
+1. Add your custom domain in Netlify
+2. Update DNS records as instructed
+3. Enable SSL certificate
+
+## Admin Panel Deployment (Netlify)
+
+### 1. Update API Configuration
+
+Update `admin/src/utils/apiConfig.js`:
+
+```javascript
+const apiConfig = {
+  baseURL: "https://your-backend-url.onrender.com",
+};
+
+export default apiConfig;
+```
+
+### 2. Set Environment Variables
+
+In Netlify, set the following environment variables:
+
+```
+REACT_APP_API_URL=https://your-backend-url.onrender.com
+REACT_APP_FRONTEND_URL=https://your-frontend-url.netlify.app
+REACT_APP_ADMIN_URL=https://your-admin-url.netlify.app
+```
+
+### 3. Deploy to Netlify
+
+1. Create a new site on Netlify
+2. Connect your GitHub repository
+3. Set the build settings:
+   - Build command: `npm run build`
+   - Publish directory: `dist`
+4. Deploy the site
+
+## Post-Deployment Configuration
+
+### 1. CORS Configuration
+
+Update the backend CORS configuration in `backend/server.js`:
 
 ```javascript
 app.use(
@@ -119,89 +163,132 @@ app.use(
     origin: [
       "http://localhost:5173",
       "http://localhost:5174",
-      "http://localhost:5175",
-      "http://localhost:5176",
-      "http://localhost:5177",
       "https://your-frontend-url.netlify.app",
       "https://your-admin-url.netlify.app",
     ],
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    exposedHeaders: ["Content-Length", "Content-Type"],
   })
 );
 ```
 
-## Step 6: Deploy Frontend to Netlify
+### 2. Test All Services
 
-1. Build the frontend:
-   ```bash
-   cd frontend
-   npm run build
-   ```
-2. Sign up at [Netlify](https://netlify.com)
-3. Click "New site from Git"
-4. Connect your GitHub repository
-5. Configure the deployment:
-   - Branch: main (or your default branch)
-   - Build command: `npm run build`
-   - Publish directory: `dist`
-6. Deploy the site
+1. Test frontend functionality:
 
-## Step 7: Deploy Admin Panel to Netlify
+   - User registration and login
+   - Menu browsing
+   - Cart functionality
+   - Order placement
 
-1. Build the admin panel:
-   ```bash
-   cd admin
-   npm run build
-   ```
-2. In Netlify, create another new site
-3. Connect the same GitHub repository
-4. Configure the deployment:
-   - Branch: main (or your default branch)
-   - Base directory: `admin`
-   - Build command: `npm run build`
-   - Publish directory: `admin/dist`
-5. Deploy the site
+2. Test admin functionality:
 
-## Step 8: Environment Variables for Frontend and Admin
+   - Item management
+   - Order management
+   - User management
 
-For both frontend and admin panels, you may need to set environment variables in Netlify if you have any.
-
-## Step 9: Update Database with Image URLs
-
-After deploying, you may need to update your database to use the correct image URLs:
-
-1. Update the `imageUrl` fields in your database items to point to your deployed backend URL
-2. Or update the frontend to construct image URLs using the deployed backend URL
+3. Test API endpoints:
+   - Authentication endpoints
+   - Item endpoints
+   - Cart endpoints
+   - Order endpoints
 
 ## Monitoring and Maintenance
 
-1. Monitor your Render dashboard for backend logs
-2. Monitor your Netlify dashboards for frontend and admin logs
-3. Check MongoDB Atlas for database performance
-4. Set up alerts for your services
+### 1. Set Up Monitoring
+
+- Enable Render monitoring for backend
+- Set up Netlify analytics for frontend and admin
+- Configure MongoDB Atlas monitoring
+- Set up error tracking (e.g., Sentry)
+
+### 2. Regular Maintenance Tasks
+
+1. Update dependencies regularly:
+
+   ```bash
+   npm outdated
+   npm update
+   ```
+
+2. Run security audits:
+
+   ```bash
+   npm audit
+   ```
+
+3. Backup database regularly
+
+### 3. Performance Optimization
+
+1. Enable caching where appropriate
+2. Optimize database queries
+3. Minimize bundle sizes
+4. Use CDNs for static assets
 
 ## Troubleshooting
 
-1. **CORS Issues**: Ensure your CORS configuration includes your deployed URLs
-2. **API Connection Issues**: Verify your MongoDB connection string and environment variables
-3. **Image Loading Issues**: Ensure image URLs are correctly pointing to your deployed backend
-4. **Build Failures**: Check that all dependencies are correctly specified in package.json
+### Common Issues
 
-## Cost Considerations
+1. **CORS Errors**
 
-- MongoDB Atlas (free tier): $0
-- Render (free tier): $0 (with some limitations)
-- Netlify (free tier): $0 (with some limitations)
+   - Solution: Update CORS configuration with correct origins
 
-Note: Free tiers have limitations on resources and may have downtime. For production applications, consider upgrading to paid plans.
+2. **Authentication Failures**
 
-## Next Steps
+   - Solution: Verify JWT_SECRET and token handling
 
-1. Set up custom domains for your frontend and admin panel
-2. Configure SSL certificates (usually automatic with Netlify)
-3. Set up monitoring and alerting
-4. Optimize performance with caching
-5. Set up automated backups for your database
+3. **Database Connection Issues**
+
+   - Solution: Check MongoDB connection string and network access
+
+4. **SMS Not Sending**
+   - Solution: Verify Twilio credentials and phone number
+
+### Logs and Debugging
+
+1. Check Render logs for backend issues
+2. Check Netlify logs for frontend/admin issues
+3. Check browser console for client-side errors
+4. Check MongoDB Atlas for database issues
+
+## Scaling
+
+### Horizontal Scaling
+
+1. Enable auto-scaling on Render
+2. Use MongoDB Atlas clusters for database scaling
+3. Consider CDN for static assets
+
+### Vertical Scaling
+
+1. Upgrade Render instance types
+2. Upgrade MongoDB Atlas cluster tiers
+3. Optimize code and database queries
+
+## Rollback Procedures
+
+### If Deployment Fails
+
+1. Revert to previous working version on Render
+2. Revert to previous working version on Netlify
+3. Restore database from backup if needed
+
+### Database Rollback
+
+1. Identify the point of failure
+2. Restore from the most recent backup before the failure
+3. Replay any critical transactions if possible
+
+## Security Considerations
+
+1. Use HTTPS for all services
+2. Keep dependencies updated
+3. Use strong, unique passwords
+4. Limit database access permissions
+5. Regularly rotate API keys and secrets
+6. Implement rate limiting
+7. Use environment variables for secrets
+
+## Contact
+
+For deployment issues, contact the development team or check the GitHub repository for issue tracking.

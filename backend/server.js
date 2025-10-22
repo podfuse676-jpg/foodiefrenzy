@@ -1,52 +1,65 @@
-import express from 'express'
-import cors from 'cors'
-import 'dotenv/config'
-import { connectDB } from './config/db.js'
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
 
-import path from 'path';
-import { fileURLToPath } from 'url';
+// Load environment variables
+dotenv.config();
 
-import userRouter from './routes/userRoute.js'
-import cartRouter from './routes/cartRoute.js'
-import itemRouter from './routes/itemRoute.js';
-import orderRouter from './routes/orderRoute.js';
-import phoneAuthRouter from './routes/phoneAuthRoute.js';
+// Import database connection
+import { connectDB } from './config/db.js';
+
+// Import routes
+import itemRoutes from './routes/itemRoute.js';
+import cartRoutes from './routes/cartRoute.js';
+import orderRoutes from './routes/orderRoute.js';
+import userRoutes from './routes/userRoute.js';
+import phoneAuthRoutes from './routes/phoneAuthRoute.js';
 
 const app = express();
-const port = process.env.PORT || 4000;
+const PORT = process.env.PORT || 4000;
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Middleware
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// MIDDLEWARE 
-app.use(
-    cors({
-        origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5176', 'http://localhost:5177'],
-        credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
-        exposedHeaders: ['Content-Length', 'Content-Type']
-    })
-);
+// Serve static files from uploads directory
+app.use('/uploads', express.static('uploads'));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// DB CONNECT
-connectDB();
+// Debug middleware to log all requests
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
 
 // Routes
-app.use('/api/user', userRouter)
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/api/cart', cartRouter)
-app.use('/api/items', itemRouter);
-app.use('/api/orders', orderRouter);
-app.use('/api/phone-auth', phoneAuthRouter);
+app.use('/api/items', itemRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/auth', phoneAuthRoutes);
 
+// Connect to MongoDB
+connectDB();
+
+// Basic route for testing
 app.get('/', (req, res) => {
-    res.send('API WORKING');
-})
+  console.log('Root endpoint hit');
+  res.json({ message: 'Server is running!' });
+});
 
-app.listen(port, () => {
-    console.log(`Server Started on http://localhost:${port}`)
-})
+// Start server
+const server = app.listen(PORT, () => {
+  console.log(`Server Started on http://localhost:${PORT}`);
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err) => {
+  console.log('Unhandled Rejection:', err.message);
+  server.close(() => {
+    process.exit(1);
+  });
+});

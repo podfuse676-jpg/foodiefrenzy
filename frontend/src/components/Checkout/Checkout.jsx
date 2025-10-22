@@ -40,7 +40,7 @@ const CheckoutPage = () => {
           .then(({ data }) => {
             // Only clear cart when payment truly succeeded
             clearCart();
-            navigate('/myorder', { state: { order: data.order } });
+            navigate('/myorder', { state: { order: data } });
           })
           .catch(err => {
             console.error('Payment confirmation error:', err);
@@ -83,34 +83,51 @@ const CheckoutPage = () => {
         name: item.name,
         price: selectedSize?.price ?? item.price,
         quantity,
-        imageUrl: item.imageUrl || '',
+        imageUrl: item.imageUrl || null,
         selectedSize: selectedSize || undefined
       }))
     };
 
     try {
       if (formData.paymentMethod === 'card') {
-        // Initiate payment session; do NOT create order or clear cart yet
-        const { data } = await axios.post(
-          'http://localhost:4000/api/orders',
-          payload,
-          { 
-            headers: { Authorization: `Bearer ${token}` }
+        // Stripe Payment: create checkout session
+        try {
+          const { data } = await axios.post(
+            'http://localhost:4000/api/orders',
+            payload,
+            { 
+              headers: authHeaders
+            }
+          );
+          // Redirect to external payment gateway (Stripe)
+          if (data.checkoutUrl) {
+            window.location.href = data.checkoutUrl;
+          } else {
+            setError('Payment gateway URL not received. Please try again.');
           }
-        );
-        // Redirect to external payment gateway (Stripe)
-        window.location.href = data.checkoutUrl;
+        } catch (err) {
+          console.error('Card payment error:', err);
+          setError(err.response?.data?.message || 'Failed to process card payment');
+          setLoading(false);
+        }
       } else if (formData.paymentMethod === 'cod') {
         // Cash on Delivery: directly create order
-        const { data } = await axios.post(
-          'http://localhost:4000/api/orders',
-          payload,
-          { 
-            headers: { Authorization: `Bearer ${token}` }
-          }
-        );
-        clearCart();
-        navigate('/myorder', { state: { order: data.order } });
+        try {
+          const { data } = await axios.post(
+            'http://localhost:4000/api/orders',
+            payload,
+            { 
+              headers: authHeaders
+            }
+          );
+          clearCart();
+          // Make sure we're passing the correct data structure
+          navigate('/myorder', { state: { order: data.order } });
+        } catch (err) {
+          console.error('COD order submission error:', err);
+          setError(err.response?.data?.message || 'Failed to submit order');
+          setLoading(false);
+        }
       } else {
         setError('Please select a payment method');
         setLoading(false);
@@ -119,7 +136,6 @@ const CheckoutPage = () => {
     } catch (err) {
       console.error('Order submission error:', err);
       setError(err.response?.data?.message || 'Failed to submit order');
-    } finally {
       setLoading(false);
     }
   };

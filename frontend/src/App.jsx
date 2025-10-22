@@ -9,7 +9,6 @@ import AboutPage from './pages/AboutPage/AboutPage';
 import Menu from './pages/Menu/Menu';
 import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 import PhoneLogin from './components/PhoneLogin';
-
 import MyOrders from './pages/MyOredrs/MyOrders';
 import VerifyPaymentPage from './pages/VerifyPaymentPage/VerifyPaymentPage';
 

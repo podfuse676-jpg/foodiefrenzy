@@ -11,8 +11,8 @@ import {
   FiPackage
 } from 'react-icons/fi';
 import { GiForkKnifeSpoon } from 'react-icons/gi';
-// Import logo from local assets
-import Logo from '../../assets/logo.svg';
+// Fixed the import path for SVG in Vite
+import LakeshoreLogo from '../../assets/lakeshore-logo.png';
 import Login from '../Login/Login';
 import { useCart } from '../../CartContext/CartContext';
 
@@ -22,14 +22,29 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    Boolean(localStorage.getItem('loginData'))
-  );
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
+  // Check authentication status on component mount and when location changes
   useEffect(() => {
+    const checkAuthStatus = () => {
+      const loginData = localStorage.getItem('loginData');
+      const authToken = localStorage.getItem('authToken');
+      setIsAuthenticated(!!(loginData && authToken));
+    };
+
+    checkAuthStatus();
+    
+    // Also check when location changes
     setShowLoginModal(location.pathname === '/login');
-    setIsAuthenticated(Boolean(localStorage.getItem('loginData')));
+    
+    // Add event listener for storage changes (in case another tab updates auth)
+    window.addEventListener('storage', checkAuthStatus);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('storage', checkAuthStatus);
+    };
   }, [location.pathname]);
 
   const navLinks = [
@@ -43,14 +58,31 @@ const Navbar = () => {
   ];
 
   const handleLoginSuccess = () => {
-    localStorage.setItem('loginData', JSON.stringify({ loggedIn: true }));
+    // Update authentication state
     setIsAuthenticated(true);
+    // Close modal
+    setShowLoginModal(false);
+    // Navigate to home
     navigate('/');
   };
 
   const handleLogout = () => {
+    // Remove all auth-related items from localStorage
     localStorage.removeItem('loginData');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    // Update authentication state
     setIsAuthenticated(false);
+    
+    // If we're on a protected page, redirect to home
+    if (location.pathname === '/cart' || location.pathname === '/checkout' || location.pathname === '/myorder') {
+      navigate('/');
+    }
+    
+    // Show logout success message
+    // You might want to add a toast notification here
   };
 
   const renderDesktopAuthButton = () => {
@@ -116,7 +148,7 @@ const Navbar = () => {
           <div className="flex-shrink-0 flex items-center space-x-3 group">
             {/* Logo in a circle with matching border - 90% zoom */}
             <div className="rounded-full border-2 border-[#f59e0b] p-1 bg-[#fff7ed]">
-              <img src={Logo} alt="Lakeshore Convenience" className="h-12 w-12 rounded-full object-contain scale-90" />
+              <img src={LakeshoreLogo} alt="Lakeshore Convenience" className="h-12 w-12 rounded-full object-contain scale-90" />
             </div>
             <div className="flex flex-col ml-1 md:ml-2">
               <NavLink

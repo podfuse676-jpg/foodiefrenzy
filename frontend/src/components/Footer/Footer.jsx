@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { FaRegEnvelope } from 'react-icons/fa6';
 import { BiChevronRight } from 'react-icons/bi';
-// Import the logo from local assets
-import Logo from '../../assets/logo.svg';
+// Import the logo
+import LakeshoreLogo from '../../assets/lakeshore-logo.png';
 import { socialIcons } from '../../assets/dummydata';
 
 const navItems = [
@@ -29,7 +29,7 @@ const Footer = () => {
             <div className="flex items-center space-x-3">
               {/* Circular logo with zoomed image - 90% zoom */}
               <div className="rounded-full border-2 border-[#f59e0b] p-1.5 bg-[#fff7ed]">
-                <img src={Logo} alt="Lakeshore Convenience" className="h-14 w-14 rounded-full object-contain scale-90" />
+                <img src={LakeshoreLogo} alt="Lakeshore Convenience" className="h-14 w-14 rounded-full object-contain scale-90" />
               </div>
               <h2 className="text-4xl sm:text-5xl md:text-5xl font-bold font-sacramento text-[#f59e0b] animate-pulse">
                 Lakeshore Convenience
