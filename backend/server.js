@@ -118,6 +118,43 @@ app.get('/test-env', (req, res) => {
   });
 });
 
+// Test endpoint to simulate login function
+app.get('/test-login', async (req, res) => {
+  try {
+    console.log('Test login endpoint called');
+    
+    // Import the user model
+    const User = (await import('./modals/userModel.js')).default;
+    
+    console.log('User model imported');
+    
+    // Perform the exact same query as in the login function
+    const user = await User.findOne({ email: 'admin@foodiefrenzy.com' });
+    
+    console.log('User lookup result:', user ? 'Found' : 'Not found');
+    console.log('Database connection state:', mongoose.connection.readyState);
+    console.log('Database connection host:', mongoose.connection.host);
+    console.log('Database connection name:', mongoose.connection.name);
+    
+    if (!user) {
+      return res.json({ success: false, message: "User Doesn't Exist" });
+    }
+    
+    res.json({ 
+      success: true, 
+      message: "User found",
+      user: {
+        email: user.email,
+        username: user.username,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    console.error('Test login error:', error);
+    res.status(500).json({ success: false, message: "Error", error: error.message });
+  }
+});
+
 // Health check route for Render
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', port: PORT, timestamp: new Date().toISOString() });
