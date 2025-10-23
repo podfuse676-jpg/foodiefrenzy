@@ -7,6 +7,11 @@ dotenv.config();
 
 // Import database connection
 import { connectDB } from './config/db.js';
+
+// Connect to MongoDB
+connectDB();
+
+// Import models after database connection
 import User from './modals/userModel.js';
 
 // Import routes
@@ -45,9 +50,6 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/auth', phoneAuthRoutes);
-
-// Connect to MongoDB
-connectDB();
 
 // Test endpoint to verify database connection and user lookup
 app.get('/api/test-db', async (req, res) => {
