@@ -3,12 +3,27 @@ import mongoose from 'mongoose';
 // Connect to MongoDB. Uses MONGODB_URI from environment if present,
 // otherwise falls back to a local MongoDB instance.
 export const connectDB = async () => {
-    const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/foodiefrenzy';
+    // Ensure the database name is explicitly set to 'foodiefrenzy'
+    let uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/foodiefrenzy';
+    
+    // If the URI doesn't end with the database name, append it
+    if (uri && !uri.endsWith('/foodiefrenzy')) {
+        // Remove any trailing slash if present
+        if (uri.endsWith('/')) {
+            uri = uri.slice(0, -1);
+        }
+        // Add the database name
+        if (!uri.includes('/foodiefrenzy?')) {
+            uri = uri + '/foodiefrenzy';
+        }
+    }
+    
     try {
         await mongoose.connect(uri, {
             // useNewUrlParser and useUnifiedTopology are defaults in Mongoose 6+
         });
         console.log('DB CONNECTED');
+        console.log('Connected to database:', mongoose.connection.name);
     } catch (err) {
         console.error('DB CONNECTION ERROR:', err.message || err);
         console.error('This may be due to IP whitelist restrictions in MongoDB Atlas.');
