@@ -8,6 +8,16 @@ import AdminLogin from './components/Login/Login';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import AdminNavbar from './components/Navbar/Navbar';
 
+// Layout component for authenticated routes
+const AuthenticatedLayout = ({ children }) => (
+  <div>
+    <AdminNavbar />
+    <div className="pt-20">
+      {children}
+    </div>
+  </div>
+);
+
 function App() {
   return (
     <div>
@@ -15,32 +25,23 @@ function App() {
         <Route path="/login" element={<AdminLogin />} />
         <Route path="/" element={
           <ProtectedRoute>
-            <div>
-              <AdminNavbar />
-              <div className="pt-20">
-                <AddItems />
-              </div>
-            </div>
+            <AuthenticatedLayout>
+              <AddItems />
+            </AuthenticatedLayout>
           </ProtectedRoute>
         } />
         <Route path="/list" element={
           <ProtectedRoute>
-            <div>
-              <AdminNavbar />
-              <div className="pt-20">
-                <ListItems />
-              </div>
-            </div>
+            <AuthenticatedLayout>
+              <ListItems />
+            </AuthenticatedLayout>
           </ProtectedRoute>
         } />
         <Route path="/orders" element={
           <ProtectedRoute>
-            <div>
-              <AdminNavbar />
-              <div className="pt-20">
-                <Orders />
-              </div>
-            </div>
+            <AuthenticatedLayout>
+              <Orders />
+            </AuthenticatedLayout>
           </ProtectedRoute>
         } />
         {/* Redirect any unknown routes to the dashboard */}
