@@ -9,7 +9,8 @@
     "list-users": "node listUsers.js",
     "test-password": "node testPassword.js",
     "test-db-connection": "node testDBConnection.js",
-    "test-user-model": "node testUserModel.js"
+    "test-user-model": "node testUserModel.js",
+    "force-create-admin": "node forceCreateAdmin.js"
   },
   "author": "",
   "license": "ISC",
