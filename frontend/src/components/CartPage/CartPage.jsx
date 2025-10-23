@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { useCart } from '../../CartContext/CartContext';
 import { Link } from 'react-router-dom';
 import { FaMinus, FaPlus, FaTrash, FaTimes } from 'react-icons/fa';
+import apiConfig from '../../utils/apiConfig';
 
 // Base URL for serving uploaded images
-const API_URL = 'http://localhost:4000';
+const API_URL = apiConfig.baseURL;
 
 const CartPage = () => {
   const { cartItems, removeFromCart, updateQuantity, totalAmount } = useCart();

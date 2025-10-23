@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { FaPlus, FaMinus } from 'react-icons/fa';
 import { useCart } from '../../CartContext/CartContext';
-import { FaMinus, FaPlus } from 'react-icons/fa';
-import './Omh.css';
-import { dummyMenuData } from '../../assets/OmhDD.js';
+import apiConfig from '../../utils/apiConfig';
 
-const categories = ['Convenience', 'Food'];
+const categories = ['Convenience', 'Food', 'Drinks', 'Snacks'];
 
 const OurMenuHome = () => {
   const [activeCategory, setActiveCategory] = useState('Convenience');
   const [menuData, setMenuData] = useState({});
   const { cartItems: rawCart, addToCart, updateQuantity, removeFromCart } = useCart();
+  const url = apiConfig.baseURL;
 
   const cartItems = rawCart.filter(ci => ci.item);
 
   useEffect(() => {
-    axios.get('http://localhost:4000/api/items')
+    axios.get(`${url}/api/items`)
       .then(res => {
         // Organize items by category
         const organizedData = {};

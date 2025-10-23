@@ -1,143 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
 import { useCart } from '../../CartContext/CartContext';
-import { FaMinus, FaPlus } from 'react-icons/fa';
-import './Om.css';
-import { dummyMenuData } from '../../assets/OmhDD.js';
-
-// Separate component for each menu item to handle size selection properly
-const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, removeFromCart, category }) => {
-  // State for selected size
-  const [selectedSize, setSelectedSize] = useState(
-    item.sizeOptions && item.sizeOptions.length > 0 
-      ? item.sizeOptions[0] 
-      : null
-  );
-  
-  // Get current price based on selected size
-  const getCurrentPrice = () => {
-    if (selectedSize) {
-      return selectedSize.price;
-    }
-    return item.price;
-  };
-  
-  // Check if this is a Convenience category item to apply glow effect
-  const isConvenienceItem = category === 'Convenience';
-  
-  return (
-    <div className={`relative bg-white/20 rounded-2xl overflow-hidden border border-[#f59e0b]/30 backdrop-blur-sm flex flex-col transition-all duration-500 ${isConvenienceItem ? 'glowy-brown-effect' : ''}`}>
-      {/* Image */}
-      <div className="relative h-48 sm:h-56 md:h-60 flex items-center justify-center bg-[#0ea5a4]/10">
-        <img
-          src={item.imageUrl || item.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPuKAkzwvdGV4dD48L3N2Zz4='}
-          alt={item.name}
-          className="max-h-full max-w-full object-contain transition-all duration-700"
-          onError={(e) => {
-            // Set a default image if the image fails to load
-            e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPuKAkzwvdGV4dD48L3N2Zz4=';
-          }}
-        />
-      </div>
-      {/* Details */}
-      <div className="p-4 sm:p-6 flex flex-col flex-grow">
-        <h3 className="text-xl sm:text-2xl mb-2 font-dancingscript text-[#2D1B0E]">
-          {item.name}
-        </h3>
-        <p className="text-[#2D1B0E]/80 text-xs sm:text-sm mb-4 font-cinzel leading-relaxed">
-          {item.description || 'No description available'}
-        </p>
-        
-        {/* Size Selection */}
-        {item.sizeOptions && item.sizeOptions.length > 0 && (
-          <div className="mb-4">
-            <label className="block text-[#2D1B0E]/80 text-sm mb-1 font-cinzel">
-              Size:
-            </label>
-            <select
-              value={selectedSize ? selectedSize.size : ''}
-              onChange={(e) => {
-                const size = item.sizeOptions.find(s => s.size === e.target.value);
-                setSelectedSize(size || null);
-              }}
-              className="w-full bg-white/20 border border-[#f59e0b]/30 rounded-lg px-3 py-2 text-[#2D1B0E] font-cinzel"
-            >
-              {item.sizeOptions.map((sizeOption) => (
-                <option 
-                  key={sizeOption.size} 
-                  value={sizeOption.size}
-                  className="bg-white text-[#2D1B0E]"
-                >
-                  {sizeOption.size} - ${sizeOption.price.toFixed(2)} CAD
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-        
-        {/* Price & Cart Controls */}
-        <div className="mt-auto flex items-center gap-4 justify-between">
-          <div className="bg-[#0ea5a4]/10 backdrop-blur-sm px-3 py-1 rounded-2xl shadow-lg">
-            <span className="text-xl font-bold text-[#d97706] font-dancingscript">
-              ${getCurrentPrice().toFixed(2)} CAD
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            { quantity > 0 ? (
-              <>
-                <button
-                  onClick={() =>
-                    quantity > 1
-                      ? updateQuantity(cartEntry?._id, quantity - 1, selectedSize)
-                      : removeFromCart(cartEntry._id)
-                  }
-                  className="w-8 h-8 rounded-full bg-[#0ea5a4]/40 flex items-center justify-center hover:bg-[#0ea5a4]/50 transition-colors"
-                >
-                  <FaMinus className="text-[#2D1B0E]" />
-                </button>
-                <span className="w-8 text-center text-[#2D1B0E]">
-                  {quantity}
-                </span>
-                <button
-                  onClick={() => updateQuantity(cartEntry._id, quantity + 1, selectedSize)}
-                  className="w-8 h-8 rounded-full bg-[#0ea5a4]/40 flex items-center justify-center hover:bg-[#0ea5a4]/50 transition-colors"
-                >
-                  <FaPlus className="text-[#2D1B0E]" />
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={() => addToCart(item, 1, selectedSize)}
-                className="bg-gradient-to-r from-[#f59e0b] to-[#d97706] hover:from-[#d97706] hover:to-[#f59e0b] px-4 py-1.5 rounded-full font-cinzel text-xs sm:text-sm uppercase tracking-widest transition-all transform hover:scale-105 shadow-lg text-[#2D1B0E]"
-              >
-                Add to Cart
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+import MenuItem from './MenuItem';
+import apiConfig from '../../utils/apiConfig';
 
 const OurMenu = () => {
-  const location = useLocation();
-  const [activeCategory, setActiveCategory] = useState('Convenience');
   const [menuData, setMenuData] = useState({});
   const [categories, setCategories] = useState([]);
-  const [searchQuery, setSearchQuery] = useState(location.state?.searchQuery || '');
+  const [activeCategory, setActiveCategory] = useState('Convenience');
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { cartItems: rawCart, addToCart, updateQuantity, removeFromCart } = useCart();
   const cartItems = rawCart.filter(ci => ci.item);
+  const url = apiConfig.baseURL;
   
   useEffect(() => {
     const fetchMenu = async () => {
       try {
         setLoading(true);
         setError(null);
-        const res = await axios.get('http://localhost:4000/api/items');
+        const res = await axios.get(`${url}/api/items`);
         
         // Organize items by category
         const organizedData = {};

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import apiConfig from '../utils/apiConfig';
 
 const PhoneLogin = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -10,6 +11,7 @@ const PhoneLogin = () => {
   const [loading, setLoading] = useState(false);
   const [displayedCode, setDisplayedCode] = useState(''); // Store OTP for display
   const navigate = useNavigate();
+  const url = apiConfig.baseURL;
 
   const handleSendCode = async (e) => {
     e.preventDefault();
@@ -23,7 +25,7 @@ const PhoneLogin = () => {
       // Format phone number properly
       const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+1${phoneNumber}`;
       
-      const response = await axios.post('http://localhost:4000/api/auth/send-code', {
+      const response = await axios.post(`${url}/api/auth/send-code`, {
         phoneNumber: formattedPhone
       });
       
@@ -63,7 +65,7 @@ const PhoneLogin = () => {
       // Format phone number properly
       const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+1${phoneNumber}`;
       
-      const response = await axios.post('http://localhost:4000/api/auth/verify-code', {
+      const response = await axios.post(`${url}/api/auth/verify-code`, {
         phoneNumber: formattedPhone,
         verificationCode
       });

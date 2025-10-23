@@ -5,8 +5,10 @@ import { FiUpload, FiHeart, FiStar } from 'react-icons/fi';
 import { FaRupeeSign } from 'react-icons/fa';
 import AdminNavbar from '../Navbar/Navbar';
 import { styles } from '../../assets/dummyadmin';
+import apiConfig from '../../utils/apiConfig';
 
 const AddItems = () => {
+  const url = apiConfig.baseURL;
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -105,7 +107,7 @@ const AddItems = () => {
       
       // Make the API request with proper configuration
       const res = await axios.post(
-        'http://localhost:4000/api/items',
+        `${url}/api/items`,
         payload,
         { 
           headers: { 

@@ -3,11 +3,13 @@ import { FiTruck, FiCheckCircle, FiClock, FiArrowLeft, FiUser, FiMapPin, FiBox }
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from '../../CartContext/CartContext';
+import apiConfig from '../../utils/apiConfig';
 
 const UserOrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const url = apiConfig.baseURL;
 
   const user = JSON.parse(localStorage.getItem('user'));
 
@@ -16,7 +18,7 @@ const UserOrdersPage = () => {
       try {
         const token = localStorage.getItem('authToken') || localStorage.getItem('token');
         // Remove the email parameter since the backend filters by authenticated user ID
-        const response = await axios.get('http://localhost:4000/api/orders', {
+        const response = await axios.get(`${url}/api/orders`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -204,7 +206,7 @@ const UserOrdersPage = () => {
                               className="flex items-center gap-3 p-2 bg-[#3a2b2b]/50 rounded-lg"
                             >
                               <img
-                                src={item.item.imageUrl ? `http://localhost:4000${item.item.imageUrl}` : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='}
+                                src={item.item.imageUrl ? `${url}${item.item.imageUrl}` : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='}
                                 alt={item.item.name}
                                 className="w-10 h-10 object-cover rounded-lg"
                                 onError={(e) => {

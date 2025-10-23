@@ -6,8 +6,10 @@ import { FiEdit } from 'react-icons/fi';
 import AdminNavbar from '../Navbar/Navbar';
 import { styles } from '../../assets/dummyadmin';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import apiConfig from '../../utils/apiConfig';
 
 const ListItems = () => {
+  const url = apiConfig.baseURL;
   const [items, setItems] = useState([]);
   const [editingItem, setEditingItem] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,7 +21,7 @@ const ListItems = () => {
     const fetchItems = async () => {
       try {
         // Add withCredentials to handle CORS properly
-        const response = await axios.get('http://localhost:4000/api/items', {
+        const response = await axios.get(`${url}/api/items`, {
           withCredentials: true
         });
         console.log('Raw API response:', response.data);
@@ -55,7 +57,7 @@ const ListItems = () => {
     if (!window.confirm('Are you sure you want to delete this item?')) return;
     try {
       // Remove authentication requirement for delete operation
-      await axios.delete(`http://localhost:4000/api/items/${itemId}`);
+      await axios.delete(`${url}/api/items/${itemId}`);
       setItems(prev => prev.filter(item => item._id !== itemId));
       console.log('Deleted item ID:', itemId);
       alert('Item deleted successfully!');
@@ -241,7 +243,7 @@ const ListItems = () => {
                         if (typeof payload.flavourOptions === 'string') payload.flavourOptions = payload.flavourOptions.split(',').map(s => s.trim()).filter(Boolean);
 
                         // Send update (JSON) - backend will parse numbers/booleans
-                        const res = await axios.put(`http://localhost:4000/api/items/${editingItem._id}`, payload, { headers: { 'Content-Type': 'application/json' } });
+                        const res = await axios.put(`${url}/api/items/${editingItem._id}`, payload, { headers: { 'Content-Type': 'application/json' } });
                         // Update local list
                         setItems(prev => prev.map(it => it._id === res.data._id ? res.data : it));
                         setEditingItem(null);

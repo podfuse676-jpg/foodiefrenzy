@@ -1,294 +1,145 @@
 # Foodie Frenzy Deployment Guide
 
-This guide provides instructions for deploying the Foodie Frenzy application to production environments.
-
-## Deployment Architecture
-
-The application is designed for deployment across multiple platforms:
-
-- **Frontend**: Netlify
-- **Admin Panel**: Netlify
-- **Backend API**: Render
-- **Database**: MongoDB Atlas
+This guide will help you deploy the Foodie Frenzy application to Vercel (frontend and admin) and Render (backend).
 
 ## Prerequisites
 
-Before deployment, ensure you have:
+1. GitHub account with the repository
+2. Vercel account
+3. Render account
+4. MongoDB Atlas account
+5. (Optional) Stripe account for payments
 
-1. Accounts on Netlify and Render
-2. MongoDB Atlas cluster set up
-3. Twilio account for SMS functionality
-4. Domain names (optional but recommended)
+## Backend Deployment on Render
 
-## Environment Setup
+### 1. Update Environment Variables
 
-### 1. MongoDB Atlas Configuration
+Make sure your `.env` file in the backend has the correct values:
 
-1. Create a MongoDB Atlas account
-2. Create a new cluster
-3. Configure database access:
-   - Add a database user
-   - Add your IP address to the whitelist (or allow access from anywhere for development)
-4. Get your connection string:
-   ```
-   mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/foodiefrenzy
-   ```
-
-### 2. Twilio Configuration
-
-1. Create a Twilio account
-2. Get your Account SID and Auth Token
-3. Purchase a phone number (or use the trial number)
-4. Note down the phone number for SMS sending
-
-## Backend Deployment (Render)
-
-### 1. Prepare Environment Variables
-
-Create a `.env` file for production:
-
-```env
-MONGO_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/foodiefrenzy
+```
+JWT_SECRET=your_jwt_secret_here_(at_least_32_characters)
+STRIPE_SECRET_KEY=your_stripe_secret_key_here
+FRONTEND_URL=https://foodiefrenzy-frontend.vercel.app
+ADMIN_URL=https://foodiefrenzy-admin.vercel.app
+NODE_ENV=production
+TWILIO_ACCOUNT_SID= (leave empty if not using SMS)
+TWILIO_AUTH_TOKEN= (leave empty if not using SMS)
+TWILIO_PHONE_NUMBER= (leave empty if not using SMS)
+TWILIO_VERIFIED_NUMBER= (leave empty if not using SMS)
+MONGODB_URI=your_mongodb_atlas_connection_string
 PORT=4000
-JWT_SECRET=your_production_jwt_secret
-TWILIO_ACCOUNT_SID=your_twilio_account_sid
-TWILIO_AUTH_TOKEN=your_twilio_auth_token
-TWILIO_PHONE_NUMBER=your_twilio_phone_number
+CORS_ORIGIN=https://foodiefrenzy-frontend.vercel.app
 ```
 
 ### 2. Deploy to Render
 
-1. Create a new Web Service on Render
-2. Connect your GitHub repository
-3. Set the following build command:
-   ```
-   npm install
-   ```
-4. Set the start command:
-   ```
-   npm start
-   ```
-5. Add environment variables from your `.env` file
-6. Deploy the service
+1. Go to [Render Dashboard](https://dashboard.render.com/)
+2. Click "New" → "Web Service"
+3. Connect your GitHub repository
+4. Set the following:
+   - Name: `foodiefrenzy-backend`
+   - Region: Choose the closest region
+   - Branch: `main`
+   - Root Directory: `backend`
+   - Runtime: `Node`
+   - Build Command: `npm install`
+   - Start Command: `npm start`
+5. Add Environment Variables (copy from your `.env` file)
+6. Click "Create Web Service"
 
-### 3. Verify Backend Deployment
+### 3. Update MongoDB Atlas IP Whitelist
 
-After deployment, verify the backend is working:
+After deployment, get the Render service IP and add it to your MongoDB Atlas IP whitelist:
 
-```bash
-curl https://your-backend-url.onrender.com/
-```
+1. In Render, go to your service → Settings → IP Address
+2. Copy the IP address
+3. In MongoDB Atlas, go to Network Access → Add IP Address
+4. Add the Render IP address
 
-## Frontend Deployment (Netlify)
+## Frontend Deployment on Vercel
 
-### 1. Update API Configuration
+### 1. Update Environment Variables
 
-Update `frontend/src/utils/apiConfig.js`:
-
-```javascript
-const apiConfig = {
-  baseURL: "https://your-backend-url.onrender.com",
-};
-
-export default apiConfig;
-```
-
-### 2. Set Environment Variables
-
-In Netlify, set the following environment variables:
+Make sure your `.env` file in the frontend has the correct value:
 
 ```
-REACT_APP_API_URL=https://your-backend-url.onrender.com
-REACT_APP_FRONTEND_URL=https://your-frontend-url.netlify.app
-REACT_APP_ADMIN_URL=https://your-admin-url.netlify.app
+REACT_APP_API_URL=https://your-render-service-url.onrender.com
 ```
 
-### 3. Deploy to Netlify
+### 2. Deploy to Vercel
 
-1. Create a new site on Netlify
-2. Connect your GitHub repository
-3. Set the build settings:
-   - Build command: `npm run build`
-   - Publish directory: `dist`
-4. Deploy the site
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
+2. Click "New Project"
+3. Import your GitHub repository
+4. Set the following:
+   - Project Name: `foodiefrenzy-frontend`
+   - Framework Preset: `Vite`
+   - Root Directory: `frontend`
+5. Add Environment Variables (copy from your `.env` file)
+6. Click "Deploy"
 
-### 4. Custom Domain (Optional)
+## Admin Panel Deployment on Vercel
 
-1. Add your custom domain in Netlify
-2. Update DNS records as instructed
-3. Enable SSL certificate
+### 1. Update Environment Variables
 
-## Admin Panel Deployment (Netlify)
-
-### 1. Update API Configuration
-
-Update `admin/src/utils/apiConfig.js`:
-
-```javascript
-const apiConfig = {
-  baseURL: "https://your-backend-url.onrender.com",
-};
-
-export default apiConfig;
-```
-
-### 2. Set Environment Variables
-
-In Netlify, set the following environment variables:
+Make sure your `.env` file in the admin has the correct value:
 
 ```
-REACT_APP_API_URL=https://your-backend-url.onrender.com
-REACT_APP_FRONTEND_URL=https://your-frontend-url.netlify.app
-REACT_APP_ADMIN_URL=https://your-admin-url.netlify.app
+REACT_APP_API_URL=https://your-render-service-url.onrender.com
 ```
 
-### 3. Deploy to Netlify
+### 2. Deploy to Vercel
 
-1. Create a new site on Netlify
-2. Connect your GitHub repository
-3. Set the build settings:
-   - Build command: `npm run build`
-   - Publish directory: `dist`
-4. Deploy the site
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
+2. Click "New Project"
+3. Import your GitHub repository
+4. Set the following:
+   - Project Name: `foodiefrenzy-admin`
+   - Framework Preset: `Vite`
+   - Root Directory: `admin`
+5. Add Environment Variables (copy from your `.env` file)
+6. Click "Deploy"
 
-## Post-Deployment Configuration
+## Deploying Services Independently
 
-### 1. CORS Configuration
+If you want to deploy each service separately, you can use the specific deployment guides:
 
-Update the backend CORS configuration in `backend/server.js`:
+- [Admin Panel Deployment Guide](ADMIN_DEPLOYMENT_GUIDE.md) - For deploying only the admin panel
+- Frontend Deployment Guide (this document) - For deploying only the frontend
+- Backend Deployment (this document) - For deploying only the backend
 
-```javascript
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "https://your-frontend-url.netlify.app",
-      "https://your-admin-url.netlify.app",
-    ],
-    credentials: true,
-  })
-);
-```
-
-### 2. Test All Services
-
-1. Test frontend functionality:
-
-   - User registration and login
-   - Menu browsing
-   - Cart functionality
-   - Order placement
-
-2. Test admin functionality:
-
-   - Item management
-   - Order management
-   - User management
-
-3. Test API endpoints:
-   - Authentication endpoints
-   - Item endpoints
-   - Cart endpoints
-   - Order endpoints
-
-## Monitoring and Maintenance
-
-### 1. Set Up Monitoring
-
-- Enable Render monitoring for backend
-- Set up Netlify analytics for frontend and admin
-- Configure MongoDB Atlas monitoring
-- Set up error tracking (e.g., Sentry)
-
-### 2. Regular Maintenance Tasks
-
-1. Update dependencies regularly:
-
-   ```bash
-   npm outdated
-   npm update
-   ```
-
-2. Run security audits:
-
-   ```bash
-   npm audit
-   ```
-
-3. Backup database regularly
-
-### 3. Performance Optimization
-
-1. Enable caching where appropriate
-2. Optimize database queries
-3. Minimize bundle sizes
-4. Use CDNs for static assets
+Each service can be deployed and updated independently without affecting the others.
 
 ## Troubleshooting
 
-### Common Issues
+### Login Issues
 
-1. **CORS Errors**
+If you're unable to log in on Vercel:
 
-   - Solution: Update CORS configuration with correct origins
+1. Check that `REACT_APP_API_URL` in your frontend `.env` file points to your Render backend URL
+2. Check that CORS is properly configured in your backend
+3. Check browser console for network errors
+4. Make sure your MongoDB connection is working
 
-2. **Authentication Failures**
+### MongoDB Connection Issues
 
-   - Solution: Verify JWT_SECRET and token handling
+If your backend fails to connect to MongoDB:
 
-3. **Database Connection Issues**
+1. Verify your `MONGODB_URI` is correct
+2. Make sure your MongoDB Atlas cluster allows connections from Render IPs
+3. You may need to whitelist `0.0.0.0/0` for testing purposes
 
-   - Solution: Check MongoDB connection string and network access
+### Twilio Issues
 
-4. **SMS Not Sending**
-   - Solution: Verify Twilio credentials and phone number
+If you don't want to use Twilio for SMS:
 
-### Logs and Debugging
+1. Leave the Twilio environment variables empty
+2. The application will work without SMS functionality
 
-1. Check Render logs for backend issues
-2. Check Netlify logs for frontend/admin issues
-3. Check browser console for client-side errors
-4. Check MongoDB Atlas for database issues
+## Updating Deployments
 
-## Scaling
+To update your deployments after making changes:
 
-### Horizontal Scaling
-
-1. Enable auto-scaling on Render
-2. Use MongoDB Atlas clusters for database scaling
-3. Consider CDN for static assets
-
-### Vertical Scaling
-
-1. Upgrade Render instance types
-2. Upgrade MongoDB Atlas cluster tiers
-3. Optimize code and database queries
-
-## Rollback Procedures
-
-### If Deployment Fails
-
-1. Revert to previous working version on Render
-2. Revert to previous working version on Netlify
-3. Restore database from backup if needed
-
-### Database Rollback
-
-1. Identify the point of failure
-2. Restore from the most recent backup before the failure
-3. Replay any critical transactions if possible
-
-## Security Considerations
-
-1. Use HTTPS for all services
-2. Keep dependencies updated
-3. Use strong, unique passwords
-4. Limit database access permissions
-5. Regularly rotate API keys and secrets
-6. Implement rate limiting
-7. Use environment variables for secrets
-
-## Contact
-
-For deployment issues, contact the development team or check the GitHub repository for issue tracking.
+1. Push your changes to GitHub
+2. Vercel and Render will automatically redeploy
+3. For Render, you may need to manually trigger a deploy if auto-deploy is disabled

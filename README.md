@@ -170,24 +170,45 @@ The application supports two authentication methods:
 
 The application is designed for deployment on:
 
-- **Frontend/Admin**: Netlify
+- **Frontend/Admin**: Vercel or Netlify
 - **Backend**: Render
 - **Database**: MongoDB Atlas
 
 ### Environment Variables for Deployment
 
-#### Frontend & Admin
+#### Backend (.env)
+
+```env
+MONGODB_URI=your_mongodb_atlas_connection_string
+JWT_SECRET=your_jwt_secret_key_(at_least_32_characters)
+STRIPE_SECRET_KEY=your_stripe_secret_key
+FRONTEND_URL=https://your-frontend-url.vercel.app
+ADMIN_URL=https://your-admin-url.vercel.app
+TWILIO_ACCOUNT_SID= (leave empty if not using SMS)
+TWILIO_AUTH_TOKEN= (leave empty if not using SMS)
+TWILIO_PHONE_NUMBER= (leave empty if not using SMS)
+```
+
+#### Frontend & Admin (.env)
 
 ```env
 REACT_APP_API_URL=https://your-backend-url.onrender.com
-REACT_APP_FRONTEND_URL=https://your-frontend-url.netlify.app
-REACT_APP_ADMIN_URL=https://your-admin-url.netlify.app
 ```
+
+### Deployment Instructions
+
+For detailed deployment instructions, see:
+
+- [Deployment Guide](DEPLOYMENT_GUIDE.md)
+- [Admin Panel Deployment Guide](ADMIN_DEPLOYMENT_GUIDE.md)
+- [Vercel Login Fix Summary](VERCEL_LOGIN_FIX_SUMMARY.md)
 
 ## Scripts
 
 - `start-all.sh` - Start all services (backend, frontend, admin)
 - `stop-all.sh` - Stop all services
+- `scripts/deploy.sh` - Deployment helper script for all services
+- `scripts/deploy-admin.sh` - Deployment helper script for admin panel only
 - Various deployment scripts in the `scripts/` directory
 
 ## Contributing

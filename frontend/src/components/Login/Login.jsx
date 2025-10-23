@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import apiConfig from '../../utils/apiConfig';
 import {
   FaEnvelope,
   FaLock,
@@ -14,7 +15,7 @@ import {
 } from 'react-icons/fa';
 import { inputBase, iconClass } from '../../assets/dummydata';
 
-const url = 'http://localhost:4000'
+const url = apiConfig.baseURL;
 
 const Login = ({ onLoginSuccess, onClose }) => {
   const [formData, setFormData] = useState({
