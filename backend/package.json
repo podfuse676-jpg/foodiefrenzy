@@ -16,7 +16,8 @@
     "manual-login-test": "node manualLoginTest.js",
     "test-user-import": "node testUserImport.js",
     "test-login-endpoint": "node testLoginEndpoint.js",
-    "test-request-body": "node testRequestBody.js"
+    "test-request-body": "node testRequestBody.js",
+    "test-production-db": "node testProductionDB.js"
   },
   "author": "",
   "license": "ISC",
