@@ -11,7 +11,8 @@
     "test-db-connection": "node testDBConnection.js",
     "test-user-model": "node testUserModel.js",
     "force-create-admin": "node forceCreateAdmin.js",
-    "test-login": "node testLogin.js"
+    "test-login": "node testLogin.js",
+    "test-server-db": "node testServerDB.js"
   },
   "author": "",
   "license": "ISC",
