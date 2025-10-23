@@ -7,8 +7,23 @@ dotenv.config();
 
 // Import database connection
 import { connectDB } from './config/db.js';
+import mongoose from 'mongoose';
+
+// Add connection event listeners for debugging
+mongoose.connection.on('connected', () => {
+  console.log('Mongoose connected to DB (server.js)');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.log('Mongoose connection error (server.js):', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('Mongoose disconnected (server.js)');
+});
 
 // Connect to MongoDB
+console.log('Connecting to database...');
 connectDB();
 
 // Import models after database connection
