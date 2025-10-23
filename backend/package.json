@@ -6,7 +6,8 @@
   "scripts": {
     "start": "nodemon server.js",
     "create-admin": "node createAdminUser.js",
-    "list-users": "node listUsers.js"
+    "list-users": "node listUsers.js",
+    "test-password": "node testPassword.js"
   },
   "author": "",
   "license": "ISC",
