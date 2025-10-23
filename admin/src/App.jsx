@@ -8,6 +8,16 @@ import AdminLogin from './components/Login/Login';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import AdminNavbar from './components/Navbar/Navbar';
 
+// Main layout component that includes the navbar
+const MainLayout = ({ children }) => (
+  <div>
+    <AdminNavbar />
+    <div className="pt-20"> {/* Add padding to account for fixed navbar */}
+      {children}
+    </div>
+  </div>
+);
+
 function App() {
   return (
     <div>
@@ -15,26 +25,23 @@ function App() {
         <Route path="/login" element={<AdminLogin />} />
         <Route path="/" element={
           <ProtectedRoute>
-            <div>
-              <AdminNavbar />
+            <MainLayout>
               <AddItems />
-            </div>
+            </MainLayout>
           </ProtectedRoute>
         } />
         <Route path="/list" element={
           <ProtectedRoute>
-            <div>
-              <AdminNavbar />
+            <MainLayout>
               <ListItems />
-            </div>
+            </MainLayout>
           </ProtectedRoute>
         } />
         <Route path="/orders" element={
           <ProtectedRoute>
-            <div>
-              <AdminNavbar />
+            <MainLayout>
               <Orders />
-            </div>
+            </MainLayout>
           </ProtectedRoute>
         } />
         {/* Redirect any unknown routes to the dashboard */}
