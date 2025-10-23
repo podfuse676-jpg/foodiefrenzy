@@ -193,39 +193,39 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', port: PORT, timestamp: new Date().toISOString() });
 });
 
-// Endpoint to create the admin user
-app.get('/create-admin', async (req, res) => {
+// Simple test endpoint to check if we can find the admin user
+app.get('/test-admin-user', async (req, res) => {
   try {
-    console.log('Creating admin user...');
+    console.log('Testing admin user lookup...');
     
-    // Import bcrypt
-    const bcrypt = (await import('bcrypt')).default;
+    // Import the user model
+    const User = (await import('./modals/userModel.js')).default;
     
-    // Hash the password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash('AdminPassword123!', salt);
+    // Try to find the admin user
+    const user = await User.findOne({ email: 'admin@foodiefrenzy.com' });
+    console.log('Admin user lookup result:', user ? 'Found' : 'Not found');
     
-    // Create admin user
-    const adminUser = new User({
-      username: 'Admin',
-      email: 'admin@foodiefrenzy.com',
-      password: hashedPassword,
-      role: 'admin'
-    });
-    
-    console.log('Saving admin user...');
-    await adminUser.save();
-    console.log('Admin user created successfully');
-    
-    res.json({
-      success: true,
-      message: 'Admin user created successfully'
-    });
+    if (user) {
+      res.json({
+        success: true,
+        message: 'Admin user found',
+        user: {
+          email: user.email,
+          username: user.username,
+          role: user.role
+        }
+      });
+    } else {
+      res.json({
+        success: false,
+        message: 'Admin user not found'
+      });
+    }
   } catch (error) {
-    console.error('Error creating admin user:', error);
+    console.error('Test admin user error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error creating admin user',
+      message: 'Error testing admin user',
       error: error.message
     });
   }
