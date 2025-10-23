@@ -9,21 +9,35 @@ export const connectDB = async () => {
     try {
         console.log('MongoDB URI from environment:', uri.replace(/:[^:@]+@/, ':****@')); // Hide password in logs
         
-        // Parse the URI to extract database name
+        // Ensure the database name is properly specified
         let dbName = 'foodiefrenzy';
         if (uri.includes('mongodb.net')) {
-            const match = uri.match(/mongodb\.net\/([^?]+)/);
-            if (match && match[1]) {
-                dbName = match[1];
+            // Check if database name is in the URI
+            const dbMatch = uri.match(/mongodb\.net\/([^?]+)/);
+            if (dbMatch && dbMatch[1]) {
+                dbName = dbMatch[1];
                 console.log('Database name from URI:', dbName);
-            }
-        } else if (uri.startsWith('mongodb://localhost')) {
-            const match = uri.match(/localhost:\d+\/([^?]+)/);
-            if (match && match[1]) {
-                dbName = match[1];
-                console.log('Database name from URI:', dbName);
+            } else {
+                // If no database name in URI, add it
+                if (uri.endsWith('/')) {
+                    uri += 'foodiefrenzy';
+                } else if (!uri.includes('?')) {
+                    uri += '/foodiefrenzy';
+                } else {
+                    // Insert database name before query parameters
+                    const parts = uri.split('?');
+                    if (!parts[0].endsWith('/foodiefrenzy')) {
+                        parts[0] = parts[0].replace(/\/$/, '') + '/foodiefrenzy';
+                    }
+                    uri = parts.join('?');
+                }
+                console.log('Updated URI with database name:', uri.replace(/:[^:@]+@/, ':****@'));
             }
         }
+        
+        // Clean the database name to remove any leading slashes
+        dbName = dbName.replace(/^\//, '');
+        console.log('Using database name:', dbName);
         
         await mongoose.connect(uri, {
             // Explicitly specify the database name
