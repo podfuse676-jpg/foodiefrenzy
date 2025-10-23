@@ -13,7 +13,8 @@
     "force-create-admin": "node forceCreateAdmin.js",
     "test-login": "node testLogin.js",
     "test-server-db": "node testServerDB.js",
-    "manual-login-test": "node manualLoginTest.js"
+    "manual-login-test": "node manualLoginTest.js",
+    "test-user-import": "node testUserImport.js"
   },
   "author": "",
   "license": "ISC",
