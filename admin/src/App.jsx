@@ -9,6 +9,9 @@ import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import AdminNavbar from './components/Navbar/Navbar';
 
 function App() {
+  // Debug information
+  console.log('App component rendering');
+  
   return (
     <div>
       {/* Navbar is always visible except on login page */}
