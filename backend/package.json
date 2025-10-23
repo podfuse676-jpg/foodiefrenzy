@@ -17,7 +17,8 @@
     "test-user-import": "node testUserImport.js",
     "test-login-endpoint": "node testLoginEndpoint.js",
     "test-request-body": "node testRequestBody.js",
-    "test-production-db": "node testProductionDB.js"
+    "test-production-db": "node testProductionDB.js",
+    "test-production-user-model": "node testProductionUserModel.js"
   },
   "author": "",
   "license": "ISC",
