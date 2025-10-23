@@ -7,27 +7,27 @@ export const connectDB = async () => {
     let uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/foodiefrenzy';
     
     try {
-        // Ensure the URI ends with the correct database name
-        if (uri.includes('mongodb.net') && !uri.includes('foodiefrenzy')) {
-            // If it's a MongoDB Atlas URI and doesn't specify database, add it
-            if (uri.endsWith('/')) {
-                uri += 'foodiefrenzy';
-            } else if (!uri.includes('?')) {
-                uri += '/foodiefrenzy';
-            } else {
-                // Insert database name before query parameters
-                const parts = uri.split('?');
-                if (!parts[0].endsWith('/foodiefrenzy')) {
-                    parts[0] += '/foodiefrenzy';
-                }
-                uri = parts.join('?');
+        console.log('MongoDB URI from environment:', uri.replace(/:[^:@]+@/, ':****@')); // Hide password in logs
+        
+        // Parse the URI to extract database name
+        let dbName = 'foodiefrenzy';
+        if (uri.includes('mongodb.net')) {
+            const match = uri.match(/mongodb\.net\/([^?]+)/);
+            if (match && match[1]) {
+                dbName = match[1];
+                console.log('Database name from URI:', dbName);
+            }
+        } else if (uri.startsWith('mongodb://localhost')) {
+            const match = uri.match(/localhost:\d+\/([^?]+)/);
+            if (match && match[1]) {
+                dbName = match[1];
+                console.log('Database name from URI:', dbName);
             }
         }
         
-        console.log('Connecting to MongoDB with URI:', uri.replace(/:[^:@]+@/, ':****@')); // Hide password in logs
-        
         await mongoose.connect(uri, {
-            // useNewUrlParser and useUnifiedTopology are defaults in Mongoose 6+
+            // Explicitly specify the database name
+            dbName: dbName
         });
         console.log('DB CONNECTED to database:', mongoose.connection.name);
     } catch (err) {
