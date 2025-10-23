@@ -19,7 +19,8 @@
     "test-request-body": "node testRequestBody.js",
     "test-production-db": "node testProductionDB.js",
     "test-production-user-model": "node testProductionUserModel.js",
-    "test-production-login": "node testProductionLogin.js"
+    "test-production-login": "node testProductionLogin.js",
+    "test-production-request": "node testProductionRequest.js"
   },
   "author": "",
   "license": "ISC",
