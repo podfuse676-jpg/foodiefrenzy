@@ -406,6 +406,49 @@ app.post('/create-admin', async (req, res) => {
   }
 });
 
+// Endpoint to reset admin password (for testing purposes)
+app.post('/reset-admin-password', async (req, res) => {
+  try {
+    console.log('Resetting admin password...');
+    
+    // Import required modules
+    const bcrypt = (await import('bcrypt')).default;
+    const User = (await import('./modals/userModel.js')).default;
+    
+    // Find the admin user
+    const adminUser = await User.findOne({ email: 'admin@foodiefrenzy.com' });
+    if (!adminUser) {
+      console.log('Admin user not found');
+      return res.json({
+        success: false,
+        message: 'Admin user not found'
+      });
+    }
+    
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash('admin123', salt);
+    
+    // Update the password
+    adminUser.password = hashedPassword;
+    await adminUser.save();
+    
+    console.log('Admin password reset successfully');
+    
+    res.json({
+      success: true,
+      message: 'Admin password reset successfully'
+    });
+  } catch (error) {
+    console.error('Error resetting admin password:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error resetting admin password',
+      error: error.message
+    });
+  }
+});
+
 // Start server
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server Started on http://0.0.0.0:${PORT}`);
