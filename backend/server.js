@@ -104,6 +104,39 @@ app.get('/api/test-db', async (req, res) => {
   }
 });
 
+// Test endpoint to explicitly look for the admin user
+app.get('/api/test-admin', async (req, res) => {
+  try {
+    console.log('Testing admin user lookup...');
+    const user = await User.findOne({ email: 'admin@foodiefrenzy.com' });
+    console.log('Admin user lookup result:', user ? 'Found' : 'Not found');
+    
+    if (user) {
+      res.json({
+        success: true,
+        message: 'Admin user found',
+        user: {
+          username: user.username,
+          email: user.email,
+          role: user.role
+        }
+      });
+    } else {
+      res.json({
+        success: false,
+        message: 'Admin user not found'
+      });
+    }
+  } catch (error) {
+    console.error('Admin user test error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Admin user lookup failed',
+      error: error.message
+    });
+  }
+});
+
 // Basic route for testing
 app.get('/', (req, res) => {
   res.json({ message: 'Server is running!', port: PORT });
