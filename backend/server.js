@@ -336,6 +336,60 @@ app.get('/test-admin-user-db', async (req, res) => {
   }
 });
 
+// Endpoint to create an admin user (for testing purposes)
+app.post('/create-admin', async (req, res) => {
+  try {
+    console.log('Creating admin user...');
+    
+    // Import required modules
+    const bcrypt = (await import('bcrypt')).default;
+    const User = (await import('./modals/userModel.js')).default;
+    
+    // Check if admin already exists
+    const existingAdmin = await User.findOne({ email: 'admin@foodiefrenzy.com' });
+    if (existingAdmin) {
+      console.log('Admin user already exists');
+      return res.json({
+        success: false,
+        message: 'Admin user already exists'
+      });
+    }
+    
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash('admin123', salt);
+    
+    // Create the admin user
+    const adminUser = new User({
+      username: 'admin',
+      email: 'admin@foodiefrenzy.com',
+      password: hashedPassword,
+      role: 'admin'
+    });
+    
+    // Save the user
+    const savedUser = await adminUser.save();
+    console.log('Admin user created successfully:', savedUser.email);
+    
+    res.json({
+      success: true,
+      message: 'Admin user created successfully',
+      user: {
+        email: savedUser.email,
+        username: savedUser.username,
+        role: savedUser.role
+      }
+    });
+  } catch (error) {
+    console.error('Error creating admin user:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error creating admin user',
+      error: error.message
+    });
+  }
+});
+
 // Start server
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server Started on http://0.0.0.0:${PORT}`);

@@ -59,9 +59,9 @@ const createToken = (user) => {
 
 // REGISTER USER
 const registerUser = async (req, res) => {
-    const { username, password, email } = req.body;
+    const { username, password, email, role } = req.body;  // Add role to destructuring
     try {
-        console.log('Registration attempt for email:', email);
+        console.log('Registration attempt for email:', email, 'with role:', role);
         
         // CHECKING IS USER ALREADY EXISTS
         const exists = await userModel.findOne({ email });
@@ -88,11 +88,12 @@ const registerUser = async (req, res) => {
         const newUser = new userModel({
             username: username,
             email: email,
-            password: hashedPassword
+            password: hashedPassword,
+            role: role || 'user'  // Use provided role or default to 'user'
         })
         // SAVE USER IN THE DATABASE
         const user = await newUser.save()
-        console.log('User registered successfully:', user.email);
+        console.log('User registered successfully:', user.email, 'with role:', user.role);
 
         // CREATE A TOKEN (ABOVE ||)AND SEND IT TO USER USING RESPONSE
         const token = createToken(user)

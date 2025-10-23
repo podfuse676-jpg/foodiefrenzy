@@ -3,33 +3,39 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const testDBConnection = async () => {
+const testDbConnection = async () => {
   try {
-    const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/foodiefrenzy';
-    console.log('Connecting to MongoDB:', uri);
+    console.log('MONGODB_URI from env:', process.env.MONGODB_URI);
     
-    await mongoose.connect(uri);
-    console.log('Database connected successfully');
+    // Connect to MongoDB
+    await mongoose.connect(process.env.MONGODB_URI, {
+      // useNewUrlParser and useUnifiedTopology are defaults in Mongoose 6+
+    });
+    
+    console.log('DB CONNECTED');
+    console.log('Database name:', mongoose.connection.name);
+    console.log('Database host:', mongoose.connection.host);
     
     // List all collections
     const collections = await mongoose.connection.db.listCollections().toArray();
-    console.log('Collections in database:');
-    collections.forEach(collection => {
-      console.log('- ' + collection.name);
-    });
+    console.log('Collections:', collections.map(c => c.name));
     
-    // Try to access users collection
-    const users = await mongoose.connection.db.collection('users').find({}).toArray();
-    console.log('Users in database:', users.length);
-    users.forEach(user => {
-      console.log('- ' + user.username + ' (' + user.email + ') - Role: ' + user.role);
-    });
+    // Try to find the admin user
+    const collectionsNames = collections.map(c => c.name);
+    if (collectionsNames.includes('users')) {
+      const users = await mongoose.connection.db.collection('users').find({}).toArray();
+      console.log('Users in users collection:', users.length);
+      users.forEach(user => {
+        console.log('- Email:', user.email, 'Username:', user.username, 'Role:', user.role);
+      });
+    } else {
+      console.log('No users collection found');
+    }
     
-    await mongoose.connection.close();
-    console.log('Database connection closed');
-  } catch (error) {
-    console.error('Database connection error:', error);
+    mongoose.connection.close();
+  } catch (err) {
+    console.error('DB CONNECTION ERROR:', err.message || err);
   }
 };
 
-testDBConnection();
+testDbConnection();
