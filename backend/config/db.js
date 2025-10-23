@@ -8,12 +8,7 @@ export const connectDB = async () => {
         await mongoose.connect(uri, {
             // useNewUrlParser and useUnifiedTopology are defaults in Mongoose 6+
         });
-        
-        // Explicitly switch to the foodiefrenzy database
-        const db = mongoose.connection.useDb('foodiefrenzy');
-        
         console.log('DB CONNECTED');
-        console.log('Connected to database:', db.name);
     } catch (err) {
         console.error('DB CONNECTION ERROR:', err.message || err);
         console.error('This may be due to IP whitelist restrictions in MongoDB Atlas.');
