@@ -17,6 +17,12 @@ const UserOrdersPage = () => {
     const fetchOrders = async () => {
       try {
         const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+        if (!token) {
+          setError('You must be logged in to view orders');
+          setLoading(false);
+          return;
+        }
+        
         // Remove the email parameter since the backend filters by authenticated user ID
         const response = await axios.get(`${url}/api/orders`, {
           headers: {
@@ -47,7 +53,11 @@ const UserOrdersPage = () => {
         setError(null);
       } catch (err) {
         console.error('Error fetching orders:', err);
-        setError(err.response?.data?.message || 'Failed to load orders. Please try again later.');
+        if (err.response?.status === 401) {
+          setError('You must be logged in to view orders. Please log in and try again.');
+        } else {
+          setError(err.response?.data?.message || 'Failed to load orders. Please try again later.');
+        }
       } finally {
         setLoading(false);
       }
@@ -113,6 +123,12 @@ const UserOrdersPage = () => {
         };
     }
   };
+
+  if (loading) return (
+    <div className="min-h-screen bg-gradient-to-br from-[#1a120b] via-[#2a1e14] to-[#3e2b1d] flex items-center justify-center text-amber-400 text-xl">
+      Loading orders...
+    </div>
+  );
 
   if (error) return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a120b] via-[#2a1e14] to-[#3e2b1d] flex flex-col items-center justify-center text-red-400 text-xl gap-4">
@@ -206,7 +222,7 @@ const UserOrdersPage = () => {
                               className="flex items-center gap-3 p-2 bg-[#3a2b2b]/50 rounded-lg"
                             >
                               <img
-                                src={item.item.imageUrl ? `${url}${item.item.imageUrl}` : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='}
+                                src={item.item.imageUrl ? (item.item.imageUrl.startsWith('http') ? item.item.imageUrl : `${url}${item.item.imageUrl}`) : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='}
                                 alt={item.item.name}
                                 className="w-10 h-10 object-cover rounded-lg"
                                 onError={(e) => {
