@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import validator from 'validator'
 import { CartItem } from '../modals/cartItem.js';
+import mongoose from 'mongoose';
 
 // LOGIN USER
 const loginUser = async (req, res) => {
@@ -17,6 +18,9 @@ const loginUser = async (req, res) => {
         // CHECK IF USER IS AVAILABLE WITH THIS ID
         const user = await userModel.findOne({ email });
         console.log('User lookup result:', user ? 'Found' : 'Not found');
+        console.log('Database connection state:', mongoose.connection.readyState);
+        console.log('Database connection host:', mongoose.connection.host);
+        console.log('Database connection name:', mongoose.connection.name);
         
         if (!user) {
             console.log('User not found in database for email:', email);
