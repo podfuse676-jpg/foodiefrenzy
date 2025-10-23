@@ -406,6 +406,45 @@ app.post('/create-admin', async (req, res) => {
   }
 });
 
+// Test endpoint to directly authenticate admin user (for testing purposes)
+app.post('/test-admin-login', async (req, res) => {
+  try {
+    console.log('Test admin login endpoint called');
+    
+    // Import required modules
+    const User = (await import('./modals/userModel.js')).default;
+    
+    // Find the admin user
+    const adminUser = await User.findOne({ email: 'admin@foodiefrenzy.com' });
+    if (!adminUser) {
+      console.log('Admin user not found');
+      return res.json({
+        success: false,
+        message: 'Admin user not found'
+      });
+    }
+    
+    // Create token
+    const { createToken } = await import('./controllers/userController.js');
+    const token = createToken(adminUser);
+    
+    console.log('Test admin login successful');
+    
+    res.json({
+      success: true,
+      token: token,
+      role: adminUser.role
+    });
+  } catch (error) {
+    console.error('Test admin login error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Test admin login error',
+      error: error.message
+    });
+  }
+});
+
 // Endpoint to reset admin password (for testing purposes)
 app.post('/reset-admin-password', async (req, res) => {
   try {
