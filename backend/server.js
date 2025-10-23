@@ -269,6 +269,73 @@ app.get('/test-admin-user-explicit', async (req, res) => {
   }
 });
 
+// Test endpoint to explicitly connect to the database and find the admin user
+app.get('/test-admin-user-db', async (req, res) => {
+  try {
+    console.log('Testing admin user lookup with explicit database connection...');
+    
+    // Import mongoose
+    const mongoose = (await import('mongoose')).default;
+    
+    // Get the database connection
+    const db = mongoose.connection;
+    
+    // Check if we're connected
+    if (db.readyState !== 1) {
+      console.log('Database not connected');
+      return res.status(500).json({
+        success: false,
+        message: 'Database not connected'
+      });
+    }
+    
+    // List all collections
+    const collections = await db.db.listCollections().toArray();
+    console.log('Collections:', collections.map(c => c.name));
+    
+    // Check if the users collection exists
+    const usersCollectionExists = collections.some(c => c.name === 'users');
+    console.log('Users collection exists:', usersCollectionExists);
+    
+    if (!usersCollectionExists) {
+      console.log('Users collection does not exist');
+      return res.json({
+        success: false,
+        message: 'Users collection does not exist'
+      });
+    }
+    
+    // Try to find the admin user
+    const users = await db.db.collection('users').find({ email: 'admin@foodiefrenzy.com' }).toArray();
+    console.log('Users found:', users.length);
+    
+    if (users.length > 0) {
+      const user = users[0];
+      res.json({
+        success: true,
+        message: 'Admin user found with explicit database connection',
+        user: {
+          email: user.email,
+          username: user.username,
+          role: user.role
+        }
+      });
+    } else {
+      res.json({
+        success: false,
+        message: 'Admin user not found with explicit database connection'
+      });
+    }
+  } catch (error) {
+    console.error('Test admin user error with explicit database connection:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error testing admin user with explicit database connection',
+      error: error.message
+    });
+  }
+});
+
 // Start server
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server Started on http://0.0.0.0:${PORT}`);
