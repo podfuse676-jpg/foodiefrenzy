@@ -137,6 +137,44 @@ app.get('/api/test-admin', async (req, res) => {
   }
 });
 
+// Test endpoint to explicitly use the user model to find the admin user
+app.get('/api/test-admin-model', async (req, res) => {
+  try {
+    console.log('Testing admin user lookup with explicit model...');
+    
+    // Import the user model
+    const userModel = (await import('./modals/userModel.js')).default;
+    
+    // Use the user model to find the admin user
+    const user = await userModel.findOne({ email: 'admin@foodiefrenzy.com' });
+    console.log('Admin user lookup result with explicit model:', user ? 'Found' : 'Not found');
+    
+    if (user) {
+      res.json({
+        success: true,
+        message: 'Admin user found with explicit model',
+        user: {
+          username: user.username,
+          email: user.email,
+          role: user.role
+        }
+      });
+    } else {
+      res.json({
+        success: false,
+        message: 'Admin user not found with explicit model'
+      });
+    }
+  } catch (error) {
+    console.error('Admin user test error with explicit model:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Admin user lookup failed with explicit model',
+      error: error.message
+    });
+  }
+});
+
 // Basic route for testing
 app.get('/', (req, res) => {
   res.json({ message: 'Server is running!', port: PORT });
