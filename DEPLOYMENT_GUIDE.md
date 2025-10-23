@@ -112,6 +112,8 @@ Each service can be deployed and updated independently without affecting the oth
 
 ## Troubleshooting
 
+If you encounter any issues during or after deployment, please refer to our [Troubleshooting Login Issues Guide](TROUBLESHOOTING_LOGIN_ISSUES.md) for detailed steps to identify and resolve common problems.
+
 ### Login Issues
 
 If you're unable to log in on Vercel:

@@ -202,6 +202,7 @@ For detailed deployment instructions, see:
 - [Deployment Guide](DEPLOYMENT_GUIDE.md)
 - [Admin Panel Deployment Guide](ADMIN_DEPLOYMENT_GUIDE.md)
 - [Vercel Login Fix Summary](VERCEL_LOGIN_FIX_SUMMARY.md)
+- [Troubleshooting Login Issues](TROUBLESHOOTING_LOGIN_ISSUES.md)
 
 ## Scripts
 

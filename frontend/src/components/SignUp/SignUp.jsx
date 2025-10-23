@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { FaEye, FaEyeSlash, FaCheckCircle,FaArrowLeft  } from 'react-icons/fa';
-import apiConfig from '../utils/apiConfig';
+import { FaEye, FaEyeSlash, FaCheckCircle, FaArrowLeft } from 'react-icons/fa';
+import apiConfig from '/src/utils/apiConfig';
 
 const url = apiConfig.baseURL;
 
@@ -35,40 +35,37 @@ const SignUp = () => {
   const handleChange = e =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-    const handleSubmit = async e => {
-      e.preventDefault();
-      console.log('🟢 SignUp handleSubmit fired', formData);
-    
-      try {
-        const res = await axios.post(`${url}/api/user/register`, formData);
-        console.log('🟢 register response:', res.data);
-    
-        // **NEW**: check the actual `success` flag & token
-        if (res.data.success && res.data.token) {
-          // (optional) persist the JWT from registration
-          localStorage.setItem('authToken', res.data.token);
-    
-          setToast({
-            visible: true,
-            message: 'Sign Up Successful!',
-            icon: <FaCheckCircle />,
-          });
-    
-          // **return early** so you don't fall through
-          return;
-        }
-    
-        // if we get here, it was a 200 but `success: false`
-        throw new Error(res.data.message || 'Registration failed.');
-      } catch (err) {
-        console.error('🔴 register error:', err);
-        const msg = err.response?.data?.message || err.message || 'Registration failed.';
-        setToast({ visible: true, message: msg, icon: <FaCheckCircle /> });
+  const handleSubmit = async e => {
+    e.preventDefault();
+    console.log('🟢 SignUp handleSubmit fired', formData);
+
+    try {
+      const res = await axios.post(`${url}/api/user/register`, formData);
+      console.log('🟢 register response:', res.data);
+
+      // **NEW**: check the actual `success` flag & token
+      if (res.data.success && res.data.token) {
+        // (optional) persist the JWT from registration
+        localStorage.setItem('authToken', res.data.token);
+
+        setToast({
+          visible: true,
+          message: 'Sign Up Successful!',
+          icon: <FaCheckCircle />,
+        });
+
+        // **return early** so you don't fall through
+        return;
       }
-    };
-    
-    
-    
+
+      // if we get here, it was a 200 but `success: false`
+      throw new Error(res.data.message || 'Registration failed.');
+    } catch (err) {
+      console.error('🔴 register error:', err);
+      const msg = err.response?.data?.message || err.message || 'Registration failed.';
+      setToast({ visible: true, message: msg, icon: <FaCheckCircle /> });
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#1a120b] p-4">
@@ -136,4 +133,5 @@ const SignUp = () => {
     </div>
   );
 }
+
 export default SignUp;
