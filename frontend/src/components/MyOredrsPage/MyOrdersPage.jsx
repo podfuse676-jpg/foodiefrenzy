@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FiTruck, FiCheckCircle, FiClock, FiArrowLeft, FiUser, FiMapPin, FiBox } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from '../../CartContext/CartContext';
 import apiConfig from '../../utils/apiConfig';
@@ -10,6 +10,7 @@ const UserOrdersPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const url = apiConfig.baseURL;
+  const navigate = useNavigate();
 
   const user = JSON.parse(localStorage.getItem('user'));
 
@@ -18,9 +19,13 @@ const UserOrdersPage = () => {
       try {
         // Check for authentication token using consistent key
         const token = localStorage.getItem('authToken');
-        if (!token || token === 'undefined' || token === 'null') {
+        if (!token || token === 'undefined' || token === 'null' || token === '') {
           setError('You must be logged in to view orders');
           setLoading(false);
+          // Redirect to login page
+          setTimeout(() => {
+            navigate('/login');
+          }, 3000);
           return;
         }
         
@@ -55,7 +60,27 @@ const UserOrdersPage = () => {
       } catch (err) {
         console.error('Error fetching orders:', err);
         if (err.response?.status === 401) {
-          setError('You must be logged in to view orders. Please log in and try again.');
+          setError('You must be logged in to view orders. Redirecting to login page...');
+          // Clear invalid tokens
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('token');
+          localStorage.removeItem('loginData');
+          localStorage.removeItem('user');
+          // Redirect to login page
+          setTimeout(() => {
+            navigate('/login');
+          }, 3000);
+        } else if (err.response?.status === 403) {
+          setError('Access denied. Please try logging in again.');
+          // Clear invalid tokens
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('token');
+          localStorage.removeItem('loginData');
+          localStorage.removeItem('user');
+          // Redirect to login page
+          setTimeout(() => {
+            navigate('/login');
+          }, 3000);
         } else {
           setError(err.response?.data?.message || 'Failed to load orders. Please try again later.');
         }
@@ -65,7 +90,7 @@ const UserOrdersPage = () => {
     };
 
     fetchOrders();
-  }, []);
+  }, [navigate]);
 
   const statusStyles = {
     processing: {
