@@ -6,6 +6,10 @@ import { CartItem } from '../modals/cartItem.js';
 
 // LOGIN USER
 const loginUser = async (req, res) => {
+    console.log('Login request received');
+    console.log('Request body:', req.body);
+    console.log('Request headers:', req.headers);
+    
     const { email, password } = req.body;
     try {
         console.log('Login attempt for email:', email);
