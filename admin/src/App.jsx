@@ -8,14 +8,6 @@ import AdminLogin from './components/Login/Login';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import AdminNavbar from './components/Navbar/Navbar';
 
-// Layout component that includes the navbar
-const Layout = ({ children }) => (
-  <div>
-    <AdminNavbar />
-    {children}
-  </div>
-);
-
 function App() {
   return (
     <div>
@@ -23,23 +15,26 @@ function App() {
         <Route path="/login" element={<AdminLogin />} />
         <Route path="/" element={
           <ProtectedRoute>
-            <Layout>
+            <div>
+              <AdminNavbar />
               <AddItems />
-            </Layout>
+            </div>
           </ProtectedRoute>
         } />
         <Route path="/list" element={
           <ProtectedRoute>
-            <Layout>
+            <div>
+              <AdminNavbar />
               <ListItems />
-            </Layout>
+            </div>
           </ProtectedRoute>
         } />
         <Route path="/orders" element={
           <ProtectedRoute>
-            <Layout>
+            <div>
+              <AdminNavbar />
               <Orders />
-            </Layout>
+            </div>
           </ProtectedRoute>
         } />
         {/* Redirect any unknown routes to the dashboard */}
