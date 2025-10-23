@@ -1,6 +1,6 @@
 import userModel from "../modals/userModel.js";
 import jwt from 'jsonwebtoken'
-import bycrypt from 'bcrypt'
+import bcrypt from 'bcrypt'  // Use bcrypt instead of bycrypt
 import validator from 'validator'
 import { CartItem } from '../modals/cartItem.js';
 
@@ -15,7 +15,7 @@ const loginUser = async (req, res) => {
         }
 
         // MATCHING USER AND PASSWORD
-        const isMatch = await bycrypt.compare(password, user.password);
+        const isMatch = await bcrypt.compare(password, user.password);  // Use bcrypt instead of bycrypt
         if (!isMatch) {
             return res.json({ success: false, message: "Invalid Credentials" })
         }
@@ -60,8 +60,8 @@ const registerUser = async (req, res) => {
         }
 
         // HASING USER PASSWORD
-        const salt = await bycrypt.genSalt(10)
-        const hashedPassword = await bycrypt.hash(password, salt);
+        const salt = await bcrypt.genSalt(10)  // Use bcrypt instead of bycrypt
+        const hashedPassword = await bcrypt.hash(password, salt);  // Use bcrypt instead of bycrypt
 
         // NEW USER 
         const newUser = new userModel({
