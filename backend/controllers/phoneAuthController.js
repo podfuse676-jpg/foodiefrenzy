@@ -6,11 +6,25 @@ import { CartItem } from '../modals/cartItem.js';
 
 dotenv.config();
 
-// Initialize Twilio client
-const twilioClient = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
+// Initialize Twilio client with error handling
+let twilioClient = null;
+try {
+  if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+    // Validate that the Account SID starts with "AC"
+    if (process.env.TWILIO_ACCOUNT_SID.startsWith('AC')) {
+      twilioClient = twilio(
+        process.env.TWILIO_ACCOUNT_SID,
+        process.env.TWILIO_AUTH_TOKEN
+      );
+    } else {
+      console.warn('Invalid Twilio Account SID format. Must start with "AC"');
+    }
+  } else {
+    console.warn('Twilio credentials not found. SMS functionality will be disabled.');
+  }
+} catch (error) {
+  console.error('Error initializing Twilio client:', error.message);
+}
 
 // Send verification OTP using Twilio
 const sendVerificationOTP = async (phoneNumber, code) => {
@@ -21,15 +35,24 @@ const sendVerificationOTP = async (phoneNumber, code) => {
     // Format the message as requested
     const message = `THE LOGIN CODE FOR LOG IN TO LAKESHORE CONVENIENCE IS ${code}`;
     
-    // Send SMS using Twilio
-    const result = await twilioClient.messages.create({
-      body: message,
-      from: process.env.TWILIO_PHONE_NUMBER,
-      to: phoneNumber
-    });
-    
-    console.log(`Message sent with SID: ${result.sid}`);
-    return true;
+    // Send SMS using Twilio if available
+    if (twilioClient) {
+      const result = await twilioClient.messages.create({
+        body: message,
+        from: process.env.TWILIO_PHONE_NUMBER,
+        to: phoneNumber
+      });
+      
+      console.log(`Message sent with SID: ${result.sid}`);
+      return true;
+    } else {
+      // Fall back to console logging for development or when Twilio is not configured
+      console.log(`=== FREE OTP VERIFICATION SYSTEM (FALLBACK) ===`);
+      console.log(`Phone: ${phoneNumber}`);
+      console.log(`Code: ${code}`);
+      console.log(`=====================================`);
+      return false;
+    }
   } catch (error) {
     console.error('Error sending SMS via Twilio:', error);
     // Fall back to console logging for development

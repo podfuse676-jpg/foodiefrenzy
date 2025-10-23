@@ -46,10 +46,23 @@ connectDB();
 
 // Basic route for testing
 app.get('/', (req, res) => {
-  res.json({ message: 'Server is running!' });
+  res.json({ message: 'Server is running!', port: PORT });
+});
+
+// Health check route for Render
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', port: PORT, timestamp: new Date().toISOString() });
 });
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`Server Started on http://localhost:${PORT}`);
+const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server Started on http://0.0.0.0:${PORT}`);
+});
+
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully');
+  server.close(() => {
+    console.log('Process terminated');
+  });
 });
