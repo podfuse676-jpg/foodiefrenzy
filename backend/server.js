@@ -1,4 +1,5 @@
 import express from 'express';
+
 import cors from 'cors';
 import dotenv from 'dotenv';
 
@@ -334,6 +335,21 @@ app.get('/test-admin-user-db', async (req, res) => {
       error: error.message
     });
   }
+});
+
+// Endpoint to check MongoDB URI and connection details
+app.get('/check-mongo-config', (req, res) => {
+  const mongoUri = process.env.MONGODB_URI || 'Not set';
+  const sanitizedUri = mongoUri.replace(/:[^:@]+@/, ':****@'); // Hide password
+  
+  res.json({
+    MONGODB_URI: sanitizedUri,
+    NODE_ENV: process.env.NODE_ENV || 'Not set',
+    dbConnectionState: mongoose.connection.readyState,
+    dbConnectionHost: mongoose.connection.host,
+    dbConnectionName: mongoose.connection.name,
+    dbConnectionString: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
+  });
 });
 
 // Endpoint to create an admin user (for testing purposes)
