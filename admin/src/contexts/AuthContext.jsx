@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }) => {
           setIsAdmin(true);
         } catch (error) {
           // Token is invalid, clear it
+          console.log('Token verification failed:', error.response?.status, error.response?.data);
           localStorage.removeItem('adminToken');
           localStorage.removeItem('adminRole');
           setIsAuthenticated(false);

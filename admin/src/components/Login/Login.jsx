@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import apiConfig from '../../utils/apiConfig';
 
 const AdminLogin = () => {
@@ -11,7 +12,12 @@ const AdminLogin = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
   const url = apiConfig.baseURL;
+
+  // Get the redirect path from location state or default to '/'
+  const from = location.state?.from?.pathname || '/';
 
   const handleChange = (e) => {
     setFormData({
@@ -32,14 +38,13 @@ const AdminLogin = () => {
       });
 
       if (res.data.success && res.data.token) {
-        // Save token and role to localStorage
-        localStorage.setItem('adminToken', res.data.token);
-        localStorage.setItem('adminRole', res.data.role);
+        // Use the auth context login function
+        login(res.data.token, res.data.role);
         
         // Check if user is admin
         if (res.data.role === 'admin') {
-          // Redirect to admin dashboard
-          navigate('/');
+          // Redirect to the page they were trying to access or to admin dashboard
+          navigate(from, { replace: true });
         } else {
           setError('Access denied. Admin rights required.');
           // Clear token if not admin

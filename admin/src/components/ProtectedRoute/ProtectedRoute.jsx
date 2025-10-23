@@ -13,10 +13,12 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
+  // If not authenticated or not admin, redirect to login
   if (!isAuthenticated || !isAdmin) {
     return <Navigate to="/login" replace />;
   }
 
+  // If authenticated and is admin, render children
   return children;
 };
 

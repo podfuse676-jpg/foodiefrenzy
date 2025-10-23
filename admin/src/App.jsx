@@ -1,6 +1,6 @@
 // App.js
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import AddItems from './components/AddItems/AddItems';
 import Orders from './components/Orders/Orders';
 import ListItems from './components/ListItems/ListItems';
@@ -37,6 +37,8 @@ function App() {
             </>
           </ProtectedRoute>
         } />
+        {/* Redirect any unknown routes to the dashboard */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
   );
