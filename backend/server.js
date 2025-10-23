@@ -193,6 +193,44 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', port: PORT, timestamp: new Date().toISOString() });
 });
 
+// Endpoint to create the admin user
+app.get('/create-admin', async (req, res) => {
+  try {
+    console.log('Creating admin user...');
+    
+    // Import bcrypt
+    const bcrypt = (await import('bcrypt')).default;
+    
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash('AdminPassword123!', salt);
+    
+    // Create admin user
+    const adminUser = new User({
+      username: 'Admin',
+      email: 'admin@foodiefrenzy.com',
+      password: hashedPassword,
+      role: 'admin'
+    });
+    
+    console.log('Saving admin user...');
+    await adminUser.save();
+    console.log('Admin user created successfully');
+    
+    res.json({
+      success: true,
+      message: 'Admin user created successfully'
+    });
+  } catch (error) {
+    console.error('Error creating admin user:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error creating admin user',
+      error: error.message
+    });
+  }
+});
+
 // Start server
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server Started on http://0.0.0.0:${PORT}`);
