@@ -146,9 +146,9 @@ export const verifyPhoneCode = async (req, res) => {
     user.phoneVerificationExpires = undefined;
     await user.save();
     
-    // Generate JWT token
+    // Generate JWT token with consistent payload
     const token = jwt.sign(
-      { id: user._id, username: user.username },
+      { id: user._id, username: user.username, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: '30d' }
     );

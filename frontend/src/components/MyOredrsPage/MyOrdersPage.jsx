@@ -16,8 +16,9 @@ const UserOrdersPage = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const token = localStorage.getItem('authToken') || localStorage.getItem('token');
-        if (!token) {
+        // Check for authentication token using consistent key
+        const token = localStorage.getItem('authToken');
+        if (!token || token === 'undefined' || token === 'null') {
           setError('You must be logged in to view orders');
           setLoading(false);
           return;

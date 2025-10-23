@@ -34,6 +34,7 @@ const loginUser = async (req, res) => {
 }
 
 const createToken = (user) => {
+    // Ensure consistency with auth middleware
     const payload = { id: user._id, email: user.email, username: user.username };
     return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '30d' });
 }
