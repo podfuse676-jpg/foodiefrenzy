@@ -7,6 +7,7 @@ dotenv.config();
 
 // Import database connection
 import { connectDB } from './config/db.js';
+import User from './modals/userModel.js';
 
 // Import routes
 import itemRoutes from './routes/itemRoute.js';
@@ -47,6 +48,32 @@ app.use('/api/auth', phoneAuthRoutes);
 
 // Connect to MongoDB
 connectDB();
+
+// Test endpoint to verify database connection and user lookup
+app.get('/api/test-db', async (req, res) => {
+  try {
+    console.log('Testing database connection...');
+    const users = await User.find({}, 'username email role');
+    console.log('Users found:', users.length);
+    res.json({
+      success: true,
+      message: 'Database connection successful',
+      userCount: users.length,
+      users: users.map(u => ({
+        username: u.username,
+        email: u.email,
+        role: u.role
+      }))
+    });
+  } catch (error) {
+    console.error('Database test error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Database connection failed',
+      error: error.message
+    });
+  }
+});
 
 // Basic route for testing
 app.get('/', (req, res) => {
