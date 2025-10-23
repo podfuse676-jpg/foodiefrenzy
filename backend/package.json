@@ -10,7 +10,8 @@
     "test-password": "node testPassword.js",
     "test-db-connection": "node testDBConnection.js",
     "test-user-model": "node testUserModel.js",
-    "force-create-admin": "node forceCreateAdmin.js"
+    "force-create-admin": "node forceCreateAdmin.js",
+    "test-login": "node testLogin.js"
   },
   "author": "",
   "license": "ISC",
