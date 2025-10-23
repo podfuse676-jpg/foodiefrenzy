@@ -78,6 +78,52 @@ app.get('/api/debug-env', (req, res) => {
   });
 });
 
+// Test endpoint to explicitly check the foodiefrenzy database
+app.get('/api/test-foodiefrenzy-db', async (req, res) => {
+  try {
+    // Switch to the foodiefrenzy database
+    const foodiefrenzyDb = mongoose.connection.useDb('foodiefrenzy');
+    
+    // Define user schema
+    const userSchema = new mongoose.Schema({
+      username: { type: String, required: true },
+      email: { type: String, required: true, unique: true },
+      password: { type: String, required: true },
+      phoneNumber: { type: String, unique: true, sparse: true },
+      isPhoneVerified: { type: Boolean, default: false },
+      phoneVerificationCode: { type: String },
+      phoneVerificationExpires: { type: Date },
+      role: { type: String, enum: ['user', 'admin'], default: 'user' }
+    });
+    
+    // Create user model for the foodiefrenzy database
+    const User = foodiefrenzyDb.model('user', userSchema);
+    
+    // Try to find the admin user
+    const user = await User.findOne({ email: 'admin@foodiefrenzy.com' });
+    
+    if (user) {
+      res.json({ 
+        success: true, 
+        message: "User found in foodiefrenzy database",
+        user: {
+          email: user.email,
+          username: user.username,
+          role: user.role
+        }
+      });
+    } else {
+      res.json({ 
+        success: false, 
+        message: "User not found in foodiefrenzy database"
+      });
+    }
+  } catch (error) {
+    console.error('Test foodiefrenzy db error:', error);
+    res.status(500).json({ success: false, message: "Error", error: error.message });
+  }
+});
+
 // Test endpoint to verify database connection and user lookup
 app.get('/api/test-db', async (req, res) => {
   try {
