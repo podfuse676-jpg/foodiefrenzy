@@ -109,6 +109,15 @@ app.get('/', (req, res) => {
   res.json({ message: 'Server is running!', port: PORT });
 });
 
+// Simple test endpoint to check environment variables
+app.get('/test-env', (req, res) => {
+  res.json({
+    MONGODB_URI: process.env.MONGODB_URI ? 'SET' : 'NOT SET',
+    JWT_SECRET: process.env.JWT_SECRET ? 'SET' : 'NOT SET',
+    NODE_ENV: process.env.NODE_ENV || 'NOT SET'
+  });
+});
+
 // Health check route for Render
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', port: PORT, timestamp: new Date().toISOString() });
