@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { FiUpload, FiHeart, FiStar } from 'react-icons/fi';
 import { FaRupeeSign } from 'react-icons/fa';
-import AdminNavbar from '../Navbar/Navbar';
+// Removed AdminNavbar import since it's handled in App.jsx
 import { styles } from '../../assets/dummyadmin';
 import apiConfig from '../../utils/apiConfig';
 
@@ -154,141 +154,86 @@ const AddItems = () => {
   };
 
   return (
-    <>
-      <AdminNavbar />
-      <div className={styles.formWrapper}>
-        <div className="max-w-4xl mx-auto">
-          <div className={styles.formCard}>
-            <h2 className={styles.formTitle}>Add New Menu Item</h2>
-            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-              <div className={styles.uploadWrapper}>
-                <label className={styles.uploadLabel}>
-                  {formData.preview ? (
-                    <img
-                      src={formData.preview}
-                      alt="Preview"
-                      className={styles.previewImage}
-                    />
-                  ) : (
-                    <div className="text-center p-4">
-                      <FiUpload className={styles.uploadIcon} />
-                      <p className={styles.uploadText}>
-                        Click to upload product image
-                      </p>
-                    </div>
-                  )}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    required
+    <div className={styles.formWrapper}>
+      <div className="max-w-4xl mx-auto">
+        <div className={styles.formCard}>
+          <h2 className={styles.formTitle}>Add New Menu Item</h2>
+          <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+            <div className={styles.uploadWrapper}>
+              <label className={styles.uploadLabel}>
+                {formData.preview ? (
+                  <img
+                    src={formData.preview}
+                    alt="Preview"
+                    className={styles.previewImage}
                   />
-                </label>
+                ) : (
+                  <div className="text-center p-4">
+                    <FiUpload className={styles.uploadIcon} />
+                    <p className={styles.uploadText}>
+                      Click to upload product image
+                    </p>
+                  </div>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  required
+                />
+              </label>
+            </div>
+
+            <div className="space-y-6">
+              {/* Section 1: Convenience Store fields */}
+              <div className="p-4 bg-[#2b1f1f] rounded-lg border border-amber-900/20">
+                <h3 className="text-lg text-amber-200 mb-3">Convenience Store / Item</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block mb-2 text-sm text-amber-400">Price Type</label>
+                    <input name="priceType" value={formData.priceType} onChange={handleInputChange} className={styles.inputField} placeholder="e.g. fixed / variable" />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm text-amber-400">Price Unit</label>
+                    <input name="priceUnit" value={formData.priceUnit} onChange={handleInputChange} className={styles.inputField} placeholder="e.g. per item / per kg" />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm text-amber-400">GST (%)</label>
+                    <input type="number" step="0.01" name="gst" value={formData.gst} onChange={handleInputChange} className={styles.inputField} placeholder="0.00" />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm text-amber-400">Cost</label>
+                    <input type="number" step="0.01" name="cost" value={formData.cost} onChange={handleInputChange} className={styles.inputField} placeholder="0.00" />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm text-amber-400">Product Code</label>
+                    <input name="productCode" value={formData.productCode} onChange={handleInputChange} className={styles.inputField} placeholder="e.g. PC123456" />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm text-amber-400">SKU</label>
+                    <input name="sku" value={formData.sku} onChange={handleInputChange} className={styles.inputField} placeholder="e.g. SKU123456" />
+                  </div>
+                </div>
               </div>
 
-              <div className="space-y-6">
-                {/* Section 1: Convenience Store fields */}
-                <div className="p-4 bg-[#2b1f1f] rounded-lg border border-amber-900/20">
-                  <h3 className="text-lg text-amber-200 mb-3">Convenience Store / Item</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block mb-2 text-sm text-amber-400">Price Type</label>
-                      <input name="priceType" value={formData.priceType} onChange={handleInputChange} className={styles.inputField} placeholder="e.g. fixed / variable" />
-                    </div>
-                    <div>
-                      <label className="block mb-2 text-sm text-amber-400">Price Unit</label>
-                      <input name="priceUnit" value={formData.priceUnit} onChange={handleInputChange} className={styles.inputField} placeholder="e.g. per kg / per item" />
-                    </div>
-                    <div>
-                      <label className="block mb-2 text-sm text-amber-400">Tax Rates</label>
-                      <input name="taxRate" value={formData.taxRate} onChange={handleInputChange} className={styles.inputField} placeholder="e.g. 5 or 12" />
-                    </div>
-                    <div>
-                      <label className="block mb-2 text-sm text-amber-400">Cost</label>
-                      <input name="cost" value={formData.cost} onChange={handleInputChange} className={styles.inputField} placeholder="Supplier cost" />
-                    </div>
-                    <div>
-                      <label className="block mb-2 text-sm text-amber-400">Product Code</label>
-                      <input name="productCode" value={formData.productCode} onChange={handleInputChange} className={styles.inputField} placeholder="Internal code" />
-                    </div>
-                    <div>
-                      <label className="block mb-2 text-sm text-amber-400">SKU</label>
-                      <input name="sku" value={formData.sku} onChange={handleInputChange} className={styles.inputField} placeholder="Stock keeping unit" />
-                    </div>
-                    <div>
-                      <label className="block mb-2 text-sm text-amber-400">Modifier Groups (comma separated)</label>
-                      <input name="modifierGroups" value={formData.modifierGroups} onChange={handleInputChange} className={styles.inputField} placeholder="e.g. Size, Toppings" />
-                    </div>
-                    <div>
-                      <label className="block mb-2 text-sm text-amber-400">Quantity</label>
-                      <input type="number" name="quantity" value={formData.quantity} onChange={handleInputChange} className={styles.inputField} min="0" />
-                    </div>
-                    <div>
-                      <label className="block mb-2 text-sm text-amber-400">Printer Labels (comma separated)</label>
-                      <input name="printerLabels" value={formData.printerLabels} onChange={handleInputChange} className={styles.inputField} placeholder="e.g. Kitchen, Bar" />
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <label className="flex items-center gap-2">
-                        <input type="checkbox" name="hidden" checked={formData.hidden} onChange={e => setFormData(prev => ({ ...prev, hidden: e.target.checked }))} />
-                        <span className="text-amber-300 text-sm">Hidden</span>
-                      </label>
-                      <label className="flex items-center gap-2">
-                        <input type="checkbox" name="nonRevenue" checked={formData.nonRevenue} onChange={e => setFormData(prev => ({ ...prev, nonRevenue: e.target.checked }))} />
-                        <span className="text-amber-300 text-sm">Non-revenue item</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Section 2: Food/Menu specific fields */}
-                <div className="p-4 bg-[#181010] rounded-lg border border-amber-900/20">
-                  <h3 className="text-lg text-amber-200 mb-3">Food / Menu Details</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block mb-2 text-base sm:text-lg text-amber-400">GST (%)</label>
-                      <input name="gst" value={formData.gst} onChange={handleInputChange} className={styles.inputField} placeholder="e.g. 5" />
-                    </div>
-                    <div>
-                      <label className="block mb-2 text-base sm:text-lg text-amber-400">Flavour Options (comma separated)</label>
-                      <input name="flavourOptions" value={formData.flavourOptions} onChange={handleInputChange} className={styles.inputField} placeholder="e.g. Vanilla, Chocolate" />
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <label className="block mb-2 text-base sm:text-lg text-amber-400">
-                    Product Name
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className={styles.inputField}
-                    placeholder="Enter product name"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block mb-2 text-base sm:text-lg text-amber-400">
-                    Description
-                  </label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    className={styles.inputField + ' h-32 sm:h-40'}
-                    placeholder="Enter product description"
-                    required
-                  />
-                </div>
-
-                <div className={styles.gridTwoCols}>
+              {/* Section 2: Food Menu fields */}
+              <div className="p-4 bg-[#2b1f1f] rounded-lg border border-amber-900/20">
+                <h3 className="text-lg text-amber-200 mb-3">Food Menu Item</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block mb-2 text-base sm:text-lg text-amber-400">
-                      Category
-                    </label>
+                    <label className="block mb-2 text-sm text-amber-400">Item Name *</label>
+                    <input
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className={styles.inputField}
+                      placeholder="e.g. Margherita Pizza"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm text-amber-400">Category *</label>
                     <select
                       name="category"
                       value={formData.category}
@@ -296,96 +241,136 @@ const AddItems = () => {
                       className={styles.inputField}
                       required
                     >
-                      <option value="">Select Category</option>
-                      {categories.map(c => (
-                        <option key={c} value={c} className="bg-[#3a2b2b]">
-                          {c}
-                        </option>
+                      <option value="">Select a category</option>
+                      {categories.map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <label className="block mb-2 text-base sm:text-lg text-amber-400">
-                      Price ($ CAD)
-                    </label>
-                    <div className={styles.relativeInput}>
-                      <FaRupeeSign className={styles.rupeeIcon} />
+                    <label className="block mb-2 text-sm text-amber-400">Price *</label>
+                    <div className="relative">
+                      <FaRupeeSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-400" />
                       <input
                         type="number"
+                        step="0.01"
                         name="price"
                         value={formData.price}
                         onChange={handleInputChange}
-                        className={styles.inputField + ' pl-10 sm:pl-12'}
-                        placeholder="Enter price"
-                        min="0"
-                        step="0.01"
+                        className={`${styles.inputField} pl-10`}
+                        placeholder="0.00"
                         required
                       />
                     </div>
                   </div>
-                </div>
-
-                <div className={styles.gridTwoCols}>
                   <div>
-                    <label className="block mb-2 text-base sm:text-lg text-amber-400">
-                      Rating
-                    </label>
-                    <div className="flex gap-2">
-                      {[1, 2, 3, 4, 5].map(star => (
-                        <button
-                          key={star}
-                          type="button"
-                          onClick={() => handleRating(star)}
-                          onMouseEnter={() => setHoverRating(star)}
-                          onMouseLeave={() => setHoverRating(0)}
-                          className="text-2xl sm:text-3xl transition-transform hover:scale-110"
-                        >
-                          <FiStar
-                            className={
-                              star <= (hoverRating || formData.rating)
-                                ? 'text-amber-400 fill-current'
-                                : 'text-amber-100/30'
-                            }
-                          />
-                        </button>
-                      ))}
-                    </div>
+                    <label className="block mb-2 text-sm text-amber-400">Quantity</label>
+                    <input
+                      type="number"
+                      name="quantity"
+                      value={formData.quantity}
+                      onChange={handleInputChange}
+                      className={styles.inputField}
+                      placeholder="0"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block mb-2 text-sm text-amber-400">Description</label>
+                    <textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      className={`${styles.inputField} h-24`}
+                      placeholder="Describe the item..."
+                    />
                   </div>
                   <div>
-                    <label className="block mb-2 text-base sm:text-lg text-amber-400">
-                      Popularity
-                    </label>
-                    <div className="flex items-center gap-3 sm:gap-4">
-                      <button
-                        type="button"
-                        onClick={handleHearts}
-                        className="text-2xl sm:text-3xl text-amber-400 hover:text-amber-300 transition-colors animate-pulse"
-                      >
-                        <FiHeart />
-                      </button>
+                    <label className="block mb-2 text-sm text-amber-400">Modifier Groups (comma separated)</label>
+                    <input
+                      name="modifierGroups"
+                      value={formData.modifierGroups}
+                      onChange={handleInputChange}
+                      className={styles.inputField}
+                      placeholder="e.g. Toppings, Sauces"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm text-amber-400">Printer Labels (comma separated)</label>
+                    <input
+                      name="printerLabels"
+                      value={formData.printerLabels}
+                      onChange={handleInputChange}
+                      className={styles.inputField}
+                      placeholder="e.g. Kitchen, Bar"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm text-amber-400">Flavour Options (comma separated)</label>
+                    <input
+                      name="flavourOptions"
+                      value={formData.flavourOptions}
+                      onChange={handleInputChange}
+                      className={styles.inputField}
+                      placeholder="e.g. Spicy, Mild"
+                    />
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-2">
                       <input
-                        type="number"
-                        name="hearts"
-                        value={formData.hearts}
-                        onChange={handleInputChange}
-                        className={styles.inputField + ' pl-10 sm:pl-12'}
-                        placeholder="Enter Likes"
-                        min="0"
-                        required
+                        type="checkbox"
+                        name="hidden"
+                        checked={formData.hidden}
+                        onChange={e => setFormData(prev => ({ ...prev, hidden: e.target.checked }))}
                       />
-                    </div>
+                      <span className="text-amber-200">Hidden (do not show on frontend)</span>
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        name="nonRevenue"
+                        checked={formData.nonRevenue}
+                        onChange={e => setFormData(prev => ({ ...prev, nonRevenue: e.target.checked }))}
+                      />
+                      <span className="text-amber-200">Non-revenue item</span>
+                    </label>
                   </div>
                 </div>
-
-                <button type="submit" className={styles.actionBtn}>
-                  Add to Menu
-                </button>
               </div>
-            </form>
-          </div>
+
+              {/* Rating and Hearts */}
+              <div className="p-4 bg-[#2b1f1f] rounded-lg border border-amber-900/20">
+                <h3 className="text-lg text-amber-200 mb-3">Item Rating</h3>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map(star => (
+                      <FiStar
+                        key={star}
+                        className={`text-2xl cursor-pointer ${star <= (hoverRating || formData.rating) ? 'text-amber-400 fill-current' : 'text-amber-100/30'}`}
+                        onMouseEnter={() => setHoverRating(star)}
+                        onMouseLeave={() => setHoverRating(0)}
+                        onClick={() => handleRating(star)}
+                      />
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleHearts}
+                    className="flex items-center gap-2 px-3 py-1 bg-rose-900/30 rounded-lg border border-rose-700/50 text-rose-300 hover:bg-rose-800/50 transition-colors"
+                  >
+                    <FiHeart className="fill-current" />
+                    <span>{formData.hearts} Hearts</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" className={styles.submitButton}>
+              Add Item
+            </button>
+          </form>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
