@@ -15,8 +15,8 @@ const UserOrdersPage = () => {
     const fetchOrders = async () => {
       try {
         const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+        // Remove the email parameter since the backend filters by authenticated user ID
         const response = await axios.get('http://localhost:4000/api/orders', {
-          params: { email: user?.email },
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -52,7 +52,7 @@ const UserOrdersPage = () => {
     };
 
     fetchOrders();
-  }, [user?.email]);
+  }, []);
 
   const statusStyles = {
     processing: {

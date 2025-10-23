@@ -68,9 +68,11 @@ const PhoneLogin = () => {
         verificationCode
       });
       
-      // Save token and login data to localStorage
+      // Save token and login data to localStorage - use consistent key
       localStorage.setItem('authToken', response.data.token);
-      localStorage.setItem('token', response.data.token); // Keep for backward compatibility
+      // Remove old token key if it exists
+      localStorage.removeItem('token');
+      
       localStorage.setItem('user', JSON.stringify(response.data.user));
       localStorage.setItem('loginData', JSON.stringify({ 
         loggedIn: true,
@@ -78,6 +80,9 @@ const PhoneLogin = () => {
         phoneNumber: response.data.user.phoneNumber || '',
         rememberMe: true
       }));
+      
+      // Clear the cart to ensure no items from previous session
+      localStorage.removeItem('cart');
       
       toast.success('Login successful!');
       setLoading(false);

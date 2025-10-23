@@ -2,6 +2,7 @@ import userModel from "../modals/userModel.js";
 import jwt from 'jsonwebtoken'
 import bycrypt from 'bcrypt'
 import validator from 'validator'
+import { CartItem } from '../modals/cartItem.js';
 
 // LOGIN USER
 const loginUser = async (req, res) => {
@@ -19,9 +20,12 @@ const loginUser = async (req, res) => {
             return res.json({ success: false, message: "Invalid Credentials" })
         }
 
-    // IF PASSWORD MATCHES WE GENERATE TOKENS
-    const token = createToken(user);
-    res.json({ success: true, token })
+        // Clear the user's cart on login to ensure fresh start
+        await CartItem.deleteMany({ user: user._id });
+
+        // IF PASSWORD MATCHES WE GENERATE TOKENS
+        const token = createToken(user);
+        res.json({ success: true, token })
     }
     catch (error) {
         console.log(error);
@@ -67,9 +71,9 @@ const registerUser = async (req, res) => {
         // SAVE USER IN THE DATABASE
         const user = await newUser.save()
 
-    // CREATE A TOKEN (ABOVE ||)AND SEND IT TO USER USING RESPONSE
-    const token = createToken(user)
-    res.json({ success: true, token })
+        // CREATE A TOKEN (ABOVE ||)AND SEND IT TO USER USING RESPONSE
+        const token = createToken(user)
+        res.json({ success: true, token })
 
     }
 

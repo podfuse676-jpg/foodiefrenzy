@@ -3,6 +3,7 @@ import { useCart } from '../../CartContext/CartContext';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaArrowLeft, FaLock } from 'react-icons/fa';
 import axios from 'axios';
+import apiConfig from '../../utils/apiConfig';
 
 const CheckoutPage = () => {
   const { totalAmount, cartItems: rawCart, clearCart } = useCart();
@@ -22,38 +23,19 @@ const CheckoutPage = () => {
   // Ensure proper Bearer token format for authorization header
   const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
 
-  // Handle redirect back from payment gateway
+  // Handle redirect back from payment gateway - only for cancel cases
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const paymentStatus = params.get('payment_status');
-    const sessionId = params.get('session_id');
 
-    if (paymentStatus) {
-      setLoading(true);
-      if (paymentStatus === 'success' && sessionId) {
-        // Confirm the payment and create order on the backend
-        axios.post(
-          'http://localhost:4000/api/orders/confirm',
-          { sessionId },
-          { headers: authHeaders }
-        )
-          .then(({ data }) => {
-            // Only clear cart when payment truly succeeded
-            clearCart();
-            navigate('/myorder', { state: { order: data } });
-          })
-          .catch(err => {
-            console.error('Payment confirmation error:', err);
-            setError('Payment confirmation failed. Please contact support.');
-          })
-          .finally(() => setLoading(false));
-      } else if (paymentStatus === 'cancel') {
-        // User cancelled or payment failed
-        setError('Payment was cancelled or failed. Your cart remains intact.');
-        setLoading(false);
-      }
+    console.log('CheckoutPage useEffect triggered with params:', { paymentStatus });
+
+    if (paymentStatus === 'cancel') {
+      // User cancelled or payment failed
+      console.log('Payment cancelled or failed');
+      setError('Payment was cancelled or failed. Your cart remains intact.');
     }
-  }, [location.search, clearCart, navigate, authHeaders]);
+  }, [location.search]);
 
   const handleInputChange = e => {
     const { name, value } = e.target;
@@ -64,6 +46,15 @@ const CheckoutPage = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    // Validate form data
+    if (!formData.firstName || !formData.lastName || !formData.email || 
+        !formData.address || !formData.city || !formData.zipCode || 
+        !formData.paymentMethod) {
+      setError('Please fill in all required fields');
+      setLoading(false);
+      return;
+    }
 
     // Calculate pricing with delivery and COD fees
     const subtotal = Number(totalAmount.toFixed(2));
@@ -93,7 +84,7 @@ const CheckoutPage = () => {
         // Stripe Payment: create checkout session
         try {
           const { data } = await axios.post(
-            'http://localhost:4000/api/orders',
+            `${apiConfig.baseURL}/api/orders`,
             payload,
             { 
               headers: authHeaders
@@ -101,6 +92,7 @@ const CheckoutPage = () => {
           );
           // Redirect to external payment gateway (Stripe)
           if (data.checkoutUrl) {
+            console.log('Redirecting to Stripe checkout URL:', data.checkoutUrl);
             window.location.href = data.checkoutUrl;
           } else {
             setError('Payment gateway URL not received. Please try again.');
@@ -114,14 +106,14 @@ const CheckoutPage = () => {
         // Cash on Delivery: directly create order
         try {
           const { data } = await axios.post(
-            'http://localhost:4000/api/orders',
+            `${apiConfig.baseURL}/api/orders`,
             payload,
             { 
               headers: authHeaders
             }
           );
           clearCart();
-          // Make sure we're passing the correct data structure
+          // For COD, the backend returns { order: orderObject }
           navigate('/myorder', { state: { order: data.order } });
         } catch (err) {
           console.error('COD order submission error:', err);
@@ -152,13 +144,13 @@ const CheckoutPage = () => {
           {/* Personal Info Section */}
           <div className="bg-[#4b3b3b]/80 p-6 rounded-3xl space-y-6">
             <h2 className="text-2xl font-bold">Personal Information</h2>
-            <Input label="First Name" name="firstName" value={formData.firstName} onChange={handleInputChange} />
-            <Input label="Last Name" name="lastName" value={formData.lastName} onChange={handleInputChange} />
-            <Input label="Phone" name="phone" value={formData.phone} onChange={handleInputChange} />
-            <Input label="Email" name="email" type="email" value={formData.email} onChange={handleInputChange} />
-            <Input label="Address" name="address" value={formData.address} onChange={handleInputChange} />
-            <Input label="City" name="city" value={formData.city} onChange={handleInputChange} />
-            <Input label="Zip Code" name="zipCode" value={formData.zipCode} onChange={handleInputChange} />
+            <Input label="First Name" name="firstName" value={formData.firstName} onChange={handleInputChange} required />
+            <Input label="Last Name" name="lastName" value={formData.lastName} onChange={handleInputChange} required />
+            <Input label="Phone" name="phone" value={formData.phone} onChange={handleInputChange} required />
+            <Input label="Email" name="email" type="email" value={formData.email} onChange={handleInputChange} required />
+            <Input label="Address" name="address" value={formData.address} onChange={handleInputChange} required />
+            <Input label="City" name="city" value={formData.city} onChange={handleInputChange} required />
+            <Input label="Zip Code" name="zipCode" value={formData.zipCode} onChange={handleInputChange} required />
           </div>
 
           {/* Payment Section */}
@@ -241,15 +233,15 @@ const CheckoutPage = () => {
   );
 };
 
-const Input = ({ label, name, type = 'text', value, onChange }) => (
+const Input = ({ label, name, type = 'text', value, onChange, required = false }) => (
   <div>
-    <label className="block mb-1">{label}</label>
+    <label className="block mb-1">{label} {required && <span className="text-red-400">*</span>}</label>
     <input
       type={type}
       name={name}
       value={value}
       onChange={onChange}
-      required
+      required={required}
       className="w-full bg-[#3a2b2b]/50 rounded-xl px-4 py-2"
     />
   </div>

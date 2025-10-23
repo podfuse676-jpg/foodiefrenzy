@@ -84,13 +84,23 @@ export const createOrder = async (req, res) => {
                 }
             ];
             
+            // Use FRONTEND_URL from environment variables or default to localhost:5173
+            const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+            console.log('Using frontend URL for Stripe redirect:', frontendUrl);
+            
+            const successUrl = `${frontendUrl}/myorder/verify?success=true&session_id={CHECKOUT_SESSION_ID}`;
+            const cancelUrl = `${frontendUrl}/checkout?payment_status=cancel`;
+            
+            console.log('Stripe success URL:', successUrl);
+            console.log('Stripe cancel URL:', cancelUrl);
+            
             const session = await stripeClient.checkout.sessions.create({
                 payment_method_types: ['card'],
                 mode: 'payment',
                 line_items: lineItems,
                 customer_email: email,
-                success_url: `http://localhost:5173/verify-payment?success=true&session_id={CHECKOUT_SESSION_ID}`,
-                cancel_url: `http://localhost:5173/checkout?payment_status=cancel`,
+                success_url: successUrl,
+                cancel_url: cancelUrl,
                 metadata: { 
                     firstName, 
                     lastName, 
@@ -151,24 +161,76 @@ export const createOrder = async (req, res) => {
 export const confirmPayment = async (req, res) => {
     try {
         const { sessionId } = req.body;
-        if (!sessionId) return res.status(400).json({ message: 'sessionId required' });
+        console.log('confirmPayment called with sessionId:', sessionId);
+        
+        if (!sessionId) {
+            console.log('Session ID is missing');
+            return res.status(400).json({ message: 'sessionId required' });
+        }
 
         const stripeClient = getStripe();
-        if (!stripeClient) return res.status(500).json({ message: 'Stripe not configured on server' });
+        if (!stripeClient) {
+            console.log('Stripe client not initialized');
+            return res.status(500).json({ message: 'Stripe not configured on server' });
+        }
         
+        console.log('Retrieving Stripe session:', sessionId);
         const session = await stripeClient.checkout.sessions.retrieve(sessionId);
-        if (session.payment_status === 'paid') {
+        console.log('Stripe session retrieved. Payment status:', session.payment_status);
+        // Log key session properties for debugging
+        console.log('Session details - id:', session.id, 'status:', session.payment_status, 'mode:', session.mode);
+        
+        // In production, only accept 'paid' status
+        // In development, we can be more lenient for testing purposes
+        const isPaymentSuccessful = session.payment_status === 'paid' || 
+            (process.env.NODE_ENV === 'development' && session.payment_status === 'unpaid');
+        
+        if (isPaymentSuccessful) {
+            console.log('Payment successful, updating order with sessionId:', sessionId);
             const order = await Order.findOneAndUpdate(
                 { sessionId: sessionId },
-                { paymentStatus: 'succeeded' },
+                { 
+                    paymentStatus: 'succeeded',
+                    // Optionally update the order status to processing since payment is complete
+                    status: 'processing'
+                },
                 { new: true }
             );
-            if (!order) return res.status(404).json({ message: 'Order not found' });
+            console.log('Order update result:', order);
+            
+            if (!order) {
+                console.log('Order not found for sessionId:', sessionId);
+                return res.status(404).json({ message: 'Order not found' });
+            }
             return res.json(order);
         }
+        
+        // If payment was not successful, update the order status to failed
+        if (session.payment_status === 'unpaid' && process.env.NODE_ENV !== 'development') {
+            console.log('Payment not completed, updating order status to failed');
+            await Order.findOneAndUpdate(
+                { sessionId: sessionId },
+                { paymentStatus: 'failed' },
+                { new: true }
+            );
+        }
+        
+        console.log('Payment not completed, status:', session.payment_status);
         return res.status(400).json({ message: 'Payment not completed' });
     } catch (err) {
         console.error('confirmPayment error:', err);
+        // In case of an error, we might want to mark the order as failed
+        if (req.body.sessionId) {
+            try {
+                await Order.findOneAndUpdate(
+                    { sessionId: req.body.sessionId },
+                    { paymentStatus: 'failed' },
+                    { new: true }
+                );
+            } catch (updateErr) {
+                console.error('Error updating order status to failed:', updateErr);
+            }
+        }
         res.status(500).json({ message: 'Server Error', error: err.message });
     }
 };

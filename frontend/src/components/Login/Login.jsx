@@ -59,9 +59,11 @@ const Login = ({ onLoginSuccess, onClose }) => {
       console.log('✅ axios response:', res);
   
       if (res.data.success && res.data.token) {
-        // Save your JWT however you prefer
+        // Save your JWT - use only one consistent key
         localStorage.setItem('authToken', res.data.token);
-        localStorage.setItem('token', res.data.token); // For backward compatibility
+        
+        // Remove old token key if it exists
+        localStorage.removeItem('token');
         
         // Save login state for app-wide authentication
         localStorage.setItem('loginData', JSON.stringify({ 
@@ -69,6 +71,9 @@ const Login = ({ onLoginSuccess, onClose }) => {
           email: formData.email,
           rememberMe: formData.rememberMe 
         }));
+        
+        // Clear the cart to ensure no items from previous session
+        localStorage.removeItem('cart');
   
         setToast({ visible: true, message: 'Login successful!', isError: false });
         setTimeout(() => {

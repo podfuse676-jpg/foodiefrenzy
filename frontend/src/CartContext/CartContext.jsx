@@ -41,6 +41,17 @@ const cartReducer = (state, action) => {
 
 const initializer = () => {
   try {
+    // Check if user is logged in
+    const loginData = localStorage.getItem('loginData');
+    const authToken = localStorage.getItem('authToken');
+    
+    // If user is logged in, we should start with an empty cart
+    // The actual cart will be hydrated from the server
+    if (loginData && authToken) {
+      return [];
+    }
+    
+    // For non-logged in users, use localStorage cart
     return JSON.parse(localStorage.getItem('cart') || '[]');
   } catch {
     return [];
@@ -57,26 +68,39 @@ export const CartProvider = ({ children }) => {
 
   // Hydrate from server
   useEffect(() => {
-    const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+    const token = localStorage.getItem('authToken');
     if (!token) return;
     
     axios
       .get(`${apiConfig.baseURL}/api/cart`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      .then(res => dispatch({ type: 'HYDRATE_CART', payload: res.data }))
+      .then(res => {
+        // Only hydrate if we got a valid response
+        if (Array.isArray(res.data)) {
+          dispatch({ type: 'HYDRATE_CART', payload: res.data });
+        } else {
+          // If response is not an array, initialize with empty cart
+          dispatch({ type: 'HYDRATE_CART', payload: [] });
+        }
+      })
       .catch(err => { 
-        if (err.response?.status === 403) {
+        if (err.response?.status === 403 || err.response?.status === 401) {
           console.warn('Access forbidden to cart API. User may need to re-authenticate.');
-        } else if (err.response?.status !== 401) {
+          // Clear invalid tokens
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('loginData');
+        } else {
           console.error('Error hydrating cart:', err);
+          // Initialize with empty cart on error
+          dispatch({ type: 'HYDRATE_CART', payload: [] });
         }
       });
   }, []);
 
   const addToCart = useCallback(async (item, qty, selectedSize = null) => {
     try {
-      const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+      const token = localStorage.getItem('authToken');
       if (!token) {
         console.warn('No authentication token found. Adding item to local cart only.');
         // Add item to local cart even without token
@@ -125,7 +149,7 @@ export const CartProvider = ({ children }) => {
 
   const updateQuantity = useCallback(async (_id, qty, selectedSize = null) => {
     try {
-      const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+      const token = localStorage.getItem('authToken');
       if (!token) {
         console.warn('No authentication token found. Updating local cart only.');
         // Update local cart even without token
@@ -162,7 +186,7 @@ export const CartProvider = ({ children }) => {
 
   const removeFromCart = useCallback(async (_id) => {
     try {
-      const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+      const token = localStorage.getItem('authToken');
       if (!token) {
         console.warn('No authentication token found. Removing from local cart only.');
         // Remove from local cart even without token
@@ -183,7 +207,7 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = useCallback(async () => {
     try {
-      const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+      const token = localStorage.getItem('authToken');
       if (!token) {
         console.warn('No authentication token found. Clearing local cart only.');
         dispatch({ type: 'CLEAR_CART' });

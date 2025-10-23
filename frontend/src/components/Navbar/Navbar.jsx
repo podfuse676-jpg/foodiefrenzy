@@ -70,6 +70,7 @@ const Navbar = () => {
     // Remove all auth-related items from localStorage
     localStorage.removeItem('loginData');
     localStorage.removeItem('authToken');
+    // Remove old token key if it exists
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     
@@ -153,7 +154,7 @@ const Navbar = () => {
             <div className="flex flex-col ml-1 md:ml-2">
               <NavLink
                 to="/"
-                className="text-lg md:text-xl lg:text-2xl xl:text-3xl brand-gradient font-monsieur tracking-wider whitespace-nowrap"
+                className="text-3xl font-bold bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent whitespace-nowrap"
               >
                 Lakeshore Convenience
               </NavLink>
@@ -161,7 +162,7 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation - Right side */}
           <div className="hidden lg:flex items-center space-x-2 xl:space-x-4 flex-1 justify-end">
             {navLinks.map((link) => (
               <NavLink
@@ -191,8 +192,8 @@ const Navbar = () => {
               {renderDesktopAuthButton()}
             </div>
           </div>
-
-          {/* Hamburger Menu Button */}
+          
+          {/* Hamburger Menu Button - Visible on mobile */}
           <div className="lg:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}

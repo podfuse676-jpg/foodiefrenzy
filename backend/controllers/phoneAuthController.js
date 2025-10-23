@@ -2,6 +2,7 @@ import User from '../modals/userModel.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import twilio from 'twilio';
+import { CartItem } from '../modals/cartItem.js';
 
 dotenv.config();
 
@@ -112,6 +113,9 @@ export const verifyPhoneCode = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: 'Invalid or expired verification code' });
     }
+    
+    // Clear the user's cart on login to ensure fresh start
+    await CartItem.deleteMany({ user: user._id });
     
     // Mark the phone as verified
     user.isPhoneVerified = true;

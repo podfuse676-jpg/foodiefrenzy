@@ -2,7 +2,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 
 const PrivateRoute = ({ children }) => {
-    // Check for both token and loginData to ensure proper authentication
+    // Check for authentication using consistent token key
     const token = localStorage.getItem('authToken');
     const loginData = localStorage.getItem('loginData');
     const isAuthenticated = Boolean(token) && Boolean(loginData) && token !== 'undefined' && token !== 'null';

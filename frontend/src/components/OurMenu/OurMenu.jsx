@@ -7,7 +7,7 @@ import './Om.css';
 import { dummyMenuData } from '../../assets/OmhDD.js';
 
 // Separate component for each menu item to handle size selection properly
-const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, removeFromCart }) => {
+const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, removeFromCart, category }) => {
   // State for selected size
   const [selectedSize, setSelectedSize] = useState(
     item.sizeOptions && item.sizeOptions.length > 0 
@@ -23,8 +23,11 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
     return item.price;
   };
   
+  // Check if this is a Convenience category item to apply glow effect
+  const isConvenienceItem = category === 'Convenience';
+  
   return (
-    <div className="relative bg-white/20 rounded-2xl overflow-hidden border border-[#f59e0b]/30 backdrop-blur-sm flex flex-col transition-all duration-500">
+    <div className={`relative bg-white/20 rounded-2xl overflow-hidden border border-[#f59e0b]/30 backdrop-blur-sm flex flex-col transition-all duration-500 ${isConvenienceItem ? 'glowy-brown-effect' : ''}`}>
       {/* Image */}
       <div className="relative h-48 sm:h-56 md:h-60 flex items-center justify-center bg-[#0ea5a4]/10">
         <img
@@ -313,6 +316,7 @@ const OurMenu = () => {
                   addToCart={addToCart}
                   updateQuantity={updateQuantity}
                   removeFromCart={removeFromCart}
+                  category={activeCategory}
                 />
               );
             })
