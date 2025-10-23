@@ -148,7 +148,7 @@ export const verifyPhoneCode = async (req, res) => {
     
     // Generate JWT token with consistent payload
     const token = jwt.sign(
-      { id: user._id, username: user.username, email: user.email },
+      { id: user._id, username: user.username, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: '30d' }
     );
@@ -156,6 +156,7 @@ export const verifyPhoneCode = async (req, res) => {
     res.status(200).json({
       message: 'Phone verified successfully',
       token,
+      role: user.role,
       user: {
         id: user._id,
         username: user.username,

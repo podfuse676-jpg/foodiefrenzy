@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
     isPhoneVerified: { type: Boolean, default: false },
     phoneVerificationCode: { type: String },
     phoneVerificationExpires: { type: Date },
+    role: { type: String, enum: ['user', 'admin'], default: 'user' } // Add role field
 })
 
 const userModel = mongoose.models.user || mongoose.model("user", userSchema);

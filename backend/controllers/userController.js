@@ -25,7 +25,7 @@ const loginUser = async (req, res) => {
 
         // IF PASSWORD MATCHES WE GENERATE TOKENS
         const token = createToken(user);
-        res.json({ success: true, token })
+        res.json({ success: true, token, role: user.role })
     }
     catch (error) {
         console.log(error);
@@ -35,7 +35,7 @@ const loginUser = async (req, res) => {
 
 const createToken = (user) => {
     // Ensure consistency with auth middleware
-    const payload = { id: user._id, email: user.email, username: user.username };
+    const payload = { id: user._id, email: user.email, username: user.username, role: user.role };
     return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '30d' });
 }
 
@@ -74,7 +74,7 @@ const registerUser = async (req, res) => {
 
         // CREATE A TOKEN (ABOVE ||)AND SEND IT TO USER USING RESPONSE
         const token = createToken(user)
-        res.json({ success: true, token })
+        res.json({ success: true, token, role: user.role })
 
     }
 

@@ -11,13 +11,14 @@ const authMiddleware = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        // decoded contains { id, email, username }
+        // decoded contains { id, email, username, role }
         // Ensure consistency with both id and _id
         req.user = { 
             _id: decoded.id, 
             id: decoded.id,
             email: decoded.email, 
-            username: decoded.username 
+            username: decoded.username,
+            role: decoded.role
         };
         next();
     } catch (err) {
@@ -29,4 +30,12 @@ const authMiddleware = (req, res, next) => {
     }
 };
 
-export default authMiddleware;
+// Admin middleware to check if user is admin
+const adminMiddleware = (req, res, next) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ success: false, message: 'Access denied. Admin rights required.' });
+    }
+    next();
+};
+
+export { authMiddleware, adminMiddleware };
