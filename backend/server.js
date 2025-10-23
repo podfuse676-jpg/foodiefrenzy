@@ -27,7 +27,8 @@ app.use(cors({
     process.env.ADMIN_URL || 'http://localhost:5174',
     'https://foodiefrenzy-frontend.vercel.app',
     'https://foodiefrenzy-admin.vercel.app',
-    'https://foodiefrenzy-5hdf.vercel.app'
+    'https://foodiefrenzy-5hdf.vercel.app',
+    'https://foodiefrenzy-nine.vercel.app'
   ],
   credentials: true
 }));
