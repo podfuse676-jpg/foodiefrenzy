@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
-    "create-admin": "node createAdminUser.js"
+    "create-admin": "node createAdminUser.js",
+    "list-users": "node listUsers.js"
   },
   "author": "",
   "license": "ISC",
