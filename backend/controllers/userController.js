@@ -1,6 +1,6 @@
 import userModel from "../modals/userModel.js";
 import jwt from 'jsonwebtoken'
-import bcrypt from 'bcrypt'  // Use bcrypt instead of bycrypt
+import bcrypt from 'bcrypt'
 import validator from 'validator'
 import { CartItem } from '../modals/cartItem.js';
 
@@ -8,14 +8,23 @@ import { CartItem } from '../modals/cartItem.js';
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
     try {
+        console.log('Login attempt for email:', email);
+        
         // CHECK IF USER IS AVAILABLE WITH THIS ID
         const user = await userModel.findOne({ email });
+        console.log('User lookup result:', user ? 'Found' : 'Not found');
+        
         if (!user) {
+            console.log('User not found in database for email:', email);
             return res.json({ success: false, message: "User Doesn't Exist" })
         }
 
+        console.log('User found:', user.username, user.email, user.role);
+        
         // MATCHING USER AND PASSWORD
-        const isMatch = await bcrypt.compare(password, user.password);  // Use bcrypt instead of bycrypt
+        const isMatch = await bcrypt.compare(password, user.password);
+        console.log('Password match result:', isMatch);
+        
         if (!isMatch) {
             return res.json({ success: false, message: "Invalid Credentials" })
         }
@@ -25,10 +34,11 @@ const loginUser = async (req, res) => {
 
         // IF PASSWORD MATCHES WE GENERATE TOKENS
         const token = createToken(user);
+        console.log('Login successful for user:', user.email);
         res.json({ success: true, token, role: user.role })
     }
     catch (error) {
-        console.log(error);
+        console.log('Login error:', error);
         res.json({ success: false, message: "Error" })
     }
 }
@@ -43,9 +53,12 @@ const createToken = (user) => {
 const registerUser = async (req, res) => {
     const { username, password, email } = req.body;
     try {
+        console.log('Registration attempt for email:', email);
+        
         // CHECKING IS USER ALREADY EXISTS
         const exists = await userModel.findOne({ email });
         if (exists) {
+            console.log('User already exists with email:', email);
             return res.json({ success: false, message: "User Already Exists" })
         }
 
@@ -60,8 +73,8 @@ const registerUser = async (req, res) => {
         }
 
         // HASING USER PASSWORD
-        const salt = await bcrypt.genSalt(10)  // Use bcrypt instead of bycrypt
-        const hashedPassword = await bcrypt.hash(password, salt);  // Use bcrypt instead of bycrypt
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(password, salt);
 
         // NEW USER 
         const newUser = new userModel({
@@ -71,6 +84,7 @@ const registerUser = async (req, res) => {
         })
         // SAVE USER IN THE DATABASE
         const user = await newUser.save()
+        console.log('User registered successfully:', user.email);
 
         // CREATE A TOKEN (ABOVE ||)AND SEND IT TO USER USING RESPONSE
         const token = createToken(user)
@@ -79,7 +93,7 @@ const registerUser = async (req, res) => {
     }
 
     catch (error) {
-        console.log(error);
+        console.log('Registration error:', error);
         res.json({ success: false, message: "Error" })
     }
 }
