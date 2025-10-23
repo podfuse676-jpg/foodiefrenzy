@@ -1,5 +1,5 @@
 const apiConfig = {
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:4000'
+  baseURL: import.meta.env.VITE_API_URL || 'https://lakeshoreconveniencee-backend.onrender.com'
 };
 
 export default apiConfig;
