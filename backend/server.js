@@ -92,6 +92,18 @@ app.get('/api/test-db', async (req, res) => {
   }
 });
 
+// Debug endpoint to check environment variables
+app.get('/api/debug-env', (req, res) => {
+  res.json({
+    MONGODB_URI: process.env.MONGODB_URI ? 'SET' : 'NOT SET',
+    JWT_SECRET: process.env.JWT_SECRET ? 'SET' : 'NOT SET',
+    NODE_ENV: process.env.NODE_ENV || 'NOT SET',
+    dbConnectionState: mongoose.connection.readyState,
+    dbConnectionHost: mongoose.connection.host,
+    dbConnectionName: mongoose.connection.name
+  });
+});
+
 // Basic route for testing
 app.get('/', (req, res) => {
   res.json({ message: 'Server is running!', port: PORT });
