@@ -6,10 +6,11 @@ import User from './modals/userModel.js';
 dotenv.config();
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/foodiefrenzy', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/foodiefrenzy';
+
+console.log('Connecting to MongoDB:', mongoURI);
+
+mongoose.connect(mongoURI);
 
 const createAdminUser = async () => {
   try {
@@ -18,6 +19,8 @@ const createAdminUser = async () => {
     
     if (existingAdmin) {
       console.log('Admin user already exists');
+      console.log('Email: admin@foodiefrenzy.com');
+      console.log('Role:', existingAdmin.role);
       process.exit(0);
     }
     
