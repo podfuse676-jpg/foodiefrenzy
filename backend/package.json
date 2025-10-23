@@ -12,7 +12,8 @@
     "test-user-model": "node testUserModel.js",
     "force-create-admin": "node forceCreateAdmin.js",
     "test-login": "node testLogin.js",
-    "test-server-db": "node testServerDB.js"
+    "test-server-db": "node testServerDB.js",
+    "manual-login-test": "node manualLoginTest.js"
   },
   "author": "",
   "license": "ISC",
