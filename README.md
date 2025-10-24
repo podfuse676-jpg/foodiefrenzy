@@ -1,6 +1,6 @@
-# Foodie Frenzy
+# Lakeshore Convenience
 
-A full-stack food ordering application with customer frontend, admin panel, and backend API.
+A full-stack grocery delivery application with customer frontend, admin panel, and backend API.
 
 ## Project Structure
 
@@ -192,7 +192,7 @@ TWILIO_PHONE_NUMBER= (leave empty if not using SMS)
 #### Frontend & Admin (.env)
 
 ```env
-REACT_APP_API_URL=https://your-backend-url.onrender.com
+VITE_API_URL=https://your-backend-url.onrender.com
 ```
 
 ### Deployment Instructions
