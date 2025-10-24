@@ -1,6 +1,6 @@
-# Foodie Frenzy Deployment Guide
+# Lakeshore Convenience Deployment Guide
 
-This guide will help you deploy the Foodie Frenzy application to Vercel (frontend and admin) and Render (backend).
+This guide will help you deploy the Lakeshore Convenience application to Vercel (frontend and admin) and Render (backend).
 
 ## Prerequisites
 
@@ -63,7 +63,7 @@ After deployment, get the Render service IP and add it to your MongoDB Atlas IP 
 Make sure your `.env` file in the frontend has the correct value:
 
 ```
-REACT_APP_API_URL=https://your-render-service-url.onrender.com
+VITE_API_URL=https://your-render-service-url.onrender.com
 ```
 
 ### 2. Deploy to Vercel
@@ -85,7 +85,7 @@ REACT_APP_API_URL=https://your-render-service-url.onrender.com
 Make sure your `.env` file in the admin has the correct value:
 
 ```
-REACT_APP_API_URL=https://your-render-service-url.onrender.com
+VITE_API_URL=https://your-render-service-url.onrender.com
 ```
 
 ### 2. Deploy to Vercel
@@ -118,7 +118,7 @@ If you encounter any issues during or after deployment, please refer to our [Tro
 
 If you're unable to log in on Vercel:
 
-1. Check that `REACT_APP_API_URL` in your frontend `.env` file points to your Render backend URL
+1. Check that `VITE_API_URL` in your frontend `.env` file points to your Render backend URL
 2. Check that CORS is properly configured in your backend
 3. Check browser console for network errors
 4. Make sure your MongoDB connection is working

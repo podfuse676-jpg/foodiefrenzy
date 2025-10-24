@@ -1,6 +1,6 @@
 # Admin Panel Deployment Guide for Vercel
 
-This guide will help you deploy the Foodie Frenzy admin panel to Vercel.
+This guide will help you deploy the Lakeshore Convenience admin panel to Vercel.
 
 ## Prerequisites
 
@@ -13,7 +13,7 @@ This guide will help you deploy the Foodie Frenzy admin panel to Vercel.
 Your admin panel already has the correct environment configuration:
 
 ```
-REACT_APP_API_URL=https://lakeshoreconveniencee-backend.onrender.com
+VITE_API_URL=https://lakeshoreconveniencee-backend.onrender.com
 ```
 
 This is set in the `.env` file and will allow the admin panel to communicate with your backend.
@@ -34,7 +34,7 @@ This is set in the `.env` file and will allow the admin panel to communicate wit
 
 5. Add Environment Variables:
 
-   - `REACT_APP_API_URL`: `https://lakeshoreconveniencee-backend.onrender.com`
+   - `VITE_API_URL`: `https://lakeshoreconveniencee-backend.onrender.com`
 
 6. Click "Deploy"
 
@@ -51,7 +51,7 @@ After deployment is complete:
 ### If Admin Panel Doesn't Load
 
 1. Check the Vercel deployment logs for build errors
-2. Verify that the `REACT_APP_API_URL` environment variable is set correctly
+2. Verify that the `VITE_API_URL` environment variable is set correctly
 3. Check browser console for network errors
 
 ### If Admin Panel Can't Communicate with Backend
