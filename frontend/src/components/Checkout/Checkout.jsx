@@ -133,16 +133,16 @@ const CheckoutPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#1a1212] to-[#2a1e1e] text-white py-16 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-[#333333] to-[#444444] text-white py-16 px-4">
       <div className="max-w-4xl mx-auto">
-        <Link to="/cart" className="flex items-center gap-2 text-amber-400 mb-8">
+        <Link to="/cart" className="flex items-center gap-2 text-[#4CAF50] mb-8">
           <FaArrowLeft /> Back to Cart
         </Link>
         <h1 className="text-4xl font-bold text-center mb-8">Checkout</h1>
         <form onSubmit={handleSubmit} className="grid lg:grid-cols-2 gap-12">
 
           {/* Personal Info Section */}
-          <div className="bg-[#4b3b3b]/80 p-6 rounded-3xl space-y-6">
+          <div className="bg-[#4b4b4b]/80 p-6 rounded-3xl space-y-6">
             <h2 className="text-2xl font-bold">Personal Information</h2>
             <Input label="First Name" name="firstName" value={formData.firstName} onChange={handleInputChange} required />
             <Input label="Last Name" name="lastName" value={formData.lastName} onChange={handleInputChange} required />
@@ -154,27 +154,27 @@ const CheckoutPage = () => {
           </div>
 
           {/* Payment Section */}
-          <div className="bg-[#4b3b3b]/80 p-6 rounded-3xl space-y-6">
+          <div className="bg-[#4b4b4b]/80 p-6 rounded-3xl space-y-6">
             <h2 className="text-2xl font-bold">Payment Details</h2>
 
             {/* Order Items */}
             <div className="space-y-4 mb-6">
-              <h3 className="text-lg font-semibold text-amber-100">Your Order Items</h3>
+              <h3 className="text-lg font-semibold text-[#FAFAFA]">Your Order Items</h3>
               {cartItems.map(({ _id, item, quantity, selectedSize }) => {
                 // Use selected size price if available, otherwise use item price
                 const price = selectedSize?.price ?? item?.price ?? 0;
                 const totalPrice = price * quantity;
                 
                 return (
-                  <div key={_id} className="flex justify-between items-center bg-[#3a2b2b]/50 p-3 rounded-lg">
+                  <div key={_id} className="flex justify-between items-center bg-[#333333]/50 p-3 rounded-lg">
                     <div className="flex-1">
-                      <span className="text-amber-100">{item.name}</span>
+                      <span className="text-[#FAFAFA]">{item.name}</span>
                       {selectedSize && (
-                        <span className="ml-2 text-amber-500/80 text-sm">({selectedSize.size})</span>
+                        <span className="ml-2 text-[#4CAF50]/80 text-sm">({selectedSize.size})</span>
                       )}
-                      <span className="ml-2 text-amber-500/80 text-sm">x{quantity}</span>
+                      <span className="ml-2 text-[#4CAF50]/80 text-sm">x{quantity}</span>
                     </div>
-                    <span className="text-amber-300">${totalPrice.toFixed(2)} CAD</span>
+                    <span className="text-[#F4D03F]">${totalPrice.toFixed(2)} CAD</span>
                   </div>
                 );
               })}
@@ -193,14 +193,14 @@ const CheckoutPage = () => {
                 value={formData.paymentMethod}
                 onChange={handleInputChange}
                 required
-                className="w-full bg-[#3a2b2b]/50 rounded-xl px-4 py-3"
+                className="w-full bg-[#333333]/50 rounded-xl px-4 py-3"
               >
                 <option value="">Select Method</option>
                 <option value="cod">Cash on Delivery (+$5.00 CAD)</option>
                 <option value="card">Credit/Debit Card</option>
               </select>
               {formData.paymentMethod === 'cod' && (
-                <p className="text-amber-400 text-sm mt-2">
+                <p className="text-[#4CAF50] text-sm mt-2">
                   ⚠️ Additional $5.00 CAD fee for Cash on Delivery
                 </p>
               )}
@@ -208,21 +208,21 @@ const CheckoutPage = () => {
 
             {/* Card Payment Info */}
             {formData.paymentMethod === 'card' && (
-              <div className="bg-amber-900/20 border border-amber-800/30 rounded-xl p-4">
-                <p className="text-amber-100 text-sm mb-2">
+              <div className="bg-[#4CAF50]/20 border border-[#4CAF50]/30 rounded-xl p-4">
+                <p className="text-[#FAFAFA] text-sm mb-2">
                   🔒 Secure payment powered by Stripe
                 </p>
-                <p className="text-amber-100/70 text-xs">
+                <p className="text-[#FAFAFA]/70 text-xs">
                   You will be redirected to a secure payment page to complete your purchase.
                 </p>
               </div>
             )}
 
-            {error && <p className="text-red-400 mt-2">{error}</p>}
+            {error && <p className="text-[#E74C3C] mt-2">{error}</p>}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-red-600 to-amber-600 py-4 rounded-xl font-bold flex justify-center items-center"
+              className="w-full bg-gradient-to-r from-[#4CAF50] to-[#388E3C] py-4 rounded-xl font-bold flex justify-center items-center"
             >
               <FaLock className="mr-2" /> {loading ? 'Processing...' : 'Complete Order'}
             </button>
@@ -235,14 +235,14 @@ const CheckoutPage = () => {
 
 const Input = ({ label, name, type = 'text', value, onChange, required = false }) => (
   <div>
-    <label className="block mb-1">{label} {required && <span className="text-red-400">*</span>}</label>
+    <label className="block mb-1">{label} {required && <span className="text-[#E74C3C]">*</span>}</label>
     <input
       type={type}
       name={name}
       value={value}
       onChange={onChange}
       required={required}
-      className="w-full bg-[#3a2b2b]/50 rounded-xl px-4 py-2"
+      className="w-full bg-[#333333]/50 rounded-xl px-4 py-2"
     />
   </div>
 );
@@ -255,27 +255,27 @@ const PaymentSummary = ({ totalAmount, paymentMethod }) => {
   const total = Number((subtotal + tax + deliveryCharge + codFee).toFixed(2));
   
   return (
-    <div className="space-y-2 bg-amber-900/10 p-4 rounded-xl border border-amber-800/20">
-      <h3 className="text-lg font-semibold text-amber-100 mb-3">Order Summary</h3>
-      <div className="flex justify-between text-amber-100/80">
+    <div className="space-y-2 bg-[#4CAF50]/10 p-4 rounded-xl border border-[#4CAF50]/20">
+      <h3 className="text-lg font-semibold text-[#FAFAFA] mb-3">Order Summary</h3>
+      <div className="flex justify-between text-[#FAFAFA]/80">
         <span>Subtotal:</span>
         <span>${subtotal.toFixed(2)} CAD</span>
       </div>
-      <div className="flex justify-between text-amber-100/80">
+      <div className="flex justify-between text-[#FAFAFA]/80">
         <span>Tax (5% GST):</span>
         <span>${tax.toFixed(2)} CAD</span>
       </div>
-      <div className="flex justify-between text-amber-100/80">
+      <div className="flex justify-between text-[#FAFAFA]/80">
         <span>Delivery Charge:</span>
         <span>${deliveryCharge.toFixed(2)} CAD</span>
       </div>
       {codFee > 0 && (
-        <div className="flex justify-between text-amber-400">
+        <div className="flex justify-between text-[#F4D03F]">
           <span>COD Fee:</span>
           <span>+${codFee.toFixed(2)} CAD</span>
         </div>
       )}
-      <div className="flex justify-between font-bold text-lg border-t border-amber-800/30 pt-2 mt-2 text-amber-300">
+      <div className="flex justify-between font-bold text-lg border-t border-[#4CAF50]/30 pt-2 mt-2 text-[#F4D03F]">
         <span>Total:</span>
         <span>${total.toFixed(2)} CAD</span>
       </div>

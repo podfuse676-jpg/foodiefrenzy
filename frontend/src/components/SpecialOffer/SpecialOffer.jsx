@@ -40,15 +40,15 @@ const SpecialOffer = () => {
   const displayList = Array.isArray(items) ? items.slice(0, showAll ? 8 : 4) : [];
 
   return (
-    <div className="bg-gradient-to-b from-[#1a1212] to-[#2a1e1e] text-white py-16 px-4 font-['Poppins']">
+    <div className="bg-gradient-to-b from-[#333333] to-[#444444] text-white py-16 px-4 font-['Poppins']">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-14">
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-amber-400 to-red-500 bg-clip-text text-transparent italic">
+          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-[#4CAF50] to-[#F4D03F] bg-clip-text text-transparent italic">
             Today's <span className="text-stroke-gold">Special</span> Offers
           </h1>
           <p className="text-lg text-gray-300 max-w-3xl mx-auto">
-            Savor the extraordinary with our culinary masterpieces crafted to perfection
+            Fresh deals on quality groceries delivered to your door
           </p>
         </div>
 
@@ -63,7 +63,7 @@ const SpecialOffer = () => {
             return (
               <div
                 key={item._id}
-                className="relative group bg-[#4b3b3b] rounded-3xl overflow-hidden shadow-2xl hover:-translate-y-4 transition duration-500 hover:shadow-red-900/40 border-2 border-transparent hover:border-amber-500/20"
+                className="relative group bg-[#4b4b4b] rounded-3xl overflow-hidden shadow-2xl hover:-translate-y-4 transition duration-500 hover:shadow-[#4CAF50]/40 border-2 border-transparent hover:border-[#4CAF50]/20"
               >
                 {/* Image & Stats */}
                 <div className="relative h-72 overflow-hidden">
@@ -77,10 +77,10 @@ const SpecialOffer = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/90" />
                   <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center bg-black/40 backdrop-blur-sm px-4 py-2 rounded-full">
-                    <span className="flex items-center gap-2 text-amber-400">
+                    <span className="flex items-center gap-2 text-[#4CAF50]">
                       <FaStar /><b>{item.rating}</b>
                     </span>
-                    <span className="flex items-center gap-2 text-red-400">
+                    <span className="flex items-center gap-2 text-[#F4D03F]">
                       <FaHeart /><b>{item.hearts}</b>
                     </span>
                   </div>
@@ -88,12 +88,12 @@ const SpecialOffer = () => {
 
                 {/* Content & Cart Controls */}
                 <div className="p-6">
-                  <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-transparent italic">
+                  <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-[#4CAF50] to-[#F4D03F] bg-clip-text text-transparent italic">
                     {item.name}
                   </h3>
                   <p className="text-gray-300 mb-5 text-sm">{item.description}</p>
                   <div className="flex items-center justify-between gap-4">
-                    <span className="text-2xl font-bold text-amber-400">
+                    <span className="text-2xl font-bold text-[#4CAF50]">
                       ${Number(item.price).toFixed(2)} CAD
                     </span>
 
@@ -105,16 +105,16 @@ const SpecialOffer = () => {
                               ? updateQuantity(cartId, qty - 1)
                               : removeFromCart(cartId)
                           }
-                          className="w-8 h-8 rounded-full bg-amber-900/40 flex items-center justify-center"
+                          className="w-8 h-8 rounded-full bg-[#4CAF50]/40 flex items-center justify-center"
                         >
-                          <HiMinus className="w-4 h-4 text-amber-100" />
+                          <HiMinus className="w-4 h-4 text-[#FAFAFA]" />
                         </button>
-                        <span className="w-8 text-center text-amber-100">{qty}</span>
+                        <span className="w-8 text-center text-[#FAFAFA]">{qty}</span>
                         <button
                           onClick={() => updateQuantity(cartId, qty + 1)}
-                          className="w-8 h-8 rounded-full bg-amber-900/40 flex items-center justify-center"
+                          className="w-8 h-8 rounded-full bg-[#4CAF50]/40 flex items-center justify-center"
                         >
-                          <HiPlus className="w-4 h-4 text-amber-100" />
+                          <HiPlus className="w-4 h-4 text-[#FAFAFA]" />
                         </button>
                       </div>
                     ) : (
@@ -130,7 +130,7 @@ const SpecialOffer = () => {
                             console.error('Error adding to cart:', error);
                           }
                         }}
-                        className="flex items-center gap-2 bg-gradient-to-r from-red-600 to-amber-600 text-white px-5 py-2.5 rounded-xl font-bold"
+                        className="flex items-center gap-2 bg-gradient-to-r from-[#4CAF50] to-[#388E3C] text-white px-5 py-2.5 rounded-xl font-bold"
                       >
                         <FaPlus />
                         <span>Add</span>
@@ -150,7 +150,7 @@ const SpecialOffer = () => {
         <div className="mt-12 flex justify-center">
           <button
             onClick={() => setShowAll(!showAll)}
-            className="flex items-center gap-3 bg-gradient-to-r from-red-700 to-amber-700 text-white px-8 py-4 rounded-2xl font-bold uppercase"
+            className="flex items-center gap-3 bg-gradient-to-r from-[#4CAF50] to-[#388E3C] text-white px-8 py-4 rounded-2xl font-bold uppercase"
           >
             <FaFire className="animate-pulse" />
             <span>{showAll ? 'Show Less' : 'Show More'}</span>

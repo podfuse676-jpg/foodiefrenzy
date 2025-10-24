@@ -108,7 +108,7 @@ const Login = ({ onLoginSuccess, onClose }) => {
           }`}
       >
         <div
-          className={`px-4 py-3 rounded-md shadow-lg flex items-center gap-2 text-sm ${toast.isError ? 'bg-red-600 text-white' : 'bg-green-600 text-white'
+          className={`px-4 py-3 rounded-md shadow-lg flex items-center gap-2 text-sm ${toast.isError ? 'bg-[#E74C3C] text-white' : 'bg-[#4CAF50] text-white'
             }`}
         >
           <FaCheckCircle className="flex-shrink-0" />
@@ -119,34 +119,34 @@ const Login = ({ onLoginSuccess, onClose }) => {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Email Field */}
         <div className="relative">
-          <FaEnvelope className={iconClass} />
+          <FaEnvelope className="absolute top-1/2 transform -translate-y-1/2 left-3 text-[#4CAF50]" />
           <input
             type="email"
             name="email"
             placeholder="Email"
             value={formData.email}
             onChange={handleChange}
-            className={`${inputBase} pl-10 pr-4 py-3`}
+            className="w-full rounded-lg bg-[#333333] text-[#FAFAFA] placeholder-[#4CAF50] focus:outline-none focus:ring-2 focus:ring-[#4CAF50] pl-10 pr-4 py-3"
             required
           />
         </div>
 
         {/* Password Field */}
         <div className="relative">
-          <FaLock className={iconClass} />
+          <FaLock className="absolute top-1/2 transform -translate-y-1/2 left-3 text-[#4CAF50]" />
           <input
             type={showPassword ? 'text' : 'password'}
             name="password"
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
-            className={`${inputBase} pl-10 pr-10 py-3`}
+            className="w-full rounded-lg bg-[#333333] text-[#FAFAFA] placeholder-[#4CAF50] focus:outline-none focus:ring-2 focus:ring-[#4CAF50] pl-10 pr-10 py-3"
             required
           />
           <button
             type="button"
             onClick={toggleShowPassword}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-400"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#4CAF50]"
             aria-label={showPassword ? 'Hide password' : 'Show password'}
           >
             {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -161,9 +161,9 @@ const Login = ({ onLoginSuccess, onClose }) => {
               name="rememberMe"
               checked={formData.rememberMe}
               onChange={handleChange}
-              className="form-checkbox h-5 w-5 text-amber-600 bg-[#2D1B0E] border-amber-400 rounded focus:ring-amber-600"
+              className="form-checkbox h-5 w-5 text-[#4CAF50] bg-[#333333] border-[#4CAF50] rounded focus:ring-[#4CAF50]"
             />
-            <span className="ml-2 text-amber-100">Remember me</span>
+            <span className="ml-2 text-[#FAFAFA]">Remember me</span>
           </label>
         </div>
 
@@ -171,11 +171,11 @@ const Login = ({ onLoginSuccess, onClose }) => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 bg-gradient-to-r from-amber-400 to-amber-600 text-[#2D1B0E] font-bold rounded-lg flex items-center justify-center gap-2 hover:scale-105 transition-transform disabled:opacity-50"
+          className="w-full py-3 bg-gradient-to-r from-[#4CAF50] to-[#388E3C] text-[#FAFAFA] font-bold rounded-lg flex items-center justify-center gap-2 hover:scale-105 transition-transform disabled:opacity-50"
         >
           {loading ? (
             <span className="flex items-center">
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-[#2D1B0E]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-[#FAFAFA]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
@@ -194,16 +194,16 @@ const Login = ({ onLoginSuccess, onClose }) => {
         <Link
           to="/signup"
           onClick={onClose}
-          className="inline-flex items-center gap-2 text-amber-400 hover:text-amber-600 transition-colors"
+          className="inline-flex items-center gap-2 text-[#4CAF50] hover:text-[#F4D03F] transition-colors"
         >
           <FaUserPlus /> Create New Account
         </Link>
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-amber-900/30"></div>
+            <div className="w-full border-t border-[#333333]/30"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-[#3a2b2b] text-amber-100/70">Or continue with</span>
+            <span className="px-2 bg-[#333333] text-[#FAFAFA]/70">Or continue with</span>
           </div>
         </div>
         <div>
@@ -212,7 +212,7 @@ const Login = ({ onLoginSuccess, onClose }) => {
               onClose && onClose();
               navigate('/phone-login');
             }}
-            className="inline-flex items-center gap-2 text-amber-400 hover:text-amber-600 transition-colors"
+            className="inline-flex items-center gap-2 text-[#4CAF50] hover:text-[#F4D03F] transition-colors"
           >
             <FaPhone /> Login with Phone Number
           </button>

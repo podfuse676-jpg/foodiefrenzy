@@ -21,28 +21,28 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-[#2D1B0E] text-[#fff7ed] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <footer className="bg-[#333333] text-[#FAFAFA] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mb-12">
           {/* Left Column */}
           <div className="space-y-6">
             <div className="flex items-center space-x-3">
               {/* Circular logo with zoomed image - 90% zoom */}
-              <div className="rounded-full border-2 border-[#f59e0b] p-1.5 bg-[#fff7ed]">
+              <div className="rounded-full border-2 border-[#4CAF50] p-1.5 bg-[#FAFAFA]">
                 <img src={LakeshoreLogo} alt="Lakeshore Convenience" className="h-14 w-14 rounded-full object-contain scale-90" />
               </div>
-              <h2 className="text-4xl sm:text-5xl md:text-5xl font-bold font-sacramento text-[#f59e0b] animate-pulse">
+              <h2 className="text-4xl sm:text-5xl md:text-5xl font-bold font-sacramento text-[#4CAF50] animate-pulse">
                 Lakeshore Convenience
               </h2>
             </div>
-            <p className="text-[#fff7ed]/90 text-sm font-sacramento italic">
-              Where culinary artistry meets doorstep convenience.<br />
-              Savor handcrafted perfection, delivered with care.
+            <p className="text-[#FAFAFA]/90 text-sm font-sacramento italic">
+              Your trusted grocery partner.<br />
+              Fresh produce and quality goods delivered to your door.
             </p>
             <form onSubmit={handleSubmit} className="relative mt-4 group">
               <div className="flex items-center gap-2 mb-2">
-                <FaRegEnvelope className="text-[#0ea5a4] animate-pulse" />
-                <span className="font-bold text-[#0ea5a4]">Get Exclusive Offers</span>
+                <FaRegEnvelope className="text-[#4CAF50] animate-pulse" />
+                <span className="font-bold text-[#4CAF50]">Get Exclusive Offers</span>
               </div>
               <div className="relative">
                 <input
@@ -50,18 +50,18 @@ const Footer = () => {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="Enter your email..."
-                  className="w-full px-4 py-2.5 rounded-lg bg-[#fff7ed]/5 border-2 border-[#0ea5a4]/30 focus:outline-none focus:border-[#0ea5a4] focus:ring-4 focus:ring-[#0ea5a4]/20 transition-all duration-300 placeholder-[#fff7ed]/50 pr-24"
+                  className="w-full px-4 py-2.5 rounded-lg bg-[#FAFAFA]/5 border-2 border-[#4CAF50]/30 focus:outline-none focus:border-[#4CAF50] focus:ring-4 focus:ring-[#4CAF50]/20 transition-all duration-300 placeholder-[#FAFAFA]/50 pr-24"
                   required
                 />
                 <button
                   type="submit"
-                  className="absolute right-1 top-1 bg-gradient-to-br from-[#f59e0b] via-[#d97706] to-[#f59e0b] text-[#2D1B0E] px-4 py-2 rounded-full flex items-center gap-1.5 shadow-lg hover:shadow-[#fff7ed]/30 overflow-hidden transition-all duration-500"
+                  className="absolute right-1 top-1 bg-gradient-to-br from-[#4CAF50] via-[#388E3C] to-[#4CAF50] text-[#FAFAFA] px-4 py-2 rounded-full flex items-center gap-1.5 shadow-lg hover:shadow-[#FAFAFA]/30 overflow-hidden transition-all duration-500"
                 >
                   <span className="font-bold text-sm tracking-wide transition-transform duration-300 group-hover:-translate-x-1">
                     Join Now
                   </span>
                   <BiChevronRight className="text-xl transition-transform duration-300 group-hover:animate-spin flex-shrink-0" />
-                  <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[#fff7ed]/30 to-transparent group-hover:translate-x-full transition-transform duration-700"></span>
+                  <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[#FAFAFA]/30 to-transparent group-hover:translate-x-full transition-transform duration-700"></span>
                 </button>
               </div>
             </form>
@@ -70,14 +70,14 @@ const Footer = () => {
           {/* Middle Column */}
           <div className="flex justify-center">
             <div className="space-y-4">
-              <h3 className="text-xl font-semibold mb-4 border-l-4 border-[#0ea5a4] pl-3 font-merriweather italic text-[#f59e0b]">
+              <h3 className="text-xl font-semibold mb-4 border-l-4 border-[#4CAF50] pl-3 font-merriweather italic text-[#4CAF50]">
                 Navigation
               </h3>
               <ul className="space-y-3">
                 {navItems.map(item => (
                   <li key={item.name}>
-                    <a href={item.link} className="flex items-center hover:text-[#0ea5a4] transition-all group font-lora hover:pl-2">
-                      <BiChevronRight className="mr-2 text-[#0ea5a4] group-hover:animate-bounce" />
+                    <a href={item.link} className="flex items-center hover:text-[#4CAF50] transition-all group font-lora hover:pl-2">
+                      <BiChevronRight className="mr-2 text-[#4CAF50] group-hover:animate-bounce" />
                       <span className="hover:italic">{item.name}</span>
                     </a>
                   </li>
@@ -89,7 +89,7 @@ const Footer = () => {
           {/* Right Column */}
           <div className="flex justify-center md:justify-end">
             <div className="space-y-4">
-              <h3 className="text-xl font-semibold mb-4 border-l-4 border-[#0ea5a4] pl-3 font-merriweather italic text-[#f59e0b]">
+              <h3 className="text-xl font-semibold mb-4 border-l-4 border-[#4CAF50] pl-3 font-merriweather italic text-[#4CAF50]">
                 Social Connect
               </h3>
               <div className="flex space-x-4">
@@ -99,11 +99,11 @@ const Footer = () => {
                     href={link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-2xl bg-[#0ea5a4]/10 p-3 rounded-full hover:bg-[#0ea5a4]/20 hover:scale-110 transition-all duration-300 relative group"
+                    className="text-2xl bg-[#4CAF50]/10 p-3 rounded-full hover:bg-[#4CAF50]/20 hover:scale-110 transition-all duration-300 relative group"
                     style={{ color }}
                   >
                     <Icon className="hover:scale-125 transition-transform" />
-                    <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-[#f59e0b] text-[#2D1B0E] px-2 py-1 rounded text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-[#4CAF50] text-[#333333] px-2 py-1 rounded text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">
                       {label}
                     </span>
                   </a>
@@ -114,8 +114,8 @@ const Footer = () => {
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-[#0ea5a4]/30 pt-8 mt-8 text-center">
-          <p className="text-[#f59e0b] text-lg mb-2 font-playfair">
+        <div className="border-t border-[#4CAF50]/30 pt-8 mt-8 text-center">
+          <p className="text-[#4CAF50] text-lg mb-2 font-playfair">
             © 2025 Lakeshore Convenience. All rights reserved.
           </p>
           <div className="group inline-block">
@@ -123,7 +123,7 @@ const Footer = () => {
               href="https://hexagondigitalservices.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-lg font-sacramento bg-gradient-to-r from-[#f59e0b] via-[#d97706] to-[#f59e0b] bg-clip-text text-transparent hover:text-[#0ea5a4] transition-all duration-500"
+              className="text-lg font-sacramento bg-gradient-to-r from-[#4CAF50] via-[#388E3C] to-[#4CAF50] bg-clip-text text-transparent hover:text-[#F4D03F] transition-all duration-500"
             >
               Designed by Yapa Digital Services
             </a>

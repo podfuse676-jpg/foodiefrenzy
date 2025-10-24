@@ -10,7 +10,7 @@ import {
   FiKey,
   FiPackage
 } from 'react-icons/fi';
-import { GiForkKnifeSpoon } from 'react-icons/gi';
+import { FaShoppingBasket, FaLeaf, FaCarrot, FaAppleAlt, FaUserFriends } from 'react-icons/fa';
 // Fixed the import path for SVG in Vite
 import LakeshoreLogo from '../../assets/lakeshore-logo.png';
 import Login from '../Login/Login';
@@ -49,7 +49,7 @@ const Navbar = () => {
 
   const navLinks = [
     { name: 'Home', href: '/', icon: <FiHome /> },
-    { name: 'Menu', href: '/menu', icon: <FiBook /> },
+    { name: 'Grocery', href: '/menu', icon: <FaShoppingBasket /> },
     { name: 'About', href: '/about', icon: <FiStar /> },
     { name: 'Contact', href: '/contact', icon: <FiPhone /> },
     ...(isAuthenticated ? [
@@ -90,9 +90,9 @@ const Navbar = () => {
     return isAuthenticated ? (
       <button
         onClick={handleLogout}
-        className="px-3 lg:px-4 py-1.5 lg:py-2 bg-gradient-to-br from-amber-500 to-amber-700 text-[#2D1B0E] 
-          rounded-2xl font-bold hover:shadow-lg hover:shadow-amber-600/40 transition-all 
-          border-2 border-amber-600/20 flex items-center space-x-2 shadow-md shadow-amber-900/20 text-sm"
+        className="px-3 lg:px-4 py-1.5 lg:py-2 bg-gradient-to-br from-[#4CAF50] to-[#388E3C] text-[#FAFAFA] 
+          rounded-2xl font-bold hover:shadow-lg hover:shadow-[#4CAF50]/40 transition-all 
+          border-2 border-[#4CAF50]/20 flex items-center space-x-2 shadow-md shadow-[#333333]/20 text-sm"
       >
         <FiLogOut className="text-base lg:text-lg" />
         <span>Logout</span>
@@ -100,9 +100,9 @@ const Navbar = () => {
     ) : (
       <button
         onClick={() => navigate('/login')}
-        className="px-3 lg:px-4 py-1.5 lg:py-2 bg-gradient-to-br from-amber-400 to-amber-600 text-[#2D1B0E] 
-          rounded-2xl font-bold hover:shadow-lg hover:shadow-amber-500/40 transition-all 
-          border-2 border-amber-500/20 flex items-center space-x-2 shadow-md shadow-amber-900/20 text-sm"
+        className="px-3 lg:px-4 py-1.5 lg:py-2 bg-gradient-to-br from-[#4CAF50] to-[#388E3C] text-[#FAFAFA] 
+          rounded-2xl font-bold hover:shadow-lg hover:shadow-[#4CAF50]/40 transition-all 
+          border-2 border-[#4CAF50]/20 flex items-center space-x-2 shadow-md shadow-[#333333]/20 text-sm"
       >
         <FiKey className="text-base lg:text-lg" />
         <span>Login</span>
@@ -114,7 +114,7 @@ const Navbar = () => {
     return isAuthenticated ? (
       <button
         onClick={handleLogout}
-        className="w-full px-4 py-3 bg-gradient-to-br from-amber-500 to-amber-700 text-[#2D1B0E] rounded-xl font-semibold flex items-center justify-center space-x-2"
+        className="w-full px-4 py-3 bg-gradient-to-br from-[#4CAF50] to-[#388E3C] text-[#FAFAFA] rounded-xl font-semibold flex items-center justify-center space-x-2"
       >
         <FiLogOut className="text-lg" />
         <span>Logout</span>
@@ -125,7 +125,7 @@ const Navbar = () => {
           navigate('/login');
           setIsOpen(false);
         }}
-        className="w-full px-4 py-3 bg-gradient-to-br from-amber-400 to-amber-600 text-[#2D1B0E] rounded-xl font-semibold flex items-center justify-center space-x-2"
+        className="w-full px-4 py-3 bg-gradient-to-br from-[#4CAF50] to-[#388E3C] text-[#FAFAFA] rounded-xl font-semibold flex items-center justify-center space-x-2"
       >
         <FiKey className="text-lg" />
         <span>Login</span>
@@ -134,12 +134,17 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-[#2D1B0E] border-b-8 border-amber-900/40 shadow-[0_25px_50px_-12px] shadow-amber-900/30 sticky top-0 z-50 font-vibes">
+    <nav className="bg-[#333333] border-b-8 border-[#4CAF50]/40 shadow-[0_25px_50px_-12px] shadow-[#4CAF50]/30 sticky top-0 z-50 font-vibes">
       <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-full max-w-7xl px-4">
-        <div className="h-[6px] bg-gradient-to-r from-transparent via-amber-600/50 to-transparent shadow-[0_0_20px] shadow-amber-500/30"></div>
+        <div className="h-[6px] bg-gradient-to-r from-transparent via-[#4CAF50]/50 to-transparent shadow-[0_0_20px] shadow-[#4CAF50]/30"></div>
         <div className="flex justify-between px-6">
-          <GiForkKnifeSpoon className="text-amber-500/40 -mt-4 -ml-2 rotate-45" size={32} />
-          <GiForkKnifeSpoon className="text-amber-500/40 -mt-4 -mr-2 -rotate-45" size={32} />
+          {/* Replace fork icons with grocery-related icons */}
+          <svg className="text-[#4CAF50]/40 -mt-4 -ml-2" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 3v18M8 7l4-4 4 4M8 17l4 4 4-4" />
+          </svg>
+          <svg className="text-[#4CAF50]/40 -mt-4 -mr-2" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 3v18M8 7l4-4 4 4M8 17l4 4 4-4" />
+          </svg>
         </div>
       </div>
 
@@ -148,17 +153,17 @@ const Navbar = () => {
           {/* Logo Section */}
           <div className="flex-shrink-0 flex items-center space-x-3 group">
             {/* Logo in a circle with matching border - 90% zoom */}
-            <div className="rounded-full border-2 border-[#f59e0b] p-1 bg-[#fff7ed]">
+            <div className="rounded-full border-2 border-[#4CAF50] p-1 bg-[#FAFAFA]">
               <img src={LakeshoreLogo} alt="Lakeshore Convenience" className="h-12 w-12 rounded-full object-contain scale-90" />
             </div>
             <div className="flex flex-col ml-1 md:ml-2">
               <NavLink
                 to="/"
-                className="text-3xl font-bold bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent whitespace-nowrap"
+                className="text-3xl font-bold bg-gradient-to-r from-[#4CAF50] to-[#F4D03F] bg-clip-text text-transparent whitespace-nowrap"
               >
                 Lakeshore Convenience
               </NavLink>
-              <div className="h-[3px] bg-gradient-to-r from-amber-600/30 via-amber-400/50 to-amber-600/30 w-full mt-1" />
+              <div className="h-[3px] bg-gradient-to-r from-[#4CAF50]/30 via-[#F4D03F]/50 to-[#4CAF50]/30 w-full mt-1" />
             </div>
           </div>
 
@@ -170,21 +175,21 @@ const Navbar = () => {
                 to={link.href}
                 className={({ isActive }) =>
                   `px-2 xl:px-4 py-2 flex items-center space-x-2 rounded-3xl border-2 transition-colors text-sm xl:text-base
-                  ${isActive ? 'bg-amber-900/20 border-amber-600/50' : 'border-transparent hover:border-amber-600/50'}`
+                  ${isActive ? 'bg-[#4CAF50]/20 border-[#4CAF50]/50' : 'border-transparent hover:border-[#4CAF50]/50'}`
                 }
               >
-                <span className="text-amber-500">{link.icon}</span>
-                <span className="text-amber-100">{link.name}</span>
+                <span className="text-[#4CAF50]">{link.icon}</span>
+                <span className="text-[#FAFAFA]">{link.name}</span>
               </NavLink>
             ))}
             <div className="flex items-center space-x-2 xl:space-x-4 ml-2 xl:ml-4">
               <NavLink
                 to="/cart"
-                className="p-2 relative text-amber-100 hover:text-amber-300 transition-colors"
+                className="p-2 relative text-[#FAFAFA] hover:text-[#F4D03F] transition-colors"
               >
                 <FiShoppingCart className="text-lg xl:text-xl" />
                 {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-amber-600 text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-[#E74C3C] text-xs w-5 h-5 rounded-full flex items-center justify-center">
                     {totalItems}
                   </span>
                 )}
@@ -197,7 +202,7 @@ const Navbar = () => {
           <div className="lg:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-amber-500 hover:text-amber-300 p-2 rounded-xl border-2 border-amber-900/30 transition-colors"
+              className="text-[#4CAF50] hover:text-[#F4D03F] p-2 rounded-xl border-2 border-[#333333]/30 transition-colors"
             >
               <div className="space-y-2">
                 <span className={`block w-6 h-0.5 bg-current transition-transform ${isOpen ? 'rotate-45 translate-y-2' : ''}`} />
@@ -211,7 +216,7 @@ const Navbar = () => {
 
       {/* Mobile/Tablet Menu */}
       {isOpen && (
-        <div className="lg:hidden bg-[#2D1B0E] border-t-4 border-amber-900/40">
+        <div className="lg:hidden bg-[#333333] border-t-4 border-[#4CAF50]/40">
           <div className="px-4 py-4 space-y-3">
             {navLinks.map((link) => (
               <NavLink
@@ -220,24 +225,24 @@ const Navbar = () => {
                 onClick={() => setIsOpen(false)}
                 className={({ isActive }) =>
                   `flex items-center space-x-3 px-4 py-3 rounded-xl ${
-                    isActive ? 'bg-amber-600/30 text-amber-400' : 'text-amber-100 hover:bg-amber-600/20'
+                    isActive ? 'bg-[#4CAF50]/30 text-[#F4D03F]' : 'text-[#FAFAFA] hover:bg-[#4CAF50]/20'
                   }`
                 }
               >
-                <span className="text-amber-500">{link.icon}</span>
+                <span className="text-[#4CAF50]">{link.icon}</span>
                 <span>{link.name}</span>
               </NavLink>
             ))}
-            <div className="pt-4 border-t border-amber-900/40 space-y-3">
+            <div className="pt-4 border-t border-[#4CAF50]/40 space-y-3">
               <NavLink
                 to="/cart"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center justify-center space-x-2 px-4 py-3 text-amber-100 hover:bg-amber-600/20 rounded-xl"
+                className="flex items-center justify-center space-x-2 px-4 py-3 text-[#FAFAFA] hover:bg-[#4CAF50]/20 rounded-xl"
               >
                 <FiShoppingCart />
                 <span>Cart</span>
                 {totalItems > 0 && (
-                  <span className="bg-amber-600 text-xs px-2 py-1 rounded-full">
+                  <span className="bg-[#E74C3C] text-xs px-2 py-1 rounded-full">
                     {totalItems}
                   </span>
                 )}
@@ -251,15 +256,15 @@ const Navbar = () => {
       {/* Login Modal */}
       {showLoginModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-br from-[#2D1B0E] to-[#4a372a] rounded-xl p-8 w-full max-w-md relative border-4 border-amber-700/30">
+          <div className="bg-gradient-to-br from-[#333333] to-[#4a4a4a] rounded-xl p-8 w-full max-w-md relative border-4 border-[#4CAF50]/30">
             <button
               onClick={() => navigate('/')}
-              className="absolute top-4 right-4 text-amber-500 hover:text-amber-300 text-2xl"
+              className="absolute top-4 right-4 text-[#4CAF50] hover:text-[#F4D03F] text-2xl"
             >
               &times;
             </button>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent mb-6 text-center">
-              Foodie-Frenzy
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-[#4CAF50] to-[#F4D03F] bg-clip-text text-transparent mb-6 text-center">
+              Lakeshore Convenience
             </h2>
             <Login onLoginSuccess={handleLoginSuccess} onClose={() => navigate('/')} />
           </div>

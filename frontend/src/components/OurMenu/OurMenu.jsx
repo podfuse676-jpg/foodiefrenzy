@@ -3,11 +3,12 @@ import axios from 'axios';
 import { useCart } from '../../CartContext/CartContext';
 import MenuItem from './MenuItem';
 import apiConfig from '../../utils/apiConfig';
+import './Om.css';
 
 const OurMenu = () => {
   const [menuData, setMenuData] = useState({});
   const [categories, setCategories] = useState([]);
-  const [activeCategory, setActiveCategory] = useState('Convenience');
+  const [activeCategory, setActiveCategory] = useState('Fruits');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -43,20 +44,20 @@ const OurMenu = () => {
         
         // Extract all categories from the data
         const allCategories = Object.keys(organizedData).filter(cat => cat !== 'Uncategorized');
-        // Put Convenience and Food first, then other categories
+        // Put Fruits and Vegetables first, then other categories
         const sortedCategories = [
-          ...allCategories.filter(c => c === 'Convenience' || c === 'Food').sort(),
-          ...allCategories.filter(c => c !== 'Convenience' && c !== 'Food').sort()
+          ...allCategories.filter(c => c === 'Fruits' || c === 'Vegetables').sort(),
+          ...allCategories.filter(c => c !== 'Fruits' && c !== 'Vegetables').sort()
         ].filter(cat => organizedData[cat] && organizedData[cat].length > 0);
-        
-        // If no categories found, use default ones
-        const finalCategories = sortedCategories.length > 0 ? sortedCategories : ['Convenience', 'Food'];
-        
+
+        // If no categories found, use default grocery categories
+        const finalCategories = sortedCategories.length > 0 ? sortedCategories : ['Fruits', 'Vegetables', 'Dairy', 'Snacks', 'Beverages', 'Essentials'];
+
         setCategories(finalCategories);
-        
+
         // Set active category to the first available one if current active category doesn't exist
         if (!organizedData[activeCategory] || organizedData[activeCategory].length === 0) {
-          setActiveCategory(finalCategories[0] || 'Convenience');
+          setActiveCategory(finalCategories[0] || 'Fruits');
         }
         
         console.log('Successfully loaded items from database:', {
@@ -96,20 +97,20 @@ const OurMenu = () => {
   
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-[#fff7ed] via-[#fef3e5] to-[#fde9d0] min-h-screen pt-32 pb-16 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-        <p className="text-[#2D1B0E]/80 text-xl font-cinzel">Loading menu items...</p>
+      <div className="bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] min-h-screen pt-32 pb-16 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+        <p className="text-[#333333]/80 text-xl font-cinzel">Loading grocery items...</p>
       </div>
     );
   }
-  
+
   if (error) {
     return (
-      <div className="bg-gradient-to-br from-[#fff7ed] via-[#fef3e5] to-[#fde9d0] min-h-screen pt-32 pb-16 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+      <div className="bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] min-h-screen pt-32 pb-16 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-[#2D1B0E]/80 text-xl font-cinzel mb-4">{error}</p>
+          <p className="text-[#333333]/80 text-xl font-cinzel mb-4">{error}</p>
           <button 
             onClick={() => window.location.reload()}
-            className="bg-[#0ea5a4]/40 px-6 py-2 rounded-full font-cinzel text-sm uppercase hover:bg-[#0ea5a4]/50 transition duration-300 text-[#2D1B0E]"
+            className="bg-[#4CAF50]/40 px-6 py-2 rounded-full font-cinzel text-sm uppercase hover:bg-[#4CAF50]/50 transition duration-300 text-[#333333]"
           >
             Retry
           </button>
@@ -119,15 +120,15 @@ const OurMenu = () => {
   }
   
   return (
-    <div className="bg-gradient-to-br from-[#fff7ed] via-[#fef3e5] to-[#fde9d0] min-h-screen pt-32 pb-16 px-4 sm:px-6 lg:px-8">
+    <div className="bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] min-h-screen pt-32 pb-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Title */}
-        <h2 className="text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-[#f59e0b] via-[#d97706] to-[#f59e0b]">
+        <h2 className="text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-[#4CAF50] via-[#F4D03F] to-[#4CAF50]">
           <span className="font-dancingscript block text-5xl sm:text-6xl md:text-7xl mb-2">
-            Our Exquisite Menu
+            Our Grocery Selection
           </span>
-          <span className="block text-xl sm:text-2xl md:text-3xl font-cinzel mt-4 text-[#2D1B0E]/80">
-            A Symphony of Flavors
+          <span className="block text-xl sm:text-2xl md:text-3xl font-cinzel mt-4 text-[#333333]/80">
+            Fresh & Quality Products
           </span>
         </h2>
         
@@ -136,22 +137,22 @@ const OurMenu = () => {
           <div className="relative">
             <input
               type="text"
-              placeholder="Search menu items..."
+              placeholder="Search grocery items..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-6 py-4 rounded-full bg-white/20 border-2 border-[#f59e0b]/30 text-[#2D1B0E] placeholder-[#2D1B0E]/50 focus:outline-none focus:border-[#0ea5a4] focus:bg-white/30 transition-all font-cinzel"
+              className="w-full px-6 py-4 rounded-full bg-[#FAFAFA]/20 border-2 border-[#4CAF50]/30 text-[#333333] placeholder-[#333333]/50 focus:outline-none focus:border-[#4CAF50] focus:bg-[#FAFAFA]/30 transition-all font-cinzel"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#2D1B0E]/70 hover:text-[#2D1B0E] transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#333333]/70 hover:text-[#333333] transition-colors"
               >
                 ✕
               </button>
             )}
           </div>
           {searchQuery && (
-            <p className="text-center mt-3 text-[#2D1B0E]/60 font-cinzel text-sm">
+            <p className="text-center mt-3 text-[#333333]/60 font-cinzel text-sm">
               Found {displayItems.length} item{displayItems.length !== 1 ? 's' : ''} matching "{searchQuery}"
             </p>
           )}
@@ -166,15 +167,15 @@ const OurMenu = () => {
                 onClick={() => setActiveCategory(cat)}
                 className={`px-4 sm:px-6 py-2 rounded-full border-2 transition-all duration-300 transform font-cinzel text-sm sm:text-lg tracking-widest backdrop-blur-sm ${
                   activeCategory === cat
-                    ? 'bg-gradient-to-br from-[#0ea5a4]/80 to-[#f59e0b]/80 border-[#0ea5a4] scale-105 shadow-xl shadow-[#0ea5a4]/30 text-[#2D1B0E]'
-                    : 'bg-white/20 border-[#f59e0b]/30 text-[#2D1B0E]/80 hover:bg-white/40 hover:scale-95'
+                    ? 'bg-gradient-to-br from-[#4CAF50]/80 to-[#388E3C]/80 border-[#4CAF50] scale-105 shadow-xl shadow-[#4CAF50]/30 text-[#FAFAFA]'
+                    : 'bg-[#4CAF50]/20 border-[#4CAF50]/30 text-[#FAFAFA]/80 hover:bg-[#4CAF50]/40 hover:scale-95'
                 }`}
               >
                 {cat}
               </button>
             ))
           ) : (
-            <p className="text-[#2D1B0E]/80 font-cinzel">No categories available</p>
+            <p className="text-[#333333]/80 font-cinzel">No categories available</p>
           )}
         </div>
         
@@ -205,7 +206,7 @@ const OurMenu = () => {
             })
           ) : (
             <div className="col-span-full text-center py-12">
-              <p className="text-[#2D1B0E]/80 text-xl font-cinzel">
+              <p className="text-[#333333]/80 text-xl font-cinzel">
                 No items found in this category.
               </p>
             </div>
