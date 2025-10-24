@@ -170,7 +170,7 @@ const OurMenu = () => {
                 className={`px-4 sm:px-6 py-2 rounded-full border-2 transition-all duration-300 transform font-cinzel text-sm sm:text-lg tracking-widest backdrop-blur-sm ${
                   activeCategory === cat
                     ? 'bg-gradient-to-br from-[#4CAF50]/80 to-[#388E3C]/80 border-[#4CAF50] scale-105 shadow-xl shadow-[#4CAF50]/30 text-[#FAFAFA]'
-                    : 'bg-[#4CAF50]/20 border-[#4CAF50]/30 text-[#FAFAFA]/80 hover:bg-[#4CAF50]/40 hover:scale-95'
+                    : 'bg-[#4CAF50]/20 border-[#4CAF50]/30 text-[#333333] hover:bg-[#4CAF50]/40 hover:scale-95'
                 }`}
               >
                 {cat}
