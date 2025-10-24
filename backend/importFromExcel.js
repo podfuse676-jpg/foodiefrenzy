@@ -2,16 +2,22 @@ import mongoose from 'mongoose';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import Item from './modals/item.js';
+import { connectDB } from './config/db.js'; // Use the shared DB connection
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const execAsync = promisify(exec);
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/foodiefrenzy')
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => {
-    console.error('MongoDB connection error:', err);
-    process.exit(1);
-  });
+// Connect to MongoDB using the shared configuration
+connectDB().then(() => {
+  console.log('Connected to MongoDB');
+}).catch(err => {
+  console.error('MongoDB connection error:', err);
+  process.exit(1);
+});
 
 // Function to process Excel files using Python
 const processExcelFiles = async () => {
@@ -25,12 +31,14 @@ import json
 import sys
 import os
 
-# Change to parent directory where Excel files are located
-os.chdir('..')
+# Get the correct path to the Excel files
+excel_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 
 # Read convenience items
 try:
-    df_conv = pd.read_excel('lakeshore convenience item.xlsx')
+    convenience_file = os.path.join(excel_dir, 'lakeshore convenience item.xlsx')
+    print(f"Looking for convenience file at: {convenience_file}", file=sys.stderr)
+    df_conv = pd.read_excel(convenience_file)
     
     # Clean and process convenience items
     convenience_items = []
@@ -57,7 +65,9 @@ except Exception as e:
 
 # Read food menu items
 try:
-    df_food = pd.read_excel('lakeshore food menu.xlsx')
+    food_file = os.path.join(excel_dir, 'lakeshore food menu.xlsx')
+    print(f"Looking for food file at: {food_file}", file=sys.stderr)
+    df_food = pd.read_excel(food_file)
     
     # Clean and process food items
     food_items = []
@@ -138,10 +148,11 @@ print(json.dumps(all_items, indent=2))
 
     // Write Python script to a temporary file
     const fs = await import('fs');
-    fs.writeFileSync('temp_process_excel.py', pythonScript);
+    const tempScriptPath = path.join(__dirname, 'temp_process_excel.py');
+    fs.writeFileSync(tempScriptPath, pythonScript);
     
     // Execute Python script using the virtual environment
-    const { stdout, stderr } = await execAsync('cd .. && source venv/bin/activate && cd backend && python3 temp_process_excel.py')
+    const { stdout, stderr } = await execAsync('cd "' + __dirname + '" && source ../venv/bin/activate && python3 temp_process_excel.py')
     
     if (stderr) {
       console.log('Python script logs:', stderr);
@@ -150,10 +161,10 @@ print(json.dumps(all_items, indent=2))
     // Parse the JSON output
     const items = JSON.parse(stdout);
     
-    console.log(`Total items to import: ${items.length}`);
+    console.log('Total items to import: ' + items.length);
     
     // Clean up temp file
-    fs.unlinkSync('temp_process_excel.py');
+    fs.unlinkSync(tempScriptPath);
     
     return items;
     
@@ -174,7 +185,7 @@ const importItems = async () => {
       process.exit(0);
     }
     
-    console.log(`Importing ${items.length} items to MongoDB...`);
+    console.log('Importing ' + items.length + ' items to MongoDB...');
     
     // Import items one by one, handling duplicates
     let addedCount = 0;
@@ -197,24 +208,24 @@ const importItems = async () => {
             { new: true }
           );
           updatedCount++;
-          console.log(`Updated: ${itemData.name} (${itemData.category})`);
+          console.log('Updated: ' + itemData.name + ' (' + itemData.category + ')');
         } else {
           // Create new item
           await Item.create(itemData);
           addedCount++;
-          console.log(`Added: ${itemData.name} (${itemData.category})`);
+          console.log('Added: ' + itemData.name + ' (' + itemData.category + ')');
         }
       } catch (error) {
         errorCount++;
-        console.error(`Error processing ${itemData.name} in ${itemData.category}:`, error.message);
+        console.error('Error processing ' + itemData.name + ' in ' + itemData.category + ':', error.message);
       }
     }
     
     console.log('\n=== Import Summary ===');
-    console.log(`Total items processed: ${items.length}`);
-    console.log(`Items added: ${addedCount}`);
-    console.log(`Items updated: ${updatedCount}`);
-    console.log(`Errors: ${errorCount}`);
+    console.log('Total items processed: ' + items.length);
+    console.log('Items added: ' + addedCount);
+    console.log('Items updated: ' + updatedCount);
+    console.log('Errors: ' + errorCount);
     
     process.exit(0);
   } catch (error) {
