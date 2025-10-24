@@ -44,10 +44,12 @@ const OurMenu = () => {
         
         // Extract all categories from the data
         const allCategories = Object.keys(organizedData).filter(cat => cat !== 'Uncategorized');
-        // Put Fruits and Vegetables first, then other categories
+        // Put grocery categories first, then other categories
+        const groceryCategories = ['Fruits', 'Vegetables', 'Dairy', 'Beverages', 'Snacks', 'Essentials'];
+        const otherCategories = allCategories.filter(c => !groceryCategories.includes(c)).sort();
         const sortedCategories = [
-          ...allCategories.filter(c => c === 'Fruits' || c === 'Vegetables').sort(),
-          ...allCategories.filter(c => c !== 'Fruits' && c !== 'Vegetables').sort()
+          ...groceryCategories.filter(c => organizedData[c] && organizedData[c].length > 0),
+          ...otherCategories
         ].filter(cat => organizedData[cat] && organizedData[cat].length > 0);
 
         // If no categories found, use default grocery categories

@@ -2,22 +2,29 @@ import mongoose from 'mongoose';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import Item from './modals/item.js';
-import { connectDB } from './config/db.js'; // Use the shared DB connection
+import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
+// Load environment variables
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const execAsync = promisify(exec);
 
-// Connect to MongoDB using the shared configuration
-connectDB().then(() => {
-  console.log('Connected to MongoDB');
-}).catch(err => {
-  console.error('MongoDB connection error:', err);
-  process.exit(1);
-});
+// Connect to MongoDB using the Atlas database
+const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/foodiefrenzy';
+
+console.log('Connecting to MongoDB Atlas:', mongoURI.replace(/:[^:@]+@/, ':****@'));
+
+mongoose.connect(mongoURI)
+  .then(() => console.log('Connected to MongoDB Atlas'))
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
 
 // Function to process Excel files using Python
 const processExcelFiles = async () => {
@@ -185,7 +192,7 @@ const importItems = async () => {
       process.exit(0);
     }
     
-    console.log('Importing ' + items.length + ' items to MongoDB...');
+    console.log('Importing ' + items.length + ' items to MongoDB Atlas...');
     
     // Import items one by one, handling duplicates
     let addedCount = 0;
