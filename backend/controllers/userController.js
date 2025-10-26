@@ -1,9 +1,8 @@
 import userModel from "../modals/userModel.js";
+import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import bcrypt from 'bcrypt'
-import validator from 'validator'
-import { CartItem } from '../modals/cartItem.js';
-import mongoose from 'mongoose';
+import User from '../modals/userModel.js'
+import asyncHandler from 'express-async-handler'
 
 // LOGIN USER
 const loginUser = async (req, res) => {

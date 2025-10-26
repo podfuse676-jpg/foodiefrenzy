@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import User from './modals/userModel.js';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';

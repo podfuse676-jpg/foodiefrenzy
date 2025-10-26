@@ -360,7 +360,7 @@ app.post('/create-admin', async (req, res) => {
     console.log('Creating admin user...');
     
     // Import required modules
-    const bcrypt = (await import('bcrypt')).default;
+    const bcrypt = (await import('bcryptjs')).default;
     const User = (await import('./modals/userModel.js')).default;
     
     // Check if admin already exists
@@ -453,7 +453,7 @@ app.post('/reset-admin-password', async (req, res) => {
     console.log('Resetting admin password...');
     
     // Import required modules
-    const bcrypt = (await import('bcrypt')).default;
+    const bcrypt = (await import('bcryptjs')).default;
     const User = (await import('./modals/userModel.js')).default;
     
     // Find the admin user
