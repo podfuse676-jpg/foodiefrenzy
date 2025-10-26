@@ -61,9 +61,10 @@ const VerifyPaymentPage = () => {
     }, [search, clearCart, navigate, authHeaders]);
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-[#1a1212] to-[#2a1e1e] flex items-center justify-center text-white">
-            <div className="text-center p-8 bg-[#4b3b3b]/80 rounded-3xl">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-amber-500 mx-auto mb-4"></div>
+        // Updated to light fresh colors
+        <div className="min-h-screen bg-gradient-to-b from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] flex items-center justify-center text-gray-800">
+            <div className="text-center p-8 bg-white/80 rounded-3xl border-2 border-[#8BC34A]/30">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#8BC34A] mx-auto mb-4"></div>
                 <p className="text-xl">{statusMsg}</p>
             </div>
         </div>

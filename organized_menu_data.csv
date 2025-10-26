@@ -1,0 +1,99 @@
+Category,Item Name,Size/Variant,Price,GST,Customization/Flavour
+Hot Beverages,Coffee,Small,2.09,5,Hazelnut|Vanilla|Caramel
+Hot Beverages,Coffee,Medium,2.59,5,Hazelnut|Vanilla|Caramel
+Hot Beverages,Coffee,Large,2.99,5,Hazelnut|Vanilla|Caramel
+Hot Beverages,Cappuccino,Regular,2.99,5,Add cinnamon dust
+Hot Beverages,Latte,Regular,2.79,5,Add Vanilla|Soy Milk
+Hot Beverages,Mocha,Regular,2.99,5,Add chocolate drizzle
+Hot Beverages,Hot Chocolate,Regular,3.29,5,Marshmallow|Whipped Cream
+Hot Beverages,Chai,Masala Chai,2.99,5,Sugar|Honey
+Hot Beverages,Chai,Cardamom Chai,2.99,5,Sugar|Honey
+Hot Beverages,Chai,Kashmiri Pink Chai,2.99,5,Sugar|Honey
+Cold Beverages,Airheads Watermelon Drink,500ml,2.49,5,
+Cold Beverages,Dare Juicee Sour Bears,250ml,2.49,5,
+Cold Beverages,Kool-Aid Bursts,591ml,2.25,5,
+Cold Beverages,Jarritos Fruit Punch,370ml,2.19,5,
+Cold Beverages,Mogu Mogu Grape,320ml,2.29,5,
+Cold Beverages,Red Rain Energy Drink,473ml,2.99,5,
+Cold Beverages,Vitamin Water,591ml,2.99,5,
+Cold Beverages,Coca-Cola,Can,1.49,5,
+Cold Beverages,Coca-Cola,Bottle,2.49,5,
+Cold Beverages,Pepsi,Can,1.49,5,
+Cold Beverages,Pepsi,Bottle,2.49,5,
+Cold Beverages,Sprite,Can,1.49,5,
+Cold Beverages,Sprite,Bottle,2.49,5,
+Cold Beverages,Fanta,Orange Can,1.49,5,
+Cold Beverages,Fanta,Orange Bottle,2.49,5,
+Cold Beverages,Fanta,Blue Raspberry Can,1.49,5,
+Cold Beverages,Fanta,Blue Raspberry Bottle,2.49,5,
+Cold Beverages,Snow Joe,Small,2.99,5,Coke|Fanta|Barq's Cream Soda
+Cold Beverages,Snow Joe,Medium,3.99,5,Coke|Fanta|Barq's Cream Soda
+Cold Beverages,Snow Joe,Large,5.99,5,Coke|Fanta|Barq's Cream Soda
+Cold Beverages,Iced Tea,500ml,2.09,5,
+Cold Beverages,Minute Maid Juice,355ml,1.99,5,
+Hot Food,Hot Dog,Regular,3.99,5,Ketchup|Mustard|Relish
+Hot Food,Samosa,Regular,2.99,5,Tamarind Chutney|Mint Sauce
+Hot Food,Potato Wedges,Small,2.99,5,Ranch|Ketchup|BBQ|Sweet & Sour
+Hot Food,Potato Wedges,Medium,4.49,5,Ranch|Ketchup|BBQ|Sweet & Sour
+Hot Food,Potato Wedges,Large,5.99,5,Ranch|Ketchup|BBQ|Sweet & Sour
+Hot Food,Chicken Wings,6pc,7.99,5,BBQ|Sweet & Spicy|Korean Gochugaru|Montreal BBQ
+Hot Food,Chicken Wings,12pc,13.99,5,BBQ|Sweet & Spicy|Korean Gochugaru|Montreal BBQ
+Hot Food,Chicken Tenders,4pc,5.99,5,Ranch|Ketchup|BBQ|Sweet & Sour
+Hot Food,Mac N Cheese Balls,3pc,4.49,5,Ranch|Ketchup|Sriracha Drizzle
+Hot Food,Mac N Cheese Balls,5pc,6.99,5,Ranch|Ketchup|Sriracha Drizzle
+Hot Food,Sausage Rolls,Regular,2.49,5,Tomato Sauce|Mustard
+Hot Food,Extra Dip,Per Dip,0.79,5,Ranch|Ketchup|BBQ|Sweet & Sour
+Exotic Chips,Doritos Sweet Chili Heat,80g,2.29,5,
+Exotic Chips,Kettle Chips Backyard BBQ,80g,2.79,5,
+Exotic Chips,Pringles Original,148g,3.59,5,
+Exotic Chips,Takis Fuego,92g,3.99,5,
+Exotic Chips,Lays Salt & Vinegar,66g,2.49,5,
+Exotic Chips,Ruffles All Dressed,66g,2.49,5,
+Exotic Chips,Miss Vickie's Jalapeño,66g,2.49,5,
+Exotic Chips,Christie Chips Ahoy,Snack 42g,1.99,5,
+Exotic Chips,Cheetos Crunchy,90g,2.99,5,
+Exotic Drinks,5-Hr Energy Shot Berry,60ml,2.99,5,
+Exotic Drinks,5-Hr Energy Shot Xtra,Blue Raspberry 60ml,3.49,5,Blue Raspberry|Grape|Peach Mango
+Exotic Drinks,5-Hr Energy Shot Xtra,Grape 60ml,3.49,5,Blue Raspberry|Grape|Peach Mango
+Exotic Drinks,5-Hr Energy Shot Xtra,Peach Mango 60ml,3.49,5,Blue Raspberry|Grape|Peach Mango
+Exotic Drinks,Monster Energy Ultra,473ml,3.99,5,Zero Ultra|Ultra Sunrise|Ultra Blue
+Exotic Drinks,Red Bull,Regular 250ml,2.99,5,Regular|Blueberry
+Exotic Drinks,Red Bull,Blue Edition 250ml,2.99,5,Regular|Blueberry
+Exotic Drinks,Prime Hydration,500ml,3.49,5,Ice Pop|Tropical Punch
+Exotic Drinks,Rockstar Energy Drink,473ml,3.69,5,
+Exotic Drinks,Bang Energy,473ml,3.89,5,
+Exotic Drinks,Gatorade,710ml,2.99,5,Lemon-Lime|Orange|Cool Blue
+Grocery,Alcan Aluminium Foil,12in x 25ft,3.49,5,
+Grocery,Kinder Bueno,43g,1.99,5,
+Grocery,Oreo Original,154g,2.49,5,
+Grocery,Ritz Crackers,200g,2.69,5,
+Grocery,Cadbury Caramilk,50g,1.89,5,
+Grocery,Cadbury Dairy Milk,50g,1.89,5,
+Grocery,Big Sky Mints,33g,1.49,5,
+Grocery,Milk,1L,2.99,5,
+Grocery,Milk,2L,4.99,5,
+Grocery,Bread,Loaf,2.79,5,
+Grocery,Eggs,Dozen,2.99,5,
+Grocery,Rice,1kg,4.99,5,
+Grocery,Sugar,1kg,2.29,5,
+Grocery,Cooking Oil,1L,4.59,5,
+Grocery,Salt,1kg,0.89,5,
+Grocery,Sauce Packets,Per unit,0.39,5,
+Grocery,Cookies,Per unit,0.99,5,
+Grocery,Candy Bars,Per unit,1.39,5,
+Novelties,Keychain Set,Per set,3.99,5,
+Novelties,Greeting Card,Per card,1.49,5,
+Novelties,Lighter Refill,Per unit,1.69,5,
+Novelties,Gift Bag,Per unit,2.49,5,
+Novelties,Small Toy Figurine,Per piece,4.99,5,
+Car Accessories,Car Air Freshener,Per unit,4.49,5,Vanilla|Pine|Citrus
+Car Accessories,Tire Cleaner,Per bottle,5.99,5,
+Car Accessories,Wiper Fluid,Per bottle,3.99,5,
+Car Accessories,Dashboard Polish,Per bottle,6.49,5,
+Car Accessories,Car Perfume,Per bottle,5.99,5,Choose scent
+Smokes & Vapes,Vape Device,Single,18.99,13,Brand|Flavour per Excel
+Smokes & Vapes,Vape Pods,2 pack,10.49,13,Brand|Flavour per Excel
+Smokes & Vapes,Vape Pods,4 pack,18.99,13,Brand|Flavour per Excel
+Smokes & Vapes,Cigarette Pack,Single,15.49,13,Brand per Excel
+Smokes & Vapes,Cigarillo,Single,3.49,13,Brand per Excel
+Smokes & Vapes,Rolling Paper,Single,1.29,13,Brand per Excel

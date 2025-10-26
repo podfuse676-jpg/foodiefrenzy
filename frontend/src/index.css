@@ -5,12 +5,13 @@
 /* stylelint-enable at-rule-no-unknown */
 
 :root {
-  --brand-green: #4CAF50; /* Fresh Green - main accent */
-  --brand-yellow: #F4D03F; /* Highlights, buttons */
-  --brand-red: #E74C3C; /* Discount tags, offers */
-  --brand-light: #FAFAFA; /* Navbar and background */
+  --brand-green: #8BC34A; /* Fresh Green - main accent */
+  --brand-light-green: #7CB342; /* Secondary green */
+  --brand-yellow: #FFC107; /* Highlights, buttons */
+  --brand-orange: #FF9800; /* Secondary accent */
+  --brand-light: #FFFFFF; /* Navbar and background */
+  --brand-soft-background: #F9FFF6; /* Soft pale green tint */
   --brand-dark: #333333; /* Text and icons */
-  --brand-background: #F9FFF6; /* Soft pale green tint */
   --brand-card: #FFFFFF; /* Product cards */
   --brand-shadow: #E0E0E0; /* Subtle shadows */
 }
@@ -23,7 +24,7 @@
 }
 
 .grocery-gradient {
-  background: linear-gradient(180deg, var(--brand-background), var(--brand-card));
+  background: linear-gradient(180deg, var(--brand-soft-background), var(--brand-card));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;

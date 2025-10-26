@@ -7,12 +7,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'grocery-green': '#4CAF50',
-        'grocery-yellow': '#F4D03F',
-        'grocery-red': '#E74C3C',
-        'grocery-light': '#FAFAFA',
+        'grocery-green': '#8BC34A',
+        'grocery-light-green': '#7CB342',
+        'grocery-yellow': '#FFC107',
+        'grocery-orange': '#FF9800',
+        'grocery-light': '#FFFFFF',
+        'grocery-soft-background': '#F9FFF6',
         'grocery-dark': '#333333',
-        'grocery-background': '#F9FFF6',
         'grocery-card': '#FFFFFF',
         'grocery-shadow': '#E0E0E0',
       },

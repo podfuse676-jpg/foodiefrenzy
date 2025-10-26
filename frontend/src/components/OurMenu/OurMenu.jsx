@@ -1,21 +1,62 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from '../../CartContext/CartContext';
 import MenuItem from './MenuItem';
+import ItemDetailView from './ItemDetailView';
 import apiConfig from '../../utils/apiConfig';
 import './Om.css';
 
 const OurMenu = () => {
   const [menuData, setMenuData] = useState({});
-  const [categories, setCategories] = useState([]);
-  const [activeCategory, setActiveCategory] = useState('Fruits');
+  const [activeCategory, setActiveCategory] = useState('Hot Beverages'); // Default to first subcategory
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
   const { cartItems: rawCart, addToCart, updateQuantity, removeFromCart } = useCart();
   const cartItems = rawCart.filter(ci => ci.item);
   const url = apiConfig.baseURL;
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { id } = useParams();
   
+  // Define the exact subcategory order as required with emojis
+  const productSubCategories = [
+    { name: 'Hot Beverages', emoji: '☕' },
+    { name: 'Cold Beverages', emoji: '🧃' },
+    { name: 'Hot Food', emoji: '🍔' },
+    { name: 'Exotic Chips', emoji: '🍟' },
+    { name: 'Exotic Drinks', emoji: '🥤' },
+    { name: 'Grocery', emoji: '🛒' },
+    { name: 'Novelties', emoji: '🎁' },
+    { name: 'Car Accessories', emoji: '🚗' },
+    { name: 'Smokes & Vapes', emoji: '🚬' }
+  ];
+  
+  // Category images - you can replace these with your own images
+  // Format: 'Category Name': 'Image URL'
+  const categoryImages = {
+    'Hot Beverages': 'https://source.unsplash.com/200x200/?coffee,tea',
+    'Cold Beverages': 'https://source.unsplash.com/200x200/?cold,drinks',
+    'Hot Food': 'https://source.unsplash.com/200x200/?hot,food',
+    'Exotic Chips': 'https://source.unsplash.com/200x200/?chips,snacks',
+    'Exotic Drinks': 'https://source.unsplash.com/200x200/?exotic,drinks',
+    'Grocery': 'https://source.unsplash.com/200x200/?grocery,food',
+    'Novelties': 'https://source.unsplash.com/200x200/?novelty,items',
+    'Car Accessories': 'https://source.unsplash.com/200x200/?car,accessories',
+    'Smokes & Vapes': 'https://source.unsplash.com/200x200/?smoking,vapes'
+  };
+  
+  // Set active category from location state if provided
+  useEffect(() => {
+    if (location.state && location.state.activeCategory) {
+      setActiveCategory(location.state.activeCategory);
+      // Clear the state so it doesn't persist on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
+
   useEffect(() => {
     const fetchMenu = async () => {
       try {
@@ -34,34 +75,24 @@ const OurMenu = () => {
           console.log('No items found in API response');
         }
         
+        // Categorize items based on their category field
         items.forEach(item => {
-          const cat = item.category || 'Uncategorized';
-          organizedData[cat] = organizedData[cat] || [];
-          organizedData[cat].push(item);
+          const category = item.category || 'Uncategorized';
+          
+          // Add item to its assigned category
+          organizedData[category] = organizedData[category] || [];
+          organizedData[category].push(item);
         });
         
         setMenuData(organizedData);
         
-        // Extract all categories from the data
-        const allCategories = Object.keys(organizedData).filter(cat => cat !== 'Uncategorized');
-        // Put Fruits and Vegetables first, then other categories
-        const sortedCategories = [
-          ...allCategories.filter(c => c === 'Fruits' || c === 'Vegetables').sort(),
-          ...allCategories.filter(c => c !== 'Fruits' && c !== 'Vegetables').sort()
-        ].filter(cat => organizedData[cat] && organizedData[cat].length > 0);
-
-        // If no categories found, use default grocery categories
-        const finalCategories = sortedCategories.length > 0 ? sortedCategories : ['Fruits', 'Vegetables', 'Dairy', 'Snacks', 'Beverages', 'Essentials'];
-
-        setCategories(finalCategories);
-
-        // Set active category to the first available one if current active category doesn't exist
-        if (!organizedData[activeCategory] || organizedData[activeCategory].length === 0) {
-          setActiveCategory(finalCategories[0] || 'Fruits');
+        // Set active category to the first subcategory by default if not already set
+        if (!location.state || !location.state.activeCategory) {
+          setActiveCategory('Hot Beverages');
         }
         
-        console.log('Successfully loaded items from database:', {
-          categories: finalCategories,
+        console.log('Successfully loaded and categorized items from database:', {
+          categories: Object.keys(organizedData),
           totalItems: items.length
         });
       } catch (err) {
@@ -77,6 +108,18 @@ const OurMenu = () => {
   // helper: find cart entry by product ID or item id
   const getCartEntry = id => cartItems.find(ci => ci.item && (ci.item._id === id || ci.item.id === id));
   const getQuantity  = id => getCartEntry(id)?.quantity ?? 0;
+  
+  // Close item detail view
+  const closeItemDetail = () => {
+    setSelectedItem(null);
+    navigate('/menu');
+  };
+  
+  // Open item detail view
+  const openItemDetail = (item) => {
+    setSelectedItem(item);
+    navigate(`/item/${item._id || item.id}`);
+  };
   
   // items to display in active category
   // filter out hidden items
@@ -97,20 +140,22 @@ const OurMenu = () => {
   
   if (loading) {
     return (
+      // Updated to light fresh colors
       <div className="bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] min-h-screen pt-32 pb-16 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-        <p className="text-[#333333]/80 text-xl font-cinzel">Loading grocery items...</p>
+        <p className="text-gray-800/80 text-xl font-cinzel">Loading grocery items...</p>
       </div>
     );
   }
 
   if (error) {
     return (
+      // Updated to light fresh colors
       <div className="bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] min-h-screen pt-32 pb-16 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-[#333333]/80 text-xl font-cinzel mb-4">{error}</p>
+          <p className="text-gray-800/80 text-xl font-cinzel mb-4">{error}</p>
           <button 
             onClick={() => window.location.reload()}
-            className="bg-[#4CAF50]/40 px-6 py-2 rounded-full font-cinzel text-sm uppercase hover:bg-[#4CAF50]/50 transition duration-300 text-[#333333]"
+            className="bg-[#8BC34A]/40 px-6 py-2 rounded-full font-cinzel text-sm uppercase hover:bg-[#8BC34A]/50 transition duration-300 text-gray-800"
           >
             Retry
           </button>
@@ -120,15 +165,16 @@ const OurMenu = () => {
   }
   
   return (
+    // Updated to light fresh colors
     <div className="bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] min-h-screen pt-32 pb-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Title */}
-        <h2 className="text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-[#4CAF50] via-[#F4D03F] to-[#4CAF50]">
+        <h2 className="text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-[#8BC34A] via-[#FFC107] to-[#8BC34A]">
           <span className="font-dancingscript block text-5xl sm:text-6xl md:text-7xl mb-2">
-            Our Grocery Selection
+            Our Product Categories
           </span>
-          <span className="block text-xl sm:text-2xl md:text-3xl font-cinzel mt-4 text-[#333333]/80">
-            Fresh & Quality Products
+          <span className="block text-xl sm:text-2xl md:text-3xl font-cinzel mt-4 text-gray-800/80">
+            Explore Our Delicious Offerings
           </span>
         </h2>
         
@@ -140,47 +186,52 @@ const OurMenu = () => {
               placeholder="Search grocery items..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-6 py-4 rounded-full bg-[#FAFAFA]/20 border-2 border-[#4CAF50]/30 text-[#333333] placeholder-[#333333]/50 focus:outline-none focus:border-[#4CAF50] focus:bg-[#FAFAFA]/30 transition-all font-cinzel"
+              className="w-full px-6 py-4 rounded-full bg-white/20 border-2 border-[#8BC34A]/30 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-[#8BC34A] focus:bg-white/30 transition-all font-cinzel"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#333333]/70 hover:text-[#333333] transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-800/70 hover:text-gray-800 transition-colors"
               >
                 ✕
               </button>
             )}
           </div>
           {searchQuery && (
-            <p className="text-center mt-3 text-[#333333]/60 font-cinzel text-sm">
+            <p className="text-center mt-3 text-gray-800/60 font-cinzel text-sm">
               Found {displayItems.length} item{displayItems.length !== 1 ? 's' : ''} matching "{searchQuery}"
             </p>
           )}
         </div>
         
-        {/* Category Tabs */}
-        <div className="flex flex-wrap justify-center gap-4 mb-16">
-          {categories && categories.length > 0 ? (
-            categories.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-4 sm:px-6 py-2 rounded-full border-2 transition-all duration-300 transform font-cinzel text-sm sm:text-lg tracking-widest backdrop-blur-sm ${
-                  activeCategory === cat
-                    ? 'bg-gradient-to-br from-[#4CAF50]/80 to-[#388E3C]/80 border-[#4CAF50] scale-105 shadow-xl shadow-[#4CAF50]/30 text-[#FAFAFA]'
-                    : 'bg-[#4CAF50]/20 border-[#4CAF50]/30 text-[#FAFAFA]/80 hover:bg-[#4CAF50]/40 hover:scale-95'
-                }`}
-              >
-                {cat}
-              </button>
-            ))
-          ) : (
-            <p className="text-[#333333]/80 font-cinzel">No categories available</p>
-          )}
+        {/* Sub-category navigation - exact order as requested with emojis */}
+        <div className="flex flex-wrap justify-center gap-3 mb-12">
+          {productSubCategories.map(subCat => (
+            <button
+              key={subCat.name}
+              onClick={() => setActiveCategory(subCat.name)}
+              className={`px-4 py-2 rounded-full border-2 transition-all duration-300 transform font-cinzel text-sm sm:text-base flex items-center gap-2 ${
+                activeCategory === subCat.name
+                  ? 'bg-gradient-to-br from-[#8BC34A]/80 to-[#7CB342]/80 border-[#8BC34A] scale-105 shadow-xl shadow-[#8BC34A]/30 text-white'
+                  : 'border-[#8BC34A]/30 text-gray-800 hover:bg-[#8BC34A]/20 hover:scale-95'
+              }`}
+            >
+              <span>{subCat.emoji}</span>
+              <span>{subCat.name}</span>
+            </button>
+          ))}
+        </div>
+        
+        {/* Category Header with Emoji */}
+        <div className="text-center mb-8">
+          <h3 className="text-3xl font-dancingscript text-gray-800 flex items-center justify-center gap-3">
+            <span>{productSubCategories.find(cat => cat.name === activeCategory)?.emoji || '📦'}</span>
+            <span>{activeCategory}</span>
+          </h3>
         </div>
         
         {/* Menu Grid */}
-        <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {displayItems && displayItems.length > 0 ? (
             displayItems.map((item, i) => {
               // Skip items without valid data
@@ -192,27 +243,39 @@ const OurMenu = () => {
               const quantity = cartEntry?.quantity || 0;
               
               return (
-                <MenuItem
+                <div 
                   key={item._id || item.id || `menu-item-${i}`}
-                  item={item}
-                  cartEntry={cartEntry}
-                  quantity={quantity}
-                  addToCart={addToCart}
-                  updateQuantity={updateQuantity}
-                  removeFromCart={removeFromCart}
-                  category={activeCategory}
-                />
+                >
+                  <MenuItem
+                    item={item}
+                    cartEntry={cartEntry}
+                    quantity={quantity}
+                    addToCart={addToCart}
+                    updateQuantity={updateQuantity}
+                    removeFromCart={removeFromCart}
+                    category={activeCategory}
+                    onOpenDetail={() => openItemDetail(item)}
+                  />
+                </div>
               );
             })
           ) : (
             <div className="col-span-full text-center py-12">
-              <p className="text-[#333333]/80 text-xl font-cinzel">
+              <p className="text-gray-800/80 text-xl font-cinzel">
                 No items found in this category.
               </p>
             </div>
           )}
         </div>
       </div>
+      
+      {/* Item Detail View */}
+      {selectedItem && (
+        <ItemDetailView 
+          item={selectedItem} 
+          onClose={closeItemDetail} 
+        />
+      )}
     </div>
   );
 };

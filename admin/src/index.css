@@ -45,20 +45,24 @@
 }
 
 :root {
-  --brand-amber: #f59e0b; /* warm amber from logo */
-  --brand-deep: #0ea5a4; /* teal from logo circle */
-  --brand-cream: #fff7ed; /* soft background from logo */
-  --text-primary: #2D1B0E; /* dark brown text from logo */
-  --brand-orange: #d97706; /* orange from "CONVENIENCE" text */
+  --brand-green: #4CAF50; /* Fresh Green - main accent */
+  --brand-yellow: #F4D03F; /* Highlights, buttons */
+  --brand-red: #E74C3C; /* Discount tags, offers */
+  --brand-light: #FAFAFA; /* Navbar and background */
+  --brand-dark: #333333; /* Text and icons */
+  --brand-background: #F9FFF6; /* Soft pale green tint */
+  --brand-card: #FFFFFF; /* Product cards */
+  --brand-shadow: #E0E0E0; /* Subtle shadows */
+  --text-primary: #333333; /* Text and icons */
 }
 
 body {
-  background: var(--brand-cream);
+  background: var(--brand-background);
   color: var(--text-primary);
 }
 
 .brand-gradient {
-  background: linear-gradient(90deg, var(--brand-amber), var(--brand-orange));
+  background: linear-gradient(90deg, var(--brand-green), var(--brand-yellow));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;

@@ -166,6 +166,28 @@ The application supports two authentication methods:
 1. **Email/Password** - Traditional registration and login
 2. **Phone/SMS** - Phone number verification with SMS codes
 
+## Menu Organization
+
+The application organizes menu items in the following exact order:
+
+1. Home
+2. Products
+3. Hot Beverages
+4. Cold Beverages
+5. Hot Food
+6. Exotic Chips
+7. Exotic Drinks
+8. Grocery
+9. Novelties
+10. Car Accessories
+11. Smokes & Vapes
+
+Items are filtered and displayed based on their category tag. For proper loading, ensure grocery items are tagged with the exact "Grocery" category.
+
+## Modifiers
+
+Food items support modifier groups for customization (e.g., extras, spices, add-ons). Modifiers are displayed below items in the ordering UI and can be selected before adding items to the cart. Modifier groups are defined in the backend and linked to main items.
+
 ## Deployment
 
 The application is designed for deployment on:
@@ -211,6 +233,21 @@ For detailed deployment instructions, see:
 - `scripts/deploy.sh` - Deployment helper script for all services
 - `scripts/deploy-admin.sh` - Deployment helper script for admin panel only
 - Various deployment scripts in the `scripts/` directory
+
+### Windows Deployment Scripts
+
+For Windows users, additional deployment scripts are available:
+
+- `deploy-all.bat` - Complete deployment (push to GitHub + Vercel deployment)
+- `push-to-github.bat` - Push changes to GitHub
+- `deploy-to-vercel.bat` - Deploy to Vercel
+- `start-all.bat` - Start all services
+- `start-frontend-admin.bat` - Start frontend and admin panel
+- `stop-all.bat` - Stop all services
+- `run-all.ps1` - PowerShell script to run all services (frontend, admin, backend)
+- `run-all.bat` - Batch script to run all services (frontend, admin, backend)
+
+For detailed deployment instructions, see `DEPLOYMENT_INSTRUCTIONS.md`.
 
 ## Contributing
 

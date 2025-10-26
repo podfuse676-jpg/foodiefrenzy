@@ -57,76 +57,80 @@ export const stats = [
         number: '10M+',
         label: 'Orders',
         icon: GiFoodTruck,
-        gradient: 'from-[#4CAF50] via-[#F4D03F] to-[#4CAF50]',
+        gradient: 'from-[#8BC34A] via-[#FFC107] to-[#8BC34A]',
     },
     {
         number: '98%',
         label: 'Satisfaction',
         icon: FaHeart,
-        gradient: 'from-[#F4D03F] via-[#4CAF50] to-[#E74C3C]',
+        gradient: 'from-[#FFC107] via-[#8BC34A] to-[#FF9800]',
     },
     {
         number: '500+',
         label: 'Cities',
         icon: FaLeaf,
-        gradient: 'from-[#4CAF50] via-[#388E3C] to-[#F4D03F]',
+        gradient: 'from-[#8BC34A] via-[#7CB342] to-[#FFC107]',
     },
     {
         number: '24/7',
         label: 'Support',
         icon: FaRegClock,
-        gradient: 'from-[#4CAF50] via-[#F4D03F] to-[#E74C3C]',
+        gradient: 'from-[#8BC34A] via-[#FFC107] to-[#FF9800]',
     },
 ];
+
+// Placeholder for empty image
+const emptyImage = '';
 
 export const teamMembers = [
     {
         name: "Sarah Johnson",
         role: "Quality Assurance Manager",
-        img: IA4,
+        img: emptyImage,
         bio: "10+ years in grocery quality assurance",
         delay: 0.1,
         social: {
-            twitter: "https://x.com/?lang=en",
-            instagram: "https://www.instagram.com/",
-            facebook: "https://www.facebook.com/",
-            linkedin: "https://www.linkedin.com/",
+            twitter: "https://x.com/LAKESHORE_REAL_PAGE",
+            instagram: "https://www.instagram.com/lakeshoreconvenience_1?igsh=MWpncGd3NHo3MzVzNA==",
+            facebook: "https://www.facebook.com/p/Lakeshore-Convenience-Sylvan-61575180136680/",
+            linkedin: "https://www.linkedin.com/company/LAKESHORE_REAL_PAGE",
         },
     },
     {
         name: "Michael Chen",
         role: "Logistics Director",
-        img: IA5,
+        img: emptyImage,
         bio: "Logistics expert with 15+ years experience",
         delay: 0.3,
         social: {
-            twitter: "https://x.com/?lang=en",
-            instagram: "https://www.instagram.com/",
-            facebook: "https://www.facebook.com/",
-            linkedin: "https://www.linkedin.com/",
+            twitter: "https://x.com/LAKESHORE_REAL_PAGE",
+            instagram: "https://www.instagram.com/lakeshoreconvenience_1?igsh=MWpncGd3NHo3MzVzNA==",
+            facebook: "https://www.facebook.com/p/Lakeshore-Convenience-Sylvan-61575180136680/",
+            linkedin: "https://www.linkedin.com/company/LAKESHORE_REAL_PAGE",
         },
     },
     {
         name: "Emma Rodriguez",
         role: "Fresh Produce Sourcing Manager",
-        img: IA6,
+        img: emptyImage,
         bio: "Expert in fresh produce sourcing and quality",
         delay: 0.5,
         social: {
-            twitter: "https://x.com/?lang=en",
-            instagram: "https://www.instagram.com/",
-            facebook: "https://www.facebook.com/",
-            linkedin: "https://www.linkedin.com/",
+            twitter: "https://x.com/LAKESHORE_REAL_PAGE",
+            instagram: "https://www.instagram.com/lakeshoreconvenience_1?igsh=MWpncGd3NHo3MzVzNA==",
+            facebook: "https://www.facebook.com/p/Lakeshore-Convenience-Sylvan-61575180136680/",
+            linkedin: "https://www.linkedin.com/company/LAKESHORE_REAL_PAGE",
         },
     },
 ];
 
 // ABOUT HOMEPAGE
+// Updated to use light fresh colors
 export const aboutfeature = [
-  { icon: FaBolt, title: "Fast Delivery", text: "Quick grocery delivery", color: "from-[#4CAF50] to-[#388E3C]" },
-  { icon: FaRegClock, title: "Always Open", text: "24/7 grocery service", color: "from-[#F4D03F] to-[#E74C3C]" },
-  { icon: FaCalendarCheck, title: "Easy Ordering", text: "Simple online shopping", color: "from-[#4CAF50] to-[#F4D03F]" },
-  { icon: FaFire, title: "Fresh Produce", text: "Quality fresh groceries", color: "from-[#388E3C] to-[#4CAF50]" }
+  { icon: FaBolt, title: "Fast Delivery", text: "Quick grocery delivery", color: "from-[#8BC34A] to-[#7CB342]" },
+  { icon: FaRegClock, title: "Always Open", text: "24/7 grocery service", color: "from-[#FFC107] to-[#FF9800]" },
+  { icon: FaCalendarCheck, title: "Easy Ordering", text: "Simple online shopping", color: "from-[#8BC34A] to-[#FFC107]" },
+  { icon: FaFire, title: "Fresh Produce", text: "Quality fresh groceries", color: "from-[#7CB342] to-[#8BC34A]" }
 ];
 
 // SPECIAL MENU
@@ -145,15 +149,15 @@ export const additionalData = [
 
 // FOOTER 
 export const socialIcons = [
-    { icon: FaFacebook, link: 'https://www.facebook.com/share/1DjbwhdR4z/', color: '#3b5998', label: 'Facebook' },
-    { icon: FaInstagram, link: 'https://www.instagram.com/hexagondigitalservices?igsh=MW1nanQ2eXIycnRkZQ==', color: '#E1306C', label: 'Instagram' },
-    { icon: FaXTwitter, link: 'https://x.com/HexagonDService?t=Vv5ReZAIbXONqkq_O0ksWQ&s=09', color: '#000', label: 'X' },
-    { icon: FaYoutube, link: 'https://youtube.com/@hexagondigitalservices?si=UnBt0AHI-ChN5Mze', color: '#FF0000', label: 'Youtube' },
+    { icon: FaFacebook, link: 'https://www.facebook.com/p/Lakeshore-Convenience-Sylvan-61575180136680/', color: '#3b5998', label: 'Facebook' },
+    { icon: FaInstagram, link: 'https://www.instagram.com/lakeshoreconvenience_1?igsh=MWpncGd3NHo3MzVzNA==', color: '#E1306C', label: 'Instagram' },
+    { icon: FaXTwitter, link: 'https://x.com/LAKESHORE_REAL_PAGE', color: '#000', label: 'X' },
+    { icon: FaYoutube, link: 'https://youtube.com/@LAKESHORE_REAL_PAGE', color: '#FF0000', label: 'Youtube' },
 ];
 
 // LOGIN 
-export const inputBase = "w-full rounded-lg bg-[#333333] text-[#FAFAFA] placeholder-[#4CAF50] focus:outline-none focus:ring-2 focus:ring-[#4CAF50]";
-export const iconClass = "absolute top-1/2 transform -translate-y-1/2 left-3 text-[#4CAF50]";
+export const inputBase = "w-full rounded-lg bg-white text-gray-800 placeholder-[#8BC34A] focus:outline-none focus:ring-2 focus:ring-[#8BC34A]";
+export const iconClass = "absolute top-1/2 transform -translate-y-1/2 left-3 text-[#8BC34A]";
 
 // CONTACT
 export const contactFormFields = [

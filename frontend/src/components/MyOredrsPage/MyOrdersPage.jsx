@@ -94,32 +94,32 @@ const UserOrdersPage = () => {
 
   const statusStyles = {
     processing: {
-      color: 'text-[#F4D03F]',
-      bg: 'bg-[#F4D03F]/20',
+      color: 'text-[#FFC107]',
+      bg: 'bg-[#FFC107]/20',
       icon: <FiClock className="text-lg" />,
       label: 'Processing'
     },
     outForDelivery: {
-      color: 'text-blue-400',
-      bg: 'bg-blue-900/20',
+      color: 'text-blue-600',
+      bg: 'bg-blue-100/20',
       icon: <FiTruck className="text-lg" />,
       label: 'Out for Delivery'
     },
     delivered: {
-      color: 'text-[#4CAF50]',
-      bg: 'bg-[#4CAF50]/20',
+      color: 'text-[#8BC34A]',
+      bg: 'bg-[#8BC34A]/20',
       icon: <FiCheckCircle className="text-lg" />,
       label: 'Delivered'
     },
     pending: {
-      color: 'text-yellow-400',
-      bg: 'bg-yellow-900/20',
+      color: 'text-yellow-600',
+      bg: 'bg-yellow-100/20',
       icon: <FiClock className="text-lg" />,
       label: 'Payment Pending'
     },
     succeeded: {
-      color: 'text-[#4CAF50]',
-      bg: 'bg-[#4CAF50]/20',
+      color: 'text-[#8BC34A]',
+      bg: 'bg-[#8BC34A]/20',
       icon: <FiCheckCircle className="text-lg" />,
       label: 'Completed'
     }
@@ -130,38 +130,40 @@ const UserOrdersPage = () => {
       case 'cod':
         return {
           label: 'COD',
-          class: 'bg-[#F4D03F]/30 text-[#333333] border-[#F4D03F]/50'
+          class: 'bg-[#FFC107]/30 text-gray-800 border-[#FFC107]/50'
         };
       case 'card':
         return {
           label: 'Credit/Debit Card',
-          class: 'bg-blue-600/30 text-blue-300 border-blue-500/50'
+          class: 'bg-blue-100/30 text-blue-800 border-blue-500/50'
         };
       case 'upi':
         return {
           label: 'UPI Payment',
-          class: 'bg-purple-600/30 text-purple-300 border-purple-500/50'
+          class: 'bg-purple-100/30 text-purple-800 border-purple-500/50'
         };
       default:
         return {
           label: 'Online',
-          class: 'bg-[#4CAF50]/30 text-[#FAFAFA] border-[#4CAF50]/50'
+          class: 'bg-[#8BC34A]/30 text-gray-800 border-[#8BC34A]/50'
         };
     }
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-gradient-to-br from-[#333333] via-[#444444] to-[#4CAF50] flex items-center justify-center text-[#4CAF50] text-xl">
+    // Updated to light fresh colors
+    <div className="min-h-screen bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] flex items-center justify-center text-[#8BC34A] text-xl">
       Loading orders...
     </div>
   );
 
   if (error) return (
-    <div className="min-h-screen bg-gradient-to-br from-[#333333] via-[#444444] to-[#4CAF50] flex flex-col items-center justify-center text-[#E74C3C] text-xl gap-4">
+    // Updated to light fresh colors
+    <div className="min-h-screen bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] flex flex-col items-center justify-center text-[#FF9800] text-xl gap-4">
       <p>{error}</p>
       <button
         onClick={() => window.location.reload()}
-        className="flex items-center gap-2 text-[#4CAF50] hover:text-[#F4D03F]"
+        className="flex items-center gap-2 text-[#8BC34A] hover:text-[#FFC107]"
       >
         <FiArrowLeft className="text-xl" />
         <span>Try Again</span>
@@ -170,37 +172,38 @@ const UserOrdersPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#333333] via-[#444444] to-[#4CAF50] py-12 px-4 sm:px-6 lg:px-8">
+    // Updated to light fresh colors
+    <div className="min-h-screen bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <Link to="/" className="flex items-center gap-2 text-[#4CAF50] hover:text-[#F4D03F]">
+          <Link to="/" className="flex items-center gap-2 text-[#8BC34A] hover:text-[#FFC107]">
             <FiArrowLeft className="text-xl" />
             <span className="font-bold">Back to Home</span>
           </Link>
           <div className="flex items-center gap-4">
-            <span className="text-[#4CAF50]/70 text-sm">
+            <span className="text-[#8BC34A]/70 text-sm">
               {user?.email}
             </span>
           </div>
         </div>
 
-        <div className="bg-[#4b4b4b]/80 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border-2 border-[#4CAF50]/20">
-          <h2 className="text-3xl font-bold mb-8 bg-gradient-to-r from-[#4CAF50] to-[#F4D03F] bg-clip-text text-transparent text-center">
+        <div className="bg-white backdrop-blur-sm rounded-3xl p-8 shadow-2xl border-2 border-[#8BC34A]/20">
+          <h2 className="text-3xl font-bold mb-8 bg-gradient-to-r from-[#8BC34A] to-[#FFC107] bg-clip-text text-transparent text-center">
             Order History
           </h2>
 
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-[#333333]/50">
+              <thead className="bg-gray-100/50">
                 <tr>
-                  <th className="p-4 text-left text-[#4CAF50]">Order ID</th>
-                  <th className="p-4 text-left text-[#4CAF50]">Customer</th>
-                  <th className="p-4 text-left text-[#4CAF50]">Address</th>
-                  <th className="p-4 text-left text-[#4CAF50]">Items</th>
-                  <th className="p-4 text-left text-[#4CAF50]">Total Items</th>
-                  <th className="p-4 text-left text-[#4CAF50]">Price</th>
-                  <th className="p-4 text-left text-[#4CAF50]">Payment</th>
-                  <th className="p-4 text-left text-[#4CAF50]">Status</th>
+                  <th className="p-4 text-left text-[#8BC34A]">Order ID</th>
+                  <th className="p-4 text-left text-[#8BC34A]">Customer</th>
+                  <th className="p-4 text-left text-[#8BC34A]">Address</th>
+                  <th className="p-4 text-left text-[#8BC34A]">Items</th>
+                  <th className="p-4 text-left text-[#8BC34A]">Total Items</th>
+                  <th className="p-4 text-left text-[#8BC34A]">Price</th>
+                  <th className="p-4 text-left text-[#8BC34A]">Payment</th>
+                  <th className="p-4 text-left text-[#8BC34A]">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -217,24 +220,24 @@ const UserOrdersPage = () => {
                   return (
                     <tr
                       key={order._id}
-                      className="border-b border-[#4CAF50]/20 hover:bg-[#333333]/30 transition-colors group"
+                      className="border-b border-[#8BC34A]/20 hover:bg-gray-100/30 transition-colors group"
                     >
-                      <td className="p-4 text-[#FAFAFA] font-mono text-sm">#{order._id?.slice(-8)}</td>
+                      <td className="p-4 text-gray-800 font-mono text-sm">#{order._id?.slice(-8)}</td>
 
                       <td className="p-4">
                         <div className="flex items-center gap-2">
-                          <FiUser className="text-[#4CAF50]" />
+                          <FiUser className="text-[#8BC34A]" />
                           <div>
-                            <p className="text-[#FAFAFA]">{order.firstName} {order.lastName}</p>
-                            <p className="text-sm text-[#4CAF50]/60">{order.phone}</p>
+                            <p className="text-gray-800">{order.firstName} {order.lastName}</p>
+                            <p className="text-sm text-[#8BC34A]/60">{order.phone}</p>
                           </div>
                         </div>
                       </td>
 
                       <td className="p-4">
                         <div className="flex items-center gap-2">
-                          <FiMapPin className="text-[#4CAF50]" />
-                          <div className="text-[#FAFAFA]/80 text-sm max-w-[200px]">
+                          <FiMapPin className="text-[#8BC34A]" />
+                          <div className="text-gray-800/80 text-sm max-w-[200px]">
                             {order.address}, {order.city} - {order.zipCode}
                           </div>
                         </div>
@@ -245,7 +248,7 @@ const UserOrdersPage = () => {
                           {order.items.map((item, index) => (
                             <div
                               key={`${order._id}-${index}`}
-                              className="flex items-center gap-3 p-2 bg-[#333333]/50 rounded-lg"
+                              className="flex items-center gap-3 p-2 bg-gray-100/50 rounded-lg"
                             >
                               <img
                                 src={item.item.imageUrl ? (item.item.imageUrl.startsWith('http') ? item.item.imageUrl : `${url}${item.item.imageUrl}`) : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='}
@@ -257,10 +260,10 @@ const UserOrdersPage = () => {
                               />
 
                               <div className="flex-1">
-                                <span className="text-[#FAFAFA]/80 text-sm block">
+                                <span className="text-gray-800/80 text-sm block">
                                   {item.item.name}
                                 </span>
-                                <div className="flex items-center gap-2 text-xs text-[#4CAF50]/60">
+                                <div className="flex items-center gap-2 text-xs text-[#8BC34A]/60">
                                   <span>${item.item.price} CAD</span>
                                   <span className="mx-1">•</span>
                                   <span>x{item.quantity}</span>
@@ -274,12 +277,12 @@ const UserOrdersPage = () => {
 
                       <td className="p-4 text-center">
                         <div className="flex items-center justify-center gap-1">
-                          <FiBox className="text-[#4CAF50]" />
-                          <span className="text-[#F4D03F] text-lg">{totalItems}</span>
+                          <FiBox className="text-[#8BC34A]" />
+                          <span className="text-[#FFC107] text-lg">{totalItems}</span>
                         </div>
                       </td>
 
-                      <td className="p-4 text-[#F4D03F] text-lg">${totalPrice.toFixed(2)} CAD</td>
+                      <td className="p-4 text-[#FFC107] text-lg">${totalPrice.toFixed(2)} CAD</td>
 
                       <td className="p-4">
                         <div className="flex flex-col gap-2">
@@ -296,7 +299,7 @@ const UserOrdersPage = () => {
                       <td className="p-4">
                         <div className="flex items-center gap-2">
                           <span className={`${status.color} text-xl`}>{status.icon}</span>
-                          <span className={`px-4 py-2 rounded-lg ${status.bg} ${status.color} border border-[#4CAF50]/20 text-sm`}>
+                          <span className={`px-4 py-2 rounded-lg ${status.bg} ${status.color} border border-[#8BC34A]/20 text-sm`}>
                             {status.label}
                           </span>
                         </div>
@@ -309,7 +312,7 @@ const UserOrdersPage = () => {
           </div>
 
           {orders.length === 0 && (
-            <div className="text-center py-12 text-[#FAFAFA]/60 text-xl">
+            <div className="text-center py-12 text-gray-800/60 text-xl">
               No orders found
             </div>
           )}

@@ -10,6 +10,7 @@ const PhoneLogin = () => {
   const [codeSent, setCodeSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [displayedCode, setDisplayedCode] = useState(''); // Store OTP for display
+  const [verificationStatus, setVerificationStatus] = useState(''); // For visual feedback
   const navigate = useNavigate();
   const url = apiConfig.baseURL;
 
@@ -22,6 +23,7 @@ const PhoneLogin = () => {
 
     try {
       setLoading(true);
+      setVerificationStatus('sending');
       // Format phone number properly
       const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+1${phoneNumber}`;
       
@@ -35,7 +37,7 @@ const PhoneLogin = () => {
         toast.success(`Code sent! For testing: ${response.data.verificationCode}`, {
           duration: 10000,
           style: {
-            background: '#10b981',
+            background: '#8BC34A',
             color: '#fff',
             fontWeight: 'bold'
           }
@@ -45,10 +47,12 @@ const PhoneLogin = () => {
       }
       
       setCodeSent(true);
+      setVerificationStatus('sent');
       setLoading(false);
     } catch (error) {
       console.error('Error sending verification code:', error);
       toast.error(error.response?.data?.message || 'Failed to send verification code');
+      setVerificationStatus('error');
       setLoading(false);
     }
   };
@@ -62,6 +66,7 @@ const PhoneLogin = () => {
 
     try {
       setLoading(true);
+      setVerificationStatus('verifying');
       // Format phone number properly
       const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+1${phoneNumber}`;
       
@@ -87,6 +92,7 @@ const PhoneLogin = () => {
       localStorage.removeItem('cart');
       
       toast.success('Login successful!');
+      setVerificationStatus('success');
       setLoading(false);
       // Redirect to home page
       navigate('/');
@@ -95,18 +101,20 @@ const PhoneLogin = () => {
     } catch (error) {
       console.error('Error verifying code:', error);
       toast.error(error.response?.data?.message || 'Invalid verification code');
+      setVerificationStatus('error');
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#333333] via-[#444444] to-[#4CAF50] flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-[#4b4b4b]/80 backdrop-blur-sm rounded-2xl shadow-2xl border-2 border-[#4CAF50]/30 p-8">
+    // Updated to light fresh colors
+    <div className="min-h-screen bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white backdrop-blur-sm rounded-2xl shadow-2xl border-2 border-[#8BC34A]/30 p-8">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-[#4CAF50] to-[#F4D03F] bg-clip-text text-transparent mb-2">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-[#8BC34A] to-[#FFC107] bg-clip-text text-transparent mb-2">
             Phone Login
           </h2>
-          <p className="text-[#FAFAFA]/80">
+          <p className="text-gray-800/80">
             Enter your phone number to receive a verification code
           </p>
         </div>
@@ -114,12 +122,12 @@ const PhoneLogin = () => {
         {!codeSent ? (
           <form onSubmit={handleSendCode} className="space-y-6">
             <div>
-              <label className="block text-[#FAFAFA] text-sm font-bold mb-2" htmlFor="phoneNumber">
+              <label className="block text-gray-800 text-sm font-bold mb-2" htmlFor="phoneNumber">
                 Phone Number
               </label>
               <div className="relative">
                 <input
-                  className="w-full bg-[#333333]/50 border-2 border-[#4CAF50]/30 rounded-xl py-3 px-4 text-[#FAFAFA] placeholder-[#4CAF50]/50 focus:outline-none focus:border-[#4CAF50] transition-colors"
+                  className="w-full bg-white border-2 border-[#8BC34A]/30 rounded-xl py-3 px-4 text-gray-800 placeholder-[#8BC34A]/50 focus:outline-none focus:border-[#8BC34A] transition-colors"
                   id="phoneNumber"
                   type="tel"
                   placeholder="+1 (123) 456-7890"
@@ -128,19 +136,19 @@ const PhoneLogin = () => {
                   required
                 />
               </div>
-              <p className="text-xs text-[#4CAF50]/70 mt-2">
+              <p className="text-xs text-[#8BC34A]/70 mt-2">
                 Format: +1XXXXXXXXXX or XXXXXXXXXX (US)
               </p>
             </div>
             
             <button
-              className="w-full bg-gradient-to-r from-[#4CAF50] to-[#388E3C] hover:from-[#388E3C] hover:to-[#4CAF50] text-[#FAFAFA] font-bold py-3 px-4 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-[#8BC34A] to-[#7CB342] hover:from-[#7CB342] hover:to-[#8BC34A] text-white font-bold py-3 px-4 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               type="submit"
               disabled={loading}
             >
               {loading ? (
                 <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-[#FAFAFA]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
@@ -152,28 +160,28 @@ const PhoneLogin = () => {
         ) : (
           <form onSubmit={handleVerifyCode} className="space-y-6">
             {displayedCode && (
-              <div className="mb-6 p-4 bg-gradient-to-r from-green-900/30 to-green-800/30 border-2 border-green-700/50 rounded-xl">
-                <p className="text-sm text-green-300 font-semibold mb-2 flex items-center">
+              <div className="mb-6 p-4 bg-gradient-to-r from-green-100/30 to-green-200/30 border-2 border-green-300/50 rounded-xl">
+                <p className="text-sm text-green-800 font-semibold mb-2 flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                   </svg>
                   Your Verification Code:
                 </p>
-                <p className="text-4xl font-bold text-green-400 text-center tracking-widest py-2">
+                <p className="text-4xl font-bold text-green-700 text-center tracking-widest py-2">
                   {displayedCode}
                 </p>
-                <p className="text-xs text-green-400/80 mt-2 text-center">
+                <p className="text-xs text-green-700/80 mt-2 text-center">
                   (SMS may not be delivered on trial accounts - use this code)
                 </p>
               </div>
             )}
             
             <div>
-              <label className="block text-[#FAFAFA] text-sm font-bold mb-2" htmlFor="verificationCode">
+              <label className="block text-gray-800 text-sm font-bold mb-2" htmlFor="verificationCode">
                 Verification Code
               </label>
               <input
-                className="w-full bg-[#333333]/50 border-2 border-[#4CAF50]/30 rounded-xl py-3 px-4 text-[#FAFAFA] placeholder-[#4CAF50]/50 focus:outline-none focus:border-[#4CAF50] transition-colors text-center text-2xl tracking-widest"
+                className="w-full bg-white border-2 border-[#8BC34A]/30 rounded-xl py-3 px-4 text-gray-800 placeholder-[#8BC34A]/50 focus:outline-none focus:border-[#8BC34A] transition-colors text-center text-2xl tracking-widest"
                 id="verificationCode"
                 type="text"
                 placeholder="123456"
@@ -184,18 +192,57 @@ const PhoneLogin = () => {
               />
             </div>
             
+            {/* Visual feedback for verification status */}
+            {verificationStatus && (
+              <div className={`p-3 rounded-lg text-center ${
+                verificationStatus === 'verifying' ? 'bg-blue-100/30 text-blue-800' :
+                verificationStatus === 'success' ? 'bg-green-100/30 text-green-800' :
+                verificationStatus === 'error' ? 'bg-red-100/30 text-red-800' :
+                'bg-gray-100/30 text-gray-800'
+              }`}>
+                {verificationStatus === 'verifying' && (
+                  <div className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Verifying code...</span>
+                  </div>
+                )}
+                {verificationStatus === 'success' && (
+                  <div className="flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span>Login successful! Redirecting...</span>
+                  </div>
+                )}
+                {verificationStatus === 'error' && (
+                  <div className="flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                    <span>Verification failed. Please try again.</span>
+                  </div>
+                )}
+              </div>
+            )}
+            
             <div className="flex flex-col sm:flex-row gap-3">
               <button
                 type="button"
-                className="flex-1 px-4 py-2 bg-[#4CAF50]/50 hover:bg-[#388E3C]/50 text-[#FAFAFA] rounded-xl border-2 border-[#4CAF50]/30 transition-colors"
-                onClick={() => setCodeSent(false)}
+                className="flex-1 px-4 py-2 bg-[#8BC34A]/50 hover:bg-[#7CB342]/50 text-white rounded-xl border-2 border-[#8BC34A]/30 transition-colors"
+                onClick={() => {
+                  setCodeSent(false);
+                  setVerificationStatus('');
+                }}
               >
                 Change Phone Number
               </button>
               
               <button
                 type="button"
-                className="flex-1 px-4 py-2 bg-[#4CAF50]/50 hover:bg-[#388E3C]/50 text-[#FAFAFA] rounded-xl border-2 border-[#4CAF50]/30 transition-colors"
+                className="flex-1 px-4 py-2 bg-[#8BC34A]/50 hover:bg-[#7CB342]/50 text-white rounded-xl border-2 border-[#8BC34A]/30 transition-colors"
                 onClick={handleSendCode}
                 disabled={loading}
               >
@@ -204,13 +251,13 @@ const PhoneLogin = () => {
             </div>
             
             <button
-              className="w-full bg-gradient-to-r from-[#4CAF50] to-[#388E3C] hover:from-[#388E3C] hover:to-[#4CAF50] text-[#FAFAFA] font-bold py-3 px-4 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-[#8BC34A] to-[#7CB342] hover:from-[#7CB342] hover:to-[#8BC34A] text-white font-bold py-3 px-4 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               type="submit"
               disabled={loading || verificationCode.length !== 6}
             >
               {loading ? (
                 <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-[#FAFAFA]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
@@ -221,12 +268,12 @@ const PhoneLogin = () => {
           </form>
         )}
         
-        <div className="mt-8 pt-6 border-t border-[#4CAF50]/30 text-center">
-          <p className="text-sm text-[#FAFAFA]/70">
+        <div className="mt-8 pt-6 border-t border-[#8BC34A]/30 text-center">
+          <p className="text-sm text-gray-800/70">
             Want to login with email instead?{' '}
             <button 
               onClick={() => navigate('/login')}
-              className="text-[#4CAF50] hover:text-[#F4D03F] font-semibold transition-colors"
+              className="text-[#8BC34A] hover:text-[#FFC107] font-semibold transition-colors"
             >
               Login with Email
             </button>

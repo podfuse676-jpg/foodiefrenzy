@@ -1,0 +1,609 @@
+{
+  "menu": {
+    "Hot Beverages": [
+      {
+        "name": "Coffee",
+        "sizes": [
+          {"size": "Small", "price": 2.09},
+          {"size": "Medium", "price": 2.59},
+          {"size": "Large", "price": 2.99}
+        ],
+        "gst": 5,
+        "customizations": ["Hazelnut", "Vanilla", "Caramel"]
+      },
+      {
+        "name": "Cappuccino",
+        "sizes": [
+          {"size": "Regular", "price": 2.99}
+        ],
+        "gst": 5,
+        "customizations": ["Add cinnamon dust"]
+      },
+      {
+        "name": "Latte",
+        "sizes": [
+          {"size": "Regular", "price": 2.79}
+        ],
+        "gst": 5,
+        "customizations": ["Add Vanilla", "Soy Milk"]
+      },
+      {
+        "name": "Mocha",
+        "sizes": [
+          {"size": "Regular", "price": 2.99}
+        ],
+        "gst": 5,
+        "customizations": ["Add chocolate drizzle"]
+      },
+      {
+        "name": "Hot Chocolate",
+        "sizes": [
+          {"size": "Regular", "price": 3.29}
+        ],
+        "gst": 5,
+        "customizations": ["Marshmallow", "Whipped Cream"]
+      },
+      {
+        "name": "Chai",
+        "sizes": [
+          {"size": "Masala Chai", "price": 2.99},
+          {"size": "Cardamom Chai", "price": 2.99},
+          {"size": "Kashmiri Pink Chai", "price": 2.99}
+        ],
+        "gst": 5,
+        "customizations": ["Sugar", "Honey"]
+      }
+    ],
+    "Cold Beverages": [
+      {
+        "name": "Airheads Watermelon Drink",
+        "sizes": [
+          {"size": "500ml", "price": 2.49}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Dare Juicee Sour Bears",
+        "sizes": [
+          {"size": "250ml", "price": 2.49}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Kool-Aid Bursts",
+        "sizes": [
+          {"size": "591ml", "price": 2.25}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Jarritos Fruit Punch",
+        "sizes": [
+          {"size": "370ml", "price": 2.19}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Mogu Mogu Grape",
+        "sizes": [
+          {"size": "320ml", "price": 2.29}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Red Rain Energy Drink",
+        "sizes": [
+          {"size": "473ml", "price": 2.99}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Vitamin Water",
+        "sizes": [
+          {"size": "591ml", "price": 2.99}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Coca-Cola",
+        "sizes": [
+          {"size": "Can", "price": 1.49},
+          {"size": "Bottle", "price": 2.49}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Pepsi",
+        "sizes": [
+          {"size": "Can", "price": 1.49},
+          {"size": "Bottle", "price": 2.49}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Sprite",
+        "sizes": [
+          {"size": "Can", "price": 1.49},
+          {"size": "Bottle", "price": 2.49}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Fanta",
+        "sizes": [
+          {"size": "Orange Can", "price": 1.49},
+          {"size": "Orange Bottle", "price": 2.49},
+          {"size": "Blue Raspberry Can", "price": 1.49},
+          {"size": "Blue Raspberry Bottle", "price": 2.49}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Snow Joe",
+        "sizes": [
+          {"size": "Small", "price": 2.99},
+          {"size": "Medium", "price": 3.99},
+          {"size": "Large", "price": 5.99}
+        ],
+        "gst": 5,
+        "customizations": ["Coke", "Fanta", "Barq's Cream Soda"]
+      },
+      {
+        "name": "Iced Tea",
+        "sizes": [
+          {"size": "500ml", "price": 2.09}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Minute Maid Juice",
+        "sizes": [
+          {"size": "355ml", "price": 1.99}
+        ],
+        "gst": 5
+      }
+    ],
+    "Hot Food": [
+      {
+        "name": "Hot Dog",
+        "sizes": [
+          {"size": "Regular", "price": 3.99}
+        ],
+        "gst": 5,
+        "customizations": ["Ketchup", "Mustard", "Relish"]
+      },
+      {
+        "name": "Samosa",
+        "sizes": [
+          {"size": "Regular", "price": 2.99}
+        ],
+        "gst": 5,
+        "customizations": ["Tamarind Chutney", "Mint Sauce"]
+      },
+      {
+        "name": "Potato Wedges",
+        "sizes": [
+          {"size": "Small", "price": 2.99},
+          {"size": "Medium", "price": 4.49},
+          {"size": "Large", "price": 5.99}
+        ],
+        "gst": 5,
+        "customizations": ["Ranch", "Ketchup", "BBQ", "Sweet & Sour"]
+      },
+      {
+        "name": "Chicken Wings",
+        "sizes": [
+          {"size": "6pc", "price": 7.99},
+          {"size": "12pc", "price": 13.99}
+        ],
+        "gst": 5,
+        "customizations": ["BBQ", "Sweet & Spicy", "Korean Gochugaru", "Montreal BBQ"]
+      },
+      {
+        "name": "Chicken Tenders",
+        "sizes": [
+          {"size": "4pc", "price": 5.99}
+        ],
+        "gst": 5,
+        "customizations": ["Ranch", "Ketchup", "BBQ", "Sweet & Sour"]
+      },
+      {
+        "name": "Mac N Cheese Balls",
+        "sizes": [
+          {"size": "3pc", "price": 4.49},
+          {"size": "5pc", "price": 6.99}
+        ],
+        "gst": 5,
+        "customizations": ["Ranch", "Ketchup", "Sriracha Drizzle"]
+      },
+      {
+        "name": "Sausage Rolls",
+        "sizes": [
+          {"size": "Regular", "price": 2.49}
+        ],
+        "gst": 5,
+        "customizations": ["Tomato Sauce", "Mustard"]
+      },
+      {
+        "name": "Extra Dip",
+        "sizes": [
+          {"size": "Per Dip", "price": 0.79}
+        ],
+        "gst": 5,
+        "customizations": ["Ranch", "Ketchup", "BBQ", "Sweet & Sour"]
+      }
+    ],
+    "Exotic Chips": [
+      {
+        "name": "Doritos Sweet Chili Heat",
+        "sizes": [
+          {"size": "80g", "price": 2.29}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Kettle Chips Backyard BBQ",
+        "sizes": [
+          {"size": "80g", "price": 2.79}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Pringles Original",
+        "sizes": [
+          {"size": "148g", "price": 3.59}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Takis Fuego",
+        "sizes": [
+          {"size": "92g", "price": 3.99}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Lays Salt & Vinegar",
+        "sizes": [
+          {"size": "66g", "price": 2.49}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Ruffles All Dressed",
+        "sizes": [
+          {"size": "66g", "price": 2.49}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Miss Vickie's Jalapeño",
+        "sizes": [
+          {"size": "66g", "price": 2.49}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Christie Chips Ahoy",
+        "sizes": [
+          {"size": "Snack 42g", "price": 1.99}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Cheetos Crunchy",
+        "sizes": [
+          {"size": "90g", "price": 2.99}
+        ],
+        "gst": 5
+      }
+    ],
+    "Exotic Drinks": [
+      {
+        "name": "5-Hr Energy Shot Berry",
+        "sizes": [
+          {"size": "60ml", "price": 2.99}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "5-Hr Energy Shot Xtra",
+        "sizes": [
+          {"size": "Blue Raspberry 60ml", "price": 3.49},
+          {"size": "Grape 60ml", "price": 3.49},
+          {"size": "Peach Mango 60ml", "price": 3.49}
+        ],
+        "gst": 5,
+        "flavours": ["Blue Raspberry", "Grape", "Peach Mango"]
+      },
+      {
+        "name": "Monster Energy Ultra",
+        "sizes": [
+          {"size": "473ml", "price": 3.99}
+        ],
+        "gst": 5,
+        "flavours": ["Zero Ultra", "Ultra Sunrise", "Ultra Blue"]
+      },
+      {
+        "name": "Red Bull",
+        "sizes": [
+          {"size": "Regular 250ml", "price": 2.99},
+          {"size": "Blue Edition 250ml", "price": 2.99}
+        ],
+        "gst": 5,
+        "flavours": ["Regular", "Blueberry"]
+      },
+      {
+        "name": "Prime Hydration",
+        "sizes": [
+          {"size": "500ml", "price": 3.49}
+        ],
+        "gst": 5,
+        "flavours": ["Ice Pop", "Tropical Punch"]
+      },
+      {
+        "name": "Rockstar Energy Drink",
+        "sizes": [
+          {"size": "473ml", "price": 3.69}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Bang Energy",
+        "sizes": [
+          {"size": "473ml", "price": 3.89}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Gatorade",
+        "sizes": [
+          {"size": "710ml", "price": 2.99}
+        ],
+        "gst": 5,
+        "flavours": ["Lemon-Lime", "Orange", "Cool Blue"]
+      }
+    ],
+    "Grocery": [
+      {
+        "name": "Alcan Aluminium Foil",
+        "sizes": [
+          {"size": "12in x 25ft", "price": 3.49}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Kinder Bueno",
+        "sizes": [
+          {"size": "43g", "price": 1.99}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Oreo Original",
+        "sizes": [
+          {"size": "154g", "price": 2.49}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Ritz Crackers",
+        "sizes": [
+          {"size": "200g", "price": 2.69}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Cadbury Caramilk",
+        "sizes": [
+          {"size": "50g", "price": 1.89}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Cadbury Dairy Milk",
+        "sizes": [
+          {"size": "50g", "price": 1.89}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Big Sky Mints",
+        "sizes": [
+          {"size": "33g", "price": 1.49}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Milk",
+        "sizes": [
+          {"size": "1L", "price": 2.99},
+          {"size": "2L", "price": 4.99}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Bread",
+        "sizes": [
+          {"size": "Loaf", "price": 2.79}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Eggs",
+        "sizes": [
+          {"size": "Dozen", "price": 2.99}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Rice",
+        "sizes": [
+          {"size": "1kg", "price": 4.99}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Sugar",
+        "sizes": [
+          {"size": "1kg", "price": 2.29}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Cooking Oil",
+        "sizes": [
+          {"size": "1L", "price": 4.59}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Salt",
+        "sizes": [
+          {"size": "1kg", "price": 0.89}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Sauce Packets",
+        "sizes": [
+          {"size": "Per unit", "price": 0.39}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Cookies",
+        "sizes": [
+          {"size": "Per unit", "price": 0.99}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Candy Bars",
+        "sizes": [
+          {"size": "Per unit", "price": 1.39}
+        ],
+        "gst": 5
+      }
+    ],
+    "Novelties": [
+      {
+        "name": "Keychain Set",
+        "sizes": [
+          {"size": "Per set", "price": 3.99}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Greeting Card",
+        "sizes": [
+          {"size": "Per card", "price": 1.49}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Lighter Refill",
+        "sizes": [
+          {"size": "Per unit", "price": 1.69}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Gift Bag",
+        "sizes": [
+          {"size": "Per unit", "price": 2.49}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Small Toy Figurine",
+        "sizes": [
+          {"size": "Per piece", "price": 4.99}
+        ],
+        "gst": 5
+      }
+    ],
+    "Car Accessories": [
+      {
+        "name": "Car Air Freshener",
+        "sizes": [
+          {"size": "Per unit", "price": 4.49}
+        ],
+        "gst": 5,
+        "customizations": ["Vanilla", "Pine", "Citrus"]
+      },
+      {
+        "name": "Tire Cleaner",
+        "sizes": [
+          {"size": "Per bottle", "price": 5.99}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Wiper Fluid",
+        "sizes": [
+          {"size": "Per bottle", "price": 3.99}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Dashboard Polish",
+        "sizes": [
+          {"size": "Per bottle", "price": 6.49}
+        ],
+        "gst": 5
+      },
+      {
+        "name": "Car Perfume",
+        "sizes": [
+          {"size": "Per bottle", "price": 5.99}
+        ],
+        "gst": 5,
+        "customizations": ["Choose scent"]
+      }
+    ],
+    "Smokes & Vapes": [
+      {
+        "name": "Vape Device",
+        "sizes": [
+          {"size": "Single", "price": 18.99}
+        ],
+        "gst": 13,
+        "customizations": ["Brand", "Flavour per Excel"]
+      },
+      {
+        "name": "Vape Pods",
+        "sizes": [
+          {"size": "2 pack", "price": 10.49},
+          {"size": "4 pack", "price": 18.99}
+        ],
+        "gst": 13,
+        "customizations": ["Brand", "Flavour per Excel"]
+      },
+      {
+        "name": "Cigarette Pack",
+        "sizes": [
+          {"size": "Single", "price": 15.49}
+        ],
+        "gst": 13,
+        "customizations": ["Brand per Excel"]
+      },
+      {
+        "name": "Cigarillo",
+        "sizes": [
+          {"size": "Single", "price": 3.49}
+        ],
+        "gst": 13,
+        "customizations": ["Brand per Excel"]
+      },
+      {
+        "name": "Rolling Paper",
+        "sizes": [
+          {"size": "Single", "price": 1.29}
+        ],
+        "gst": 13,
+        "customizations": ["Brand per Excel"]
+      }
+    ]
+  }
+}

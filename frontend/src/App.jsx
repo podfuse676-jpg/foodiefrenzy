@@ -11,6 +11,7 @@ import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 import PhoneLogin from './components/PhoneLogin';
 import MyOrders from './pages/MyOredrs/MyOrders';
 import VerifyPaymentPage from './pages/VerifyPaymentPage/VerifyPaymentPage';
+import Login from './components/Login/Login';
 
 function App() {
   return (
@@ -18,11 +19,12 @@ function App() {
       {/* Public */}
       <Route path="/" element={<Home />} />
       <Route path="/signup" element={<SignUp />} />
-      <Route path="/login" element={<Home />} />
+      <Route path="/login" element={<LoginWrapper />} />
       <Route path="/phone-login" element={<PhoneLogin />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/menu" element={<Menu />} />
+      <Route path="/item/:id" element={<Menu />} />
 
       {/* Payment verification */}
       <Route path="/myorder/verify" element={<VerifyPaymentPage />} />
@@ -45,5 +47,26 @@ function App() {
     </Routes>
   );
 }
+
+// Wrapper component to handle login success and close functionality for direct login route
+const LoginWrapper = () => {
+  const handleLoginSuccess = () => {
+    // Redirect to home page after successful login
+    window.location.href = '/';
+  };
+
+  const handleClose = () => {
+    // Redirect to home page when closing
+    window.location.href = '/';
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] p-4">
+      <div className="w-full max-w-md">
+        <Login onLoginSuccess={handleLoginSuccess} onClose={handleClose} />
+      </div>
+    </div>
+  );
+};
 
 export default App;

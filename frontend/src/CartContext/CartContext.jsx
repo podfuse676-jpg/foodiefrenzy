@@ -4,27 +4,27 @@ import apiConfig from '../utils/apiConfig';
 
 const CartContext = createContext();
 
-// State shape: [ { _id, item: { _id, name, price, … }, quantity, selectedSize }, … ]
+// State shape: [ { _id, item: { _id, name, price, … }, quantity, selectedSize, selectedFlavors }, … ]
 const cartReducer = (state, action) => {
   switch (action.type) {
     case 'HYDRATE_CART':
       return action.payload;
 
     case 'ADD_ITEM': {
-      const { _id, item, quantity, selectedSize } = action.payload;
+      const { _id, item, quantity, selectedSize, selectedFlavors } = action.payload;
       const exists = state.find(ci => ci._id === _id);
       if (exists) {
         return state.map(ci =>
           ci._id === _id ? { ...ci, quantity: ci.quantity + quantity } : ci
         );
       }
-      return [...state, { _id, item, quantity, selectedSize }];
+      return [...state, { _id, item, quantity, selectedSize, selectedFlavors }];
     }
 
     case 'UPDATE_ITEM': {
-      const { _id, quantity, selectedSize } = action.payload;
+      const { _id, quantity, selectedSize, selectedFlavors } = action.payload;
       return state.map(ci =>
-        ci._id === _id ? { ...ci, quantity, selectedSize } : ci
+        ci._id === _id ? { ...ci, quantity, selectedSize, selectedFlavors } : ci
       );
     }
 
@@ -98,7 +98,7 @@ export const CartProvider = ({ children }) => {
       });
   }, []);
 
-  const addToCart = useCallback(async (item, qty, selectedSize = null) => {
+  const addToCart = useCallback(async (item, qty, selectedSize = null, selectedFlavors = null) => {
     try {
       const token = localStorage.getItem('authToken');
       if (!token) {
@@ -107,7 +107,7 @@ export const CartProvider = ({ children }) => {
         const _id = Date.now().toString() + Math.random().toString(36).substr(2, 9); // Generate unique ID
         dispatch({ 
           type: 'ADD_ITEM', 
-          payload: { _id, item, quantity: qty, selectedSize } 
+          payload: { _id, item, quantity: qty, selectedSize, selectedFlavors } 
         });
         return;
       }
@@ -130,6 +130,11 @@ export const CartProvider = ({ children }) => {
         requestData.selectedSize = selectedSize;
       }
       
+      // Add selected flavors if provided
+      if (selectedFlavors && selectedFlavors.length > 0) {
+        requestData.selectedFlavors = selectedFlavors;
+      }
+      
       const res = await axios.post(
         `${apiConfig.baseURL}/api/cart`,
         requestData,
@@ -142,12 +147,12 @@ export const CartProvider = ({ children }) => {
       const _id = Date.now().toString() + Math.random().toString(36).substr(2, 9); // Generate unique ID
       dispatch({ 
         type: 'ADD_ITEM', 
-        payload: { _id, item, quantity: qty, selectedSize } 
+        payload: { _id, item, quantity: qty, selectedSize, selectedFlavors } 
       });
     }
   }, []);
 
-  const updateQuantity = useCallback(async (_id, qty, selectedSize = null) => {
+  const updateQuantity = useCallback(async (_id, qty, selectedSize = null, selectedFlavors = null) => {
     try {
       const token = localStorage.getItem('authToken');
       if (!token) {
@@ -155,7 +160,7 @@ export const CartProvider = ({ children }) => {
         // Update local cart even without token
         dispatch({ 
           type: 'UPDATE_ITEM', 
-          payload: { _id, quantity: qty, selectedSize } 
+          payload: { _id, quantity: qty, selectedSize, selectedFlavors } 
         });
         return;
       }
@@ -167,19 +172,24 @@ export const CartProvider = ({ children }) => {
         requestData.selectedSize = selectedSize;
       }
       
+      // Add selected flavors if provided
+      if (selectedFlavors) {
+        requestData.selectedFlavors = selectedFlavors;
+      }
+      
       const res = await axios.put(
         `${apiConfig.baseURL}/api/cart/${_id}`,
         requestData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      // backend responds with updated { _id, item, quantity, selectedSize }
+      // backend responds with updated { _id, item, quantity, selectedSize, selectedFlavors }
       dispatch({ type: 'UPDATE_ITEM', payload: res.data });
     } catch (error) {
       console.error('Error updating cart item:', error);
       // Update local cart even if API call fails
       dispatch({ 
         type: 'UPDATE_ITEM', 
-        payload: { _id, quantity: qty, selectedSize } 
+        payload: { _id, quantity: qty, selectedSize, selectedFlavors } 
       });
     }
   }, []);
