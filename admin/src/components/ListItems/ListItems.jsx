@@ -1,6 +1,6 @@
 // src/components/ListItems.jsx
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import apiClient, { apiCallWithFallback } from '../../utils/apiClient';
 import { FiTrash2, FiStar, FiHeart } from 'react-icons/fi';
 import { FiEdit } from 'react-icons/fi';
 // Removed AdminNavbar import since it's handled in App.jsx
@@ -20,32 +20,39 @@ const ListItems = () => {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        // Add withCredentials to handle CORS properly
-        const response = await axios.get(`${url}/api/items`, {
-          withCredentials: true
-        });
-        console.log('Raw API response:', response.data);
+        setLoading(true);
+        
+        // Use our improved API client with fallback
+        const { data, error } = await apiCallWithFallback(
+          () => apiClient.get('/api/items'),
+          [] // Fallback to empty array if API fails
+        );
+        
+        if (error) {
+          console.warn('Using fallback data due to API error:', error);
+        }
+        
+        console.log('Raw API response:', data);
         
         // Ensure we're getting an array of items
         let itemsArray = [];
-        if (Array.isArray(response.data)) {
-          itemsArray = response.data;
-        } else if (response.data && typeof response.data === 'object') {
+        if (Array.isArray(data)) {
+          itemsArray = data;
+        } else if (data && typeof data === 'object') {
           // Try to extract items from response object
-          if (Array.isArray(response.data.items)) {
-            itemsArray = response.data.items;
+          if (Array.isArray(data.items)) {
+            itemsArray = data.items;
           } else {
             // If all else fails, try to convert object values to array
-            itemsArray = Object.values(response.data).filter(item => item && typeof item === 'object');
+            itemsArray = Object.values(data).filter(item => item && typeof item === 'object');
           }
         }
         
         console.log('Total items available:', itemsArray.length);
         setItems(itemsArray);
-        setLoading(false);
       } catch (err) {
         console.error('Error fetching items:', err);
-        // Set loading to false even on error to show empty state
+      } finally {
         setLoading(false);
       }
     };
@@ -56,14 +63,14 @@ const ListItems = () => {
   const handleDelete = async (itemId) => {
     if (!window.confirm('Are you sure you want to delete this item?')) return;
     try {
-      // Remove authentication requirement for delete operation
-      await axios.delete(`${url}/api/items/${itemId}`);
+      // Use our improved API client
+      await apiClient.delete(`/api/items/${itemId}`);
       setItems(prev => prev.filter(item => item._id !== itemId));
       console.log('Deleted item ID:', itemId);
       alert('Item deleted successfully!');
     } catch (err) {
       console.error('Error deleting item:', err);
-      alert('Error deleting item: ' + (err.response?.data?.message || err.message));
+      alert('Error deleting item: ' + (err.message || 'Unknown error'));
     }
   };
 

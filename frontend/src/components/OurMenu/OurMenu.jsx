@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import apiClient, { apiCallWithFallback } from '../../utils/apiClient';
 import { useCart } from '../../CartContext/CartContext';
 import MenuItem from './MenuItem';
 import apiConfig from '../../utils/apiConfig';
@@ -21,13 +21,22 @@ const OurMenu = () => {
       try {
         setLoading(true);
         setError(null);
-        const res = await axios.get(`${url}/api/items`);
+        
+        // Use our improved API client with fallback
+        const { data, error } = await apiCallWithFallback(
+          () => apiClient.get('/api/items'),
+          [] // Fallback to empty array if API fails
+        );
+        
+        if (error) {
+          console.warn('Using fallback data due to API error:', error);
+        }
         
         // Organize items by category
         const organizedData = {};
         
         // Organize items by category
-        const items = Array.isArray(res.data) ? res.data : (res.data.items || []);
+        const items = Array.isArray(data) ? data : (data.items || []);
         console.log('Items fetched from API:', items.length);
         
         if (items.length === 0) {
@@ -62,7 +71,7 @@ const OurMenu = () => {
           setActiveCategory(finalCategories[0] || 'Fruits');
         }
         
-        console.log('Successfully loaded items from database:', {
+        console.log('Successfully loaded items from API:', {
           categories: finalCategories,
           totalItems: items.length
         });
