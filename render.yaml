@@ -3,7 +3,7 @@ services:
     name: lakeshoreconveniencee-backend
     env: node
     plan: free
-    buildCommand: npm install; npm rebuild bcrypt --platform=linux --arch=x64
+    buildCommand: npm install
     startCommand: node server.js
     envVars:
       - key: NODE_ENV
