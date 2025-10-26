@@ -2,195 +2,178 @@ import mongoose from 'mongoose';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import Item from './modals/item.js';
-import xlsx from 'xlsx';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Load environment variables
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const execAsync = promisify(exec);
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/foodiefrenzy')
-  .then(() => console.log('Connected to MongoDB'))
+// Connect to MongoDB using the Atlas database
+const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/foodiefrenzy';
+
+console.log('Connecting to MongoDB Atlas:', mongoURI.replace(/:[^:@]+@/, ':****@'));
+
+mongoose.connect(mongoURI)
+  .then(() => console.log('Connected to MongoDB Atlas'))
   .catch(err => {
     console.error('MongoDB connection error:', err);
     process.exit(1);
   });
 
-// Define the exact category order
-const CATEGORY_ORDER = [
-  'Home',
-  'Products',
-  'Hot Beverages',
-  'Cold Beverages',
-  'Hot Food',
-  'Exotic Chips',
-  'Exotic Drinks',
-  'Grocery',
-  'Novelties',
-  'Car Accessories',
-  'Smokes & Vapes'
-];
-
-// Define modifier groups by category
-const MODIFIER_GROUPS = {
-  'Hot Beverages': ['Milk Options', 'Sugar Level', 'Size Options'],
-  'Cold Beverages': ['Flavors', 'Ice Level', 'Sweetness', 'Size Options'],
-  'Hot Food': ['Sauces', 'Add-ons', 'Spice Level', 'Cooking Instructions'],
-  'Exotic Chips': ['Flavor', 'Size'],
-  'Exotic Drinks': ['Temperature', 'Additions', 'Size Options'],
-  'Grocery': ['Size/Weight', 'Ripeness'],
-  'Novelties': ['Flavor', 'Size'],
-  'Car Accessories': ['Compatibility', 'Color'],
-  'Smokes & Vapes': ['Strength/Flavor', 'Size/Pack']
-};
-
-// Function to determine category for convenience items
-function determineCategoryForConvenienceItem(itemName) {
-  // Map specific keywords to appropriate categories
-  const lowerName = itemName.toLowerCase();
-  
-  if (lowerName.includes('chip') || lowerName.includes('crisp') || lowerName.includes('pretzel')) {
-    return 'Exotic Chips';
-  } else if (lowerName.includes('soda') || lowerName.includes('pop') || lowerName.includes('soft drink') || lowerName.includes('beverage')) {
-    return 'Exotic Drinks';
-  } else if (lowerName.includes('candy') || lowerName.includes('chocolate') || lowerName.includes('snack') || lowerName.includes('cookie') || lowerName.includes('bar')) {
-    return 'Novelties';
-  } else if (lowerName.includes('tobacco') || lowerName.includes('cigarette')) {
-    return 'Smokes & Vapes';
-  } else if (lowerName.includes('vape') || lowerName.includes('e-cigarette')) {
-    return 'Smokes & Vapes';
-  } else if (lowerName.includes('accessory') || lowerName.includes('phone') || lowerName.includes('charger') || lowerName.includes('cable')) {
-    return 'Car Accessories';
-  }
-  
-  // Default to Grocery for most convenience items
-  return 'Grocery';
-}
-
-// Function to process Excel files directly with xlsx library
+// Function to process Excel files using Python
 const processExcelFiles = async () => {
   try {
     console.log('Processing Excel files...');
     
-    let allItems = [];
+    // Python script to read and convert Excel to JSON
+    const pythonScript = `
+import pandas as pd
+import json
+import sys
+import os
+
+# Get the correct path to the Excel files
+excel_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+
+# Read convenience items
+try:
+    convenience_file = os.path.join(excel_dir, 'lakeshore convenience item.xlsx')
+    print(f"Looking for convenience file at: {convenience_file}", file=sys.stderr)
+    df_conv = pd.read_excel(convenience_file)
     
-    // Process convenience items Excel file
-    try {
-      const workbook1 = xlsx.readFile('../lakeshore convenience item.xlsx');
-      const sheetName1 = workbook1.SheetNames[0];
-      const worksheet1 = workbook1.Sheets[sheetName1];
-      const convenienceData = xlsx.utils.sheet_to_json(worksheet1);
-      
-      const convenienceItems = convenienceData.map(row => {
-        // Clean up the data
-        const name = String(row['Name'] || '').trim();
-        const price = parseFloat(row['Price']) || 0;
-        const cost = parseFloat(row['Cost']) || 0;
-        const description = String(row['Alternate Name'] || row['Name'] || '').trim();
-        const productCode = String(row['Product Code'] || '').trim();
-        const sku = String(row['SKU'] || '').trim();
+    # Clean and process convenience items
+    convenience_items = []
+    for idx, row in df_conv.iterrows():
+        if pd.notna(row.get('Name')):
+            item = {
+                'name': str(row.get('Name', '')).strip(),
+                'price': float(row.get('Price', 0)) if pd.notna(row.get('Price')) else 0,
+                'cost': float(row.get('Cost', 0)) if pd.notna(row.get('Cost')) else 0,
+                'category': 'Convenience',
+                'description': str(row.get('Alternate Name', row.get('Name', ''))).strip(),
+                'productCode': str(row.get('Product Code', '')) if pd.notna(row.get('Product Code')) else '',
+                'sku': str(row.get('SKU', '')) if pd.notna(row.get('SKU')) else '',
+                'taxRate': 0.13,
+                'rating': 4.0
+            }
+            convenience_items.append(item)
+    
+    print(f"Processed {len(convenience_items)} convenience items", file=sys.stderr)
+    
+except Exception as e:
+    print(f"Error processing convenience items: {e}", file=sys.stderr)
+    convenience_items = []
+
+# Read food menu items
+try:
+    food_file = os.path.join(excel_dir, 'lakeshore food menu.xlsx')
+    print(f"Looking for food file at: {food_file}", file=sys.stderr)
+    df_food = pd.read_excel(food_file)
+    
+    # Clean and process food items
+    food_items = []
+    current_category = 'Food'
+    
+    for idx, row in df_food.iterrows():
+        item_name = row.get('ITEM', '')
+        price_raw = row.get('PRICE', 0)
         
-        if (!name) return null;
-        
-        // Determine proper category for convenience items
-        const category = determineCategoryForConvenienceItem(name);
-        
-        return {
-          name,
-          price,
-          cost,
-          category,
-          description,
-          productCode,
-          sku,
-          taxRate: 0.13,
-          rating: 4.0
-        };
-      }).filter(item => item !== null);
-      
-      console.log(`Processed ${convenienceItems.length} convenience items`);
-      allItems = allItems.concat(convenienceItems);
-    } catch (error) {
-      console.log('Error processing convenience items:', error.message);
+        if pd.notna(item_name):
+            item_name = str(item_name).strip()
+            
+            # Skip header rows and empty rows
+            if item_name in ['ITEM', 'Food:', 'Beverages:', 'NaN', ''] or item_name.startswith('Unnamed'):
+                continue
+            
+            # Check if this is a category header (ends with ':')
+            if item_name.endswith(':'):
+                current_category = item_name.replace(':', '').strip()
+                continue
+            
+            # Parse price - handle cases like '6.49 (Regular)' or ' 12.49 (Regular)'
+            price = 0
+            try:
+                if pd.notna(price_raw):
+                    price_str = str(price_raw).strip()
+                    # Extract just the numeric part before any parentheses or spaces
+                    import re
+                    # Match any leading spaces, then the number
+                    price_match = re.search(r'([0-9.]+)', price_str)
+                    if price_match:
+                        price = float(price_match.group(1))
+                    else:
+                        price = float(price_str)
+            except (ValueError, AttributeError):
+                pass
+            
+            # Skip rows without a valid price
+            if price == 0:
+                continue
+            
+            # Get description and flavour options
+            description = str(row.get('Description', item_name)).strip() if pd.notna(row.get('Description')) else item_name
+            flavour_options = str(row.get('Flavour Options', '')).strip() if pd.notna(row.get('Flavour Options')) else ''
+            
+            # Parse flavour options into list
+            flavour_list = []
+            if flavour_options:
+                flavour_list = [f.strip() for f in flavour_options.split(',')]
+            
+            # Get GST status
+            has_gst = str(row.get('GST (5%)', 'No')).strip().lower() == 'yes'
+            
+            item = {
+                'name': item_name,
+                'price': float(price),
+                'category': current_category,
+                'description': description,
+                'flavourOptions': flavour_list,
+                'taxRate': 0.05 if has_gst else 0,
+                'gst': 0.05 if has_gst else 0,
+                'rating': 4.5
+            }
+            food_items.append(item)
+    
+    print(f"Processed {len(food_items)} food items", file=sys.stderr)
+    
+except Exception as e:
+    print(f"Error processing food items: {e}", file=sys.stderr)
+    food_items = []
+
+# Combine all items
+all_items = convenience_items + food_items
+
+# Output as JSON
+print(json.dumps(all_items, indent=2))
+`;
+
+    // Write Python script to a temporary file
+    const fs = await import('fs');
+    const tempScriptPath = path.join(__dirname, 'temp_process_excel.py');
+    fs.writeFileSync(tempScriptPath, pythonScript);
+    
+    // Execute Python script using the virtual environment
+    const { stdout, stderr } = await execAsync('cd "' + __dirname + '" && source ../venv/bin/activate && python3 temp_process_excel.py')
+    
+    if (stderr) {
+      console.log('Python script logs:', stderr);
     }
     
-    // Process food menu Excel file
-    try {
-      const workbook2 = xlsx.readFile('../lakeshore food menu.xlsx');
-      const sheetName2 = workbook2.SheetNames[0];
-      const worksheet2 = workbook2.Sheets[sheetName2];
-      const foodData = xlsx.utils.sheet_to_json(worksheet2);
-      
-      let currentCategory = 'Food';
-      const foodItems = [];
-      
-      foodData.forEach(row => {
-        const itemName = String(row['ITEM'] || '').trim();
-        const priceRaw = row['PRICE'];
-        
-        if (!itemName) return;
-        
-        // Skip header rows and empty rows
-        if (itemName === 'ITEM' || itemName === 'NaN' || itemName.startsWith('Unnamed')) {
-          return;
-        }
-        
-        // Check if this is a category header (ends with ':')
-        if (itemName.endsWith(':')) {
-          currentCategory = itemName.replace(':', '').trim();
-          return;
-        }
-        
-        // Parse price
-        let price = 0;
-        if (priceRaw) {
-          const priceStr = String(priceRaw).trim();
-          // Extract just the numeric part
-          const priceMatch = priceStr.match(/([0-9.]+)/);
-          if (priceMatch) {
-            price = parseFloat(priceMatch[1]) || 0;
-          } else {
-            price = parseFloat(priceStr) || 0;
-          }
-        }
-        
-        // Skip rows without a valid price
-        if (price === 0) {
-          return;
-        }
-        
-        // Get description and flavour options
-        const description = String(row['Description'] || itemName).trim();
-        const flavourOptionsRaw = String(row['Flavour Options'] || '').trim();
-        
-        // Parse flavour options into list
-        let flavourOptions = [];
-        if (flavourOptionsRaw) {
-          flavourOptions = flavourOptionsRaw.split(',').map(f => f.trim()).filter(f => f);
-        }
-        
-        // Get GST status
-        const gstRaw = String(row['GST (5%)'] || 'No').trim().toLowerCase();
-        const hasGst = gstRaw === 'yes';
-        
-        foodItems.push({
-          name: itemName,
-          price: price,
-          category: currentCategory,
-          description: description,
-          flavourOptions: flavourOptions,
-          taxRate: hasGst ? 0.05 : 0,
-          gst: hasGst ? 0.05 : 0,
-          rating: 4.5
-        });
-      });
-      
-      console.log(`Processed ${foodItems.length} food items`);
-      allItems = allItems.concat(foodItems);
-    } catch (error) {
-      console.log('Error processing food items:', error.message);
-    }
+    // Parse the JSON output
+    const items = JSON.parse(stdout);
     
-    console.log(`Total items to import: ${allItems.length}`);
-    return allItems;
+    console.log('Total items to import: ' + items.length);
+    
+    // Clean up temp file
+    fs.unlinkSync(tempScriptPath);
+    
+    return items;
     
   } catch (error) {
     console.error('Error processing Excel files:', error);
@@ -209,7 +192,7 @@ const importItems = async () => {
       process.exit(0);
     }
     
-    console.log(`Importing ${items.length} items to MongoDB...`);
+    console.log('Importing ' + items.length + ' items to MongoDB Atlas...');
     
     // Import items one by one, handling duplicates
     let addedCount = 0;
@@ -218,54 +201,38 @@ const importItems = async () => {
     
     for (const itemData of items) {
       try {
-        // Ensure category is in our defined order, default to Products if not
-        let category = itemData.category;
-        if (!CATEGORY_ORDER.includes(category)) {
-          category = 'Products';
-        }
-        
-        // Add modifier groups based on category
-        const itemWithModifiers = {
-          ...itemData,
-          category: category
-        };
-        
-        if (MODIFIER_GROUPS[category]) {
-          itemWithModifiers.modifierGroups = MODIFIER_GROUPS[category];
-        }
-        
         // Try to find existing item by name AND category (compound unique key)
         const existingItem = await Item.findOne({ 
-          name: itemWithModifiers.name,
-          category: itemWithModifiers.category 
+          name: itemData.name,
+          category: itemData.category 
         });
         
         if (existingItem) {
           // Update existing item
           await Item.findOneAndUpdate(
-            { name: itemWithModifiers.name, category: itemWithModifiers.category },
-            itemWithModifiers,
+            { name: itemData.name, category: itemData.category },
+            itemData,
             { new: true }
           );
           updatedCount++;
-          console.log(`Updated: ${itemWithModifiers.name} (${itemWithModifiers.category})`);
+          console.log('Updated: ' + itemData.name + ' (' + itemData.category + ')');
         } else {
           // Create new item
-          await Item.create(itemWithModifiers);
+          await Item.create(itemData);
           addedCount++;
-          console.log(`Added: ${itemWithModifiers.name} (${itemWithModifiers.category})`);
+          console.log('Added: ' + itemData.name + ' (' + itemData.category + ')');
         }
       } catch (error) {
         errorCount++;
-        console.error(`Error processing ${itemData.name} in ${itemData.category}:`, error.message);
+        console.error('Error processing ' + itemData.name + ' in ' + itemData.category + ':', error.message);
       }
     }
     
     console.log('\n=== Import Summary ===');
-    console.log(`Total items processed: ${items.length}`);
-    console.log(`Items added: ${addedCount}`);
-    console.log(`Items updated: ${updatedCount}`);
-    console.log(`Errors: ${errorCount}`);
+    console.log('Total items processed: ' + items.length);
+    console.log('Items added: ' + addedCount);
+    console.log('Items updated: ' + updatedCount);
+    console.log('Errors: ' + errorCount);
     
     process.exit(0);
   } catch (error) {
