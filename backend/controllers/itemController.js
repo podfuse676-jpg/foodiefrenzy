@@ -283,3 +283,24 @@ export const updateItem = async (req, res, next) => {
         });
     }
 };
+
+// Add the missing deleteItem function
+export const deleteItem = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        console.log('Deleting item with ID:', id);
+        
+        const deleted = await Item.findByIdAndDelete(id);
+        
+        if (!deleted) {
+            console.log('Item not found with ID:', id);
+            return res.status(404).json({ message: 'Item not found' });
+        }
+        
+        console.log('Item deleted successfully:', deleted.name);
+        res.json({ message: 'Item deleted successfully' });
+    } catch (err) {
+        console.error('Delete item error:', err);
+        res.status(500).json({ message: 'Failed to delete item', error: err.message });
+    }
+};
