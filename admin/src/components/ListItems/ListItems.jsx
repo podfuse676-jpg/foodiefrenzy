@@ -81,7 +81,7 @@ const ListItems = () => {
     [...Array(5)].map((_, i) => (
       <FiStar
         key={i}
-        className={`text-xl ${i < rating ? 'text-green-400 fill-current' : 'text-green-100/30'}`}
+        className={`text-xl ${i < rating ? 'text-amber-400 fill-current' : 'text-amber-100/30'}`}
       />
     ));
 
@@ -127,17 +127,11 @@ const ListItems = () => {
                   .map(item => (
                     <tr key={item._id} className={styles.tr}>
                       <td className={styles.imgCell}>
-                        {item.imageUrl ? (
-                          <img
-                            src={item.imageUrl.startsWith('http') ? item.imageUrl : `${url}${item.imageUrl}`}
-                            alt={item.name}
-                            className={styles.img}
-                          />
-                        ) : (
-                          <div className="w-50 h-30 bg-green-900/20 rounded-lg flex items-center justify-center">
-                            <span className="text-green-100/50 text-xs">No image</span>
-                          </div>
-                        )}
+                        <img
+                          src={item.imageUrl}
+                          alt={item.name}
+                          className={styles.img}
+                        />
                       </td>
                       <td className={styles.nameCell}>
                         <div className="space-y-1">
@@ -158,11 +152,7 @@ const ListItems = () => {
                       </td>
                       <td className="p-4 text-center">
                         <div className="flex items-center justify-center gap-2">
-                          <button onClick={() => {
-                            setEditingItem(item);
-                            setImagePreview(null);
-                            setNewImage(null);
-                          }} className={styles.editBtn} title="Edit">
+                          <button onClick={() => setEditingItem(item)} className={styles.editBtn} title="Edit">
                             <FiEdit className="text-xl" />
                           </button>
                           <button onClick={() => handleDelete(item._id)} className={styles.deleteBtn}>
@@ -186,9 +176,9 @@ const ListItems = () => {
                 <div className="mb-6">
                   <label className="block text-green-100 mb-2">Current Image</label>
                   <div className="flex flex-col sm:flex-row gap-4 items-start">
-                    {(imagePreview || editingItem.imageUrl) ? (
+                    {imagePreview || editingItem.imageUrl ? (
                       <img
-                        src={imagePreview || (editingItem.imageUrl.startsWith('http') ? editingItem.imageUrl : `${url}${editingItem.imageUrl}`)}
+                        src={imagePreview || editingItem.imageUrl}
                         alt="Preview"
                         className="w-32 h-32 object-cover rounded-lg border border-green-900/30"
                       />
@@ -311,25 +301,9 @@ const ListItems = () => {
                         
                         // Append all other fields
                         const dataToSend = { ...editingItem };
-                        
-                        // Handle array fields
-                        if (typeof dataToSend.modifierGroups === 'string') {
-                          dataToSend.modifierGroups = dataToSend.modifierGroups.split(',').map(s => s.trim()).filter(Boolean);
-                        } else if (!Array.isArray(dataToSend.modifierGroups)) {
-                          dataToSend.modifierGroups = [];
-                        }
-                        
-                        if (typeof dataToSend.printerLabels === 'string') {
-                          dataToSend.printerLabels = dataToSend.printerLabels.split(',').map(s => s.trim()).filter(Boolean);
-                        } else if (!Array.isArray(dataToSend.printerLabels)) {
-                          dataToSend.printerLabels = [];
-                        }
-                        
-                        if (typeof dataToSend.flavourOptions === 'string') {
-                          dataToSend.flavourOptions = dataToSend.flavourOptions.split(',').map(s => s.trim()).filter(Boolean);
-                        } else if (!Array.isArray(dataToSend.flavourOptions)) {
-                          dataToSend.flavourOptions = [];
-                        }
+                        if (typeof dataToSend.modifierGroups === 'string') dataToSend.modifierGroups = dataToSend.modifierGroups.split(',').map(s => s.trim()).filter(Boolean);
+                        if (typeof dataToSend.printerLabels === 'string') dataToSend.printerLabels = dataToSend.printerLabels.split(',').map(s => s.trim()).filter(Boolean);
+                        if (typeof dataToSend.flavourOptions === 'string') dataToSend.flavourOptions = dataToSend.flavourOptions.split(',').map(s => s.trim()).filter(Boolean);
                         
                         // Handle numeric fields
                         const numericFields = ['price', 'gst', 'cost', 'quantity', 'rating', 'hearts', 'taxRate'];
@@ -344,10 +318,8 @@ const ListItems = () => {
                         booleanFields.forEach(field => {
                           if (dataToSend[field] === 'true') dataToSend[field] = true;
                           if (dataToSend[field] === 'false') dataToSend[field] = false;
-                          if (typeof dataToSend[field] === 'boolean') return; // Already boolean
                         });
                         
-                        // Append all fields except image and _id
                         Object.entries(dataToSend).forEach(([key, val]) => {
                           if (key === 'image') return; // Skip the image field as it's already appended
                           if (key === '_id') return; // Skip the _id field
@@ -359,11 +331,7 @@ const ListItems = () => {
                         });
                         
                         // Update config for multipart form data
-                        config = { 
-                          headers: { 'Content-Type': 'multipart/form-data' },
-                          // Add timeout to prevent hanging requests
-                          timeout: 30000
-                        };
+                        config = { headers: { 'Content-Type': 'multipart/form-data' } };
                         console.log('FormData prepared with fields:', [...payload.entries()]);
                       } else {
                         // No image update, send as JSON
@@ -371,23 +339,9 @@ const ListItems = () => {
                         payload = { ...editingItem };
                         
                         // Handle array fields
-                        if (typeof payload.modifierGroups === 'string') {
-                          payload.modifierGroups = payload.modifierGroups.split(',').map(s => s.trim()).filter(Boolean);
-                        } else if (!Array.isArray(payload.modifierGroups)) {
-                          payload.modifierGroups = [];
-                        }
-                        
-                        if (typeof payload.printerLabels === 'string') {
-                          payload.printerLabels = payload.printerLabels.split(',').map(s => s.trim()).filter(Boolean);
-                        } else if (!Array.isArray(payload.printerLabels)) {
-                          payload.printerLabels = [];
-                        }
-                        
-                        if (typeof payload.flavourOptions === 'string') {
-                          payload.flavourOptions = payload.flavourOptions.split(',').map(s => s.trim()).filter(Boolean);
-                        } else if (!Array.isArray(payload.flavourOptions)) {
-                          payload.flavourOptions = [];
-                        }
+                        if (typeof payload.modifierGroups === 'string') payload.modifierGroups = payload.modifierGroups.split(',').map(s => s.trim()).filter(Boolean);
+                        if (typeof payload.printerLabels === 'string') payload.printerLabels = payload.printerLabels.split(',').map(s => s.trim()).filter(Boolean);
+                        if (typeof payload.flavourOptions === 'string') payload.flavourOptions = payload.flavourOptions.split(',').map(s => s.trim()).filter(Boolean);
                         
                         // Handle numeric fields
                         const numericFields = ['price', 'gst', 'cost', 'quantity', 'rating', 'hearts', 'taxRate'];
@@ -402,7 +356,6 @@ const ListItems = () => {
                         booleanFields.forEach(field => {
                           if (payload[field] === 'true') payload[field] = true;
                           if (payload[field] === 'false') payload[field] = false;
-                          if (typeof payload[field] === 'boolean') return; // Already boolean
                         });
                         
                         console.log('JSON payload prepared:', payload);

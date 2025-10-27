@@ -150,8 +150,15 @@ export const updateItem = async (req, res, next) => {
 
         console.log('Update data to be saved:', updateData);
 
+        // Validate that we have a valid item ID
+        if (!id) {
+            return res.status(400).json({ message: 'Item ID is required' });
+        }
+
         const updated = await Item.findByIdAndUpdate(id, updateData, { new: true });
-        if (!updated) return res.status(404).json({ message: 'Item not found' });
+        if (!updated) {
+            return res.status(404).json({ message: 'Item not found' });
+        }
         
         // Prefix image URL with host for absolute path
         const host = `${req.protocol}://${req.get('host')}`;
@@ -164,6 +171,23 @@ export const updateItem = async (req, res, next) => {
         res.json(updatedWithFullUrl);
     } catch (err) {
         console.error('Update item error:', err);
-        next(err);
+        console.error('Error stack:', err.stack);
+        
+        // Provide more specific error messages
+        if (err.name === 'CastError') {
+            return res.status(400).json({ message: 'Invalid item ID format' });
+        }
+        if (err.name === 'ValidationError') {
+            return res.status(400).json({ message: 'Validation error: ' + err.message });
+        }
+        if (err.code === 11000) {
+            return res.status(400).json({ message: 'Duplicate item name in category' });
+        }
+        
+        // Generic error response
+        res.status(500).json({ 
+            message: 'Failed to update item',
+            error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+        });
     }
 };
