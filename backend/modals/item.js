@@ -32,6 +32,38 @@ const itemSchema = new mongoose.Schema({
     sizeOptions: { type: [sizeOptionSchema], default: [] }
 }, { timestamps: true });
 
+// Add validation middleware
+itemSchema.pre('save', function(next) {
+    // Ensure arrays are properly formatted
+    if (this.modifierGroups && !Array.isArray(this.modifierGroups)) {
+        this.modifierGroups = [];
+    }
+    if (this.printerLabels && !Array.isArray(this.printerLabels)) {
+        this.printerLabels = [];
+    }
+    if (this.flavourOptions && !Array.isArray(this.flavourOptions)) {
+        this.flavourOptions = [];
+    }
+    
+    // Ensure numeric fields are numbers
+    const numericFields = ['price', 'taxRate', 'gst', 'cost', 'quantity', 'rating', 'hearts', 'total'];
+    numericFields.forEach(field => {
+        if (this[field] !== undefined && typeof this[field] !== 'number') {
+            this[field] = Number(this[field]) || 0;
+        }
+    });
+    
+    // Ensure boolean fields are booleans
+    const booleanFields = ['hidden', 'nonRevenue'];
+    booleanFields.forEach(field => {
+        if (this[field] !== undefined && typeof this[field] !== 'boolean') {
+            this[field] = this[field] === 'true' || this[field] === true;
+        }
+    });
+    
+    next();
+});
+
 // Create a compound unique index on name and category
 itemSchema.index({ name: 1, category: 1 }, { unique: true });
 
