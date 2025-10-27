@@ -18,13 +18,11 @@ const connectDB = async () => {
 };
 
 // Image mapping - update this with your actual image filenames
+// Supports both JPEG and WebP formats
 const imageMapping = {
-  // Format: "Item Name": "/uploads/images/filename.jpg"
-  "Rolling Paper": "/uploads/images/rolling-paper.jpg",
-  "Cigarillo": "/uploads/images/cigarillo.jpg",
-  "Cigarette Pack": "/uploads/images/cigarette-pack.jpg",
-  "Vape Pods": "/uploads/images/vape-pods.jpg",
-  "Vape Device": "/uploads/images/vape-device.jpg",
+  // Format: "Item Name": "/uploads/images/filename.ext"
+  "Car Perfume": "/uploads/images/car-perfume.jpg",
+  "Dashboard Polish": "/uploads/images/dash-board-polish.webp",
   // Add more items as needed
 };
 
@@ -33,15 +31,18 @@ const updateItemImages = async () => {
     await connectDB();
     
     console.log('Updating item images...');
+    console.log('Supported formats: JPEG, PNG, WebP, GIF');
     
     // Update each item with its image path
     for (const [itemName, imagePath] of Object.entries(imageMapping)) {
       try {
         const item = await Item.findOne({ name: itemName });
         if (item) {
-          item.imageUrl = imagePath;
+          // Use absolute URL for deployed backend
+          const baseUrl = process.env.BACKEND_URL || 'http://localhost:4000';
+          item.imageUrl = `${baseUrl}${imagePath}`;
           await item.save();
-          console.log(`✓ Updated image for "${itemName}" to ${imagePath}`);
+          console.log(`✓ Updated image for "${itemName}" to ${item.imageUrl}`);
         } else {
           console.log(`⚠ Item "${itemName}" not found`);
         }
@@ -50,7 +51,8 @@ const updateItemImages = async () => {
       }
     }
     
-    console.log('Image update process completed');
+    console.log('\nImage update process completed');
+    console.log('WebP images are supported and will be displayed correctly in modern browsers');
     process.exit(0);
   } catch (error) {
     console.error('Error:', error);
