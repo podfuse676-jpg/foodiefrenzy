@@ -1,15 +1,15 @@
 import express from 'express';
-
+import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
+import path from 'path';
 
 // Load environment variables
 dotenv.config();
 
 // Import database connection
 import { connectDB } from './config/db.js';
-import mongoose from 'mongoose';
 
 // Add connection event listeners for debugging
 mongoose.connection.on('connected', () => {
@@ -83,6 +83,23 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Serve static files from uploads directory
 app.use('/uploads', express.static('uploads'));
+
+// Add a route to serve images with proper headers
+app.get('/uploads/images/:imageName', (req, res) => {
+  const imageName = req.params.imageName;
+  const imagePath = path.join(process.cwd(), 'uploads', 'images', imageName);
+  
+  // Set cache headers for better performance
+  res.set('Cache-Control', 'public, max-age=31536000'); // 1 year
+  
+  // Serve the image file
+  res.sendFile(imagePath, (err) => {
+    if (err) {
+      console.error('Error serving image:', err);
+      res.status(404).json({ message: 'Image not found' });
+    }
+  });
+});
 
 // Routes
 app.use('/api/items', itemRoutes);
