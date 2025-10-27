@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import apiClient, { apiCallWithFallback } from '../../utils/apiClient';
 import { useCart } from '../../CartContext/CartContext';
 import MenuItem from './MenuItem';
+import ItemDetailView from './ItemDetailView'; // Add this import
 import apiConfig from '../../utils/apiConfig';
 import './Om.css';
 
@@ -12,6 +13,7 @@ const OurMenu = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null); // Add this state for detail view
   const { cartItems: rawCart, addToCart, updateQuantity, removeFromCart } = useCart();
   const cartItems = rawCart.filter(ci => ci.item);
   const url = apiConfig.baseURL;
@@ -212,6 +214,7 @@ const OurMenu = () => {
                   updateQuantity={updateQuantity}
                   removeFromCart={removeFromCart}
                   category={activeCategory}
+                  onOpenDetail={() => setSelectedItem(item)} // Pass the function to open detail view
                 />
               );
             })
@@ -224,6 +227,14 @@ const OurMenu = () => {
           )}
         </div>
       </div>
+      
+      {/* Item Detail View Modal */}
+      {selectedItem && (
+        <ItemDetailView 
+          item={selectedItem} 
+          onClose={() => setSelectedItem(null)} 
+        />
+      )}
     </div>
   );
 };
