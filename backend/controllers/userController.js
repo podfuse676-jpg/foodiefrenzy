@@ -2,10 +2,12 @@ import userModel from "../modals/userModel.js";
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import User from '../modals/userModel.js'
+import { CartItem } from '../modals/cartItem.js'
 import asyncHandler from 'express-async-handler'
 
 // LOGIN USER
 const loginUser = async (req, res) => {
+    console.log('=== LOGIN ATTEMPT ===');
     console.log('Login request received');
     console.log('Request body:', req.body);
     console.log('Request headers:', req.headers);
@@ -17,9 +19,6 @@ const loginUser = async (req, res) => {
         // CHECK IF USER IS AVAILABLE WITH THIS ID
         const user = await userModel.findOne({ email });
         console.log('User lookup result:', user ? 'Found' : 'Not found');
-        console.log('Database connection state:', mongoose.connection.readyState);
-        console.log('Database connection host:', mongoose.connection.host);
-        console.log('Database connection name:', mongoose.connection.name);
         
         if (!user) {
             console.log('User not found in database for email:', email);
@@ -29,6 +28,7 @@ const loginUser = async (req, res) => {
         console.log('User found:', user.username, user.email, user.role);
         
         // MATCHING USER AND PASSWORD
+        console.log('Comparing password...');
         const isMatch = await bcrypt.compare(password, user.password);
         console.log('Password match result:', isMatch);
         
@@ -37,15 +37,24 @@ const loginUser = async (req, res) => {
         }
 
         // Clear the user's cart on login to ensure fresh start
-        await CartItem.deleteMany({ user: user._id });
+        console.log('Clearing user cart...');
+        try {
+            await CartItem.deleteMany({ user: user._id });
+            console.log('Cart cleared successfully');
+        } catch (cartError) {
+            console.log('Error clearing cart:', cartError);
+        }
 
         // IF PASSWORD MATCHES WE GENERATE TOKENS
+        console.log('Generating token...');
         const token = createToken(user);
         console.log('Login successful for user:', user.email);
         res.json({ success: true, token, role: user.role })
     }
     catch (error) {
+        console.log('=== LOGIN ERROR ===');
         console.log('Login error:', error);
+        console.log('Error stack:', error.stack);
         res.json({ success: false, message: "Error" })
     }
 }
