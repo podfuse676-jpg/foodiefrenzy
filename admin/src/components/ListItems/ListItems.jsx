@@ -301,6 +301,10 @@ const ListItems = () => {
                         
                         // Append all other fields
                         const dataToSend = { ...editingItem };
+                        
+                        // Remove _id field as it shouldn't be updated
+                        delete dataToSend._id;
+                        
                         if (typeof dataToSend.modifierGroups === 'string') dataToSend.modifierGroups = dataToSend.modifierGroups.split(',').map(s => s.trim()).filter(Boolean);
                         if (typeof dataToSend.printerLabels === 'string') dataToSend.printerLabels = dataToSend.printerLabels.split(',').map(s => s.trim()).filter(Boolean);
                         if (typeof dataToSend.flavourOptions === 'string') dataToSend.flavourOptions = dataToSend.flavourOptions.split(',').map(s => s.trim()).filter(Boolean);
@@ -322,7 +326,6 @@ const ListItems = () => {
                         
                         Object.entries(dataToSend).forEach(([key, val]) => {
                           if (key === 'image') return; // Skip the image field as it's already appended
-                          if (key === '_id') return; // Skip the _id field
                           if (Array.isArray(val)) {
                             payload.append(key, JSON.stringify(val));
                           } else {
@@ -378,19 +381,28 @@ const ListItems = () => {
                       let errorMessage = 'Failed to update item. ';
                       
                       if (err.response) {
+                        // Server responded with error
                         errorMessage += err.response.data?.message || `Server error: ${err.response.status}`;
                         console.error('Server error details:', err.response.data);
                       } else if (err.request) {
+                        // Request made but no response received
                         errorMessage += 'No response from server. Please check your connection.';
                         console.error('No response from server:', err.request);
                       } else {
+                        // Error in request setup
                         errorMessage += err.message || 'Unknown error occurred';
                         console.error('Unknown error:', err.message);
+                      }
+                      
+                      // Show detailed error in development
+                      if (process.env.NODE_ENV === 'development') {
+                        errorMessage += '\n\nDetails: ' + JSON.stringify(err.response?.data || err.message || 'Unknown error');
                       }
                       
                       alert(errorMessage);
                     }
                   }}>Save</button>
+
                 </div>
               </div>
             </div>
