@@ -27,7 +27,7 @@ const AdminNavbar = () => {
       <div className={styles.navContainer}>
         <div className={styles.logoSection}>
           {/* Logo in a circle with matching border - 90% zoom */}
-          <div className="rounded-full border-2 border-[#f59e0b] p-1 bg-[#fff7ed]">
+          <div className="rounded-full border-2 border-[#4ade80] p-1 bg-[#f0fdf4]">
             <img src={LakeshoreLogo} alt="Lakeshore Convenience" className="h-12 w-12 rounded-full object-contain scale-90" />
           </div>
           <span className={styles.logoText}>Admin Panel</span>
@@ -49,7 +49,7 @@ const AdminNavbar = () => {
           ))}
           <button
             onClick={handleLogout}
-            className="flex items-center space-x-2 px-4 py-2 rounded-xl border-2 border-[#2D1B0E]/30 text-amber-100 hover:border-red-500 hover:bg-red-900/20 transition-all"
+            className="flex items-center space-x-2 px-4 py-2 rounded-xl border-2 border-[#1a2c1a]/30 text-green-100 hover:border-red-500 hover:bg-red-900/20 transition-all"
           >
             <FiLogOut />
             <span>Logout</span>
@@ -85,7 +85,7 @@ const AdminNavbar = () => {
               handleLogout();
               setMenuOpen(false);
             }}
-            className="flex items-center space-x-2 px-4 py-2 rounded-xl border-2 border-[#2D1B0E]/30 text-amber-100 hover:border-red-500 hover:bg-red-900/20 transition-all w-full"
+            className="flex items-center space-x-2 px-4 py-2 rounded-xl border-2 border-[#1a2c1a]/30 text-green-100 hover:border-red-500 hover:bg-red-900/20 transition-all w-full"
           >
             <FiLogOut />
             <span>Logout</span>

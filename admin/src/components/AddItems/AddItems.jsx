@@ -187,31 +187,31 @@ const AddItems = () => {
 
             <div className="space-y-6">
               {/* Section 1: Convenience Store fields */}
-              <div className="p-4 bg-[#2b1f1f] rounded-lg border border-amber-900/20">
-                <h3 className="text-lg text-amber-200 mb-3">Convenience Store / Item</h3>
+              <div className="p-4 bg-[#2b3a2b] rounded-lg border border-green-900/20">
+                <h3 className="text-lg text-green-200 mb-3">Convenience Store / Item</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block mb-2 text-sm text-amber-400">Price Type</label>
+                    <label className="block mb-2 text-sm text-green-400">Price Type</label>
                     <input name="priceType" value={formData.priceType} onChange={handleInputChange} className={styles.inputField} placeholder="e.g. fixed / variable" />
                   </div>
                   <div>
-                    <label className="block mb-2 text-sm text-amber-400">Price Unit</label>
+                    <label className="block mb-2 text-sm text-green-400">Price Unit</label>
                     <input name="priceUnit" value={formData.priceUnit} onChange={handleInputChange} className={styles.inputField} placeholder="e.g. per item / per kg" />
                   </div>
                   <div>
-                    <label className="block mb-2 text-sm text-amber-400">GST (%)</label>
+                    <label className="block mb-2 text-sm text-green-400">GST (%)</label>
                     <input type="number" step="0.01" name="gst" value={formData.gst} onChange={handleInputChange} className={styles.inputField} placeholder="0.00" />
                   </div>
                   <div>
-                    <label className="block mb-2 text-sm text-amber-400">Cost</label>
+                    <label className="block mb-2 text-sm text-green-400">Cost</label>
                     <input type="number" step="0.01" name="cost" value={formData.cost} onChange={handleInputChange} className={styles.inputField} placeholder="0.00" />
                   </div>
                   <div>
-                    <label className="block mb-2 text-sm text-amber-400">Product Code</label>
+                    <label className="block mb-2 text-sm text-green-400">Product Code</label>
                     <input name="productCode" value={formData.productCode} onChange={handleInputChange} className={styles.inputField} placeholder="e.g. PC123456" />
                   </div>
                   <div>
-                    <label className="block mb-2 text-sm text-amber-400">SKU</label>
+                    <label className="block mb-2 text-sm text-green-400">SKU</label>
                     <input name="sku" value={formData.sku} onChange={handleInputChange} className={styles.inputField} placeholder="e.g. SKU123456" />
                   </div>
                 </div>
