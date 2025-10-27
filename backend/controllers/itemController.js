@@ -1,3 +1,5 @@
+import Item from '../modals/item.js';
+
 export const getItems = async (req, res, next) => {
     try {
         console.log('Fetching all items');
