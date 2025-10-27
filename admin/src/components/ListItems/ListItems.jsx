@@ -118,7 +118,7 @@ const ListItems = () => {
                   <th className={styles.th}>Price ($ CAD)</th>
                   <th className={styles.th}>Rating</th>
                   <th className={styles.th}>Hearts</th>
-                  <th className={styles.thCenter}>Delete</th>
+                  <th className={styles.thCenter}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -169,7 +169,7 @@ const ListItems = () => {
           {/* Edit modal / inline form */}
           {editingItem && (
             <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 overflow-auto">
-              <div className="bg-[#1b1512] rounded-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="bg-[#3a2b2b]/90 backdrop-blur-sm rounded-2xl p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto border-2 border-amber-900/30">
                 <h3 className="text-xl text-amber-200 mb-4">Edit Item: {editingItem.name}</h3>
                 
                 {/* Image Preview Section */}
@@ -189,7 +189,7 @@ const ListItems = () => {
                     )}
                     <div className="flex-1">
                       <label className="block text-amber-100 mb-2">Update Image</label>
-                      <label className="flex items-center gap-2 px-4 py-2 bg-amber-800/30 rounded-lg cursor-pointer w-fit">
+                      <label className="flex items-center gap-2 px-4 py-2 bg-amber-800/30 rounded-lg cursor-pointer w-fit border border-amber-900/30 hover:border-amber-600 transition-colors">
                         <FiUpload />
                         <span className="text-amber-100">Choose Image</span>
                         <input
@@ -265,11 +265,11 @@ const ListItems = () => {
                   </div>
                   <div className="flex items-center gap-4">
                     <label className="flex items-center gap-2">
-                      <input type="checkbox" checked={!!editingItem.hidden} onChange={e => setEditingItem(prev => ({ ...prev, hidden: e.target.checked }))} />
+                      <input type="checkbox" checked={!!editingItem.hidden} onChange={e => setEditingItem(prev => ({ ...prev, hidden: e.target.checked }))} className="rounded text-amber-500 focus:ring-amber-500" />
                       <span className="text-amber-200">Hidden (do not show on frontend)</span>
                     </label>
                     <label className="flex items-center gap-2">
-                      <input type="checkbox" checked={!!editingItem.nonRevenue} onChange={e => setEditingItem(prev => ({ ...prev, nonRevenue: e.target.checked }))} />
+                      <input type="checkbox" checked={!!editingItem.nonRevenue} onChange={e => setEditingItem(prev => ({ ...prev, nonRevenue: e.target.checked }))} className="rounded text-amber-500 focus:ring-amber-500" />
                       <span className="text-amber-200">Non-revenue item</span>
                     </label>
                   </div>
@@ -280,12 +280,12 @@ const ListItems = () => {
                   </div>
                 </div>
                 <div className="flex justify-end gap-3">
-                  <button className="px-4 py-2 rounded bg-amber-800/30" onClick={() => {
+                  <button className="px-4 py-2 rounded-lg bg-amber-800/30 border border-amber-900/30 hover:border-amber-600 text-amber-100 transition-colors" onClick={() => {
                     setEditingItem(null);
                     setImagePreview(null);
                     setNewImage(null);
                   }}>Cancel</button>
-                  <button className="px-4 py-2 rounded bg-amber-700 text-white" onClick={async () => {
+                  <button className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-500 to-amber-700 text-[#2D1B0E] font-bold transition-all transform hover:scale-[1.02] shadow-lg" onClick={async () => {
                     try {
                       // Prepare payload
                       let payload;
@@ -303,6 +303,7 @@ const ListItems = () => {
                         if (typeof dataToSend.flavourOptions === 'string') dataToSend.flavourOptions = dataToSend.flavourOptions.split(',').map(s => s.trim()).filter(Boolean);
                         
                         Object.entries(dataToSend).forEach(([key, val]) => {
+                          if (key === 'image') return; // Skip the image field as it's already appended
                           if (Array.isArray(val)) {
                             payload.append(key, JSON.stringify(val));
                           } else {
@@ -328,10 +329,21 @@ const ListItems = () => {
                       setEditingItem(null);
                       setImagePreview(null);
                       setNewImage(null);
-                      alert('Item updated');
+                      alert('Item updated successfully!');
                     } catch (err) {
                       console.error('Update error', err);
-                      alert('Failed to update item');
+                      console.error('Error response:', err.response);
+                      let errorMessage = 'Failed to update item. ';
+                      
+                      if (err.response) {
+                        errorMessage += err.response.data?.message || `Server error: ${err.response.status}`;
+                      } else if (err.request) {
+                        errorMessage += 'No response from server. Please check your connection.';
+                      } else {
+                        errorMessage += err.message || 'Unknown error occurred';
+                      }
+                      
+                      alert(errorMessage);
                     }
                   }}>Save</button>
                 </div>
@@ -348,7 +360,7 @@ const ListItems = () => {
               <button 
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className={`p-2 rounded ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-amber-800'}`}
+                className={`p-2 rounded-lg ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-amber-800'}`}
               >
                 <FiChevronLeft />
               </button>
@@ -356,7 +368,7 @@ const ListItems = () => {
               <button 
                 onClick={() => setCurrentPage(prev => (prev * itemsPerPage < items.length ? prev + 1 : prev))}
                 disabled={currentPage * itemsPerPage >= items.length}
-                className={`p-2 rounded ${currentPage * itemsPerPage >= items.length ? 'opacity-50 cursor-not-allowed' : 'hover:bg-amber-800'}`}
+                className={`p-2 rounded-lg ${currentPage * itemsPerPage >= items.length ? 'opacity-50 cursor-not-allowed' : 'hover:bg-amber-800'}`}
               >
                 <FiChevronRight />
               </button>
