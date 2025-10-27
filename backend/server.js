@@ -25,6 +25,17 @@ if (!fs.existsSync(imagesDir)) {
   fs.mkdirSync(imagesDir, { recursive: true });
 }
 
+// Connect to MongoDB
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGODB_URI);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    process.exit(1);
+  }
+};
+
 // Import models after database connection
 import User from './modals/userModel.js';
 
@@ -37,6 +48,9 @@ import phoneAuthRoutes from './routes/phoneAuthRoute.js';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+
+// Connect to database
+connectDB();
 
 // Configure CORS with a dynamic origin function to allow all Vercel subdomains
 const corsOptions = {
