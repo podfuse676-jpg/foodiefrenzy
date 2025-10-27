@@ -2,11 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import apiClient, { apiCallWithFallback } from '../../utils/apiClient';
 import { FiTrash2, FiStar, FiHeart } from 'react-icons/fi';
-import { FiEdit } from 'react-icons/fi';
+import { FiEdit, FiUpload } from 'react-icons/fi';
 // Removed AdminNavbar import since it's handled in App.jsx
 import { styles } from '../../assets/dummyadmin';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import apiConfig from '../../utils/apiConfig';
+import axios from 'axios';
 
 const ListItems = () => {
   const url = apiConfig.baseURL;
@@ -15,6 +16,8 @@ const ListItems = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [newImage, setNewImage] = useState(null);
 
   // Fetch items from API
   useEffect(() => {
@@ -81,6 +84,15 @@ const ListItems = () => {
         className={`text-xl ${i < rating ? 'text-amber-400 fill-current' : 'text-amber-100/30'}`}
       />
     ));
+
+  // Handle image upload for editing
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setNewImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
 
   if (loading) {
     return (
@@ -159,6 +171,39 @@ const ListItems = () => {
             <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 overflow-auto">
               <div className="bg-[#1b1512] rounded-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
                 <h3 className="text-xl text-amber-200 mb-4">Edit Item: {editingItem.name}</h3>
+                
+                {/* Image Preview Section */}
+                <div className="mb-6">
+                  <label className="block text-amber-100 mb-2">Current Image</label>
+                  <div className="flex flex-col sm:flex-row gap-4 items-start">
+                    {imagePreview || editingItem.imageUrl ? (
+                      <img
+                        src={imagePreview || editingItem.imageUrl}
+                        alt="Preview"
+                        className="w-32 h-32 object-cover rounded-lg border border-amber-900/30"
+                      />
+                    ) : (
+                      <div className="w-32 h-32 bg-amber-900/20 rounded-lg border border-amber-900/30 flex items-center justify-center">
+                        <span className="text-amber-100/50">No image</span>
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <label className="block text-amber-100 mb-2">Update Image</label>
+                      <label className="flex items-center gap-2 px-4 py-2 bg-amber-800/30 rounded-lg cursor-pointer w-fit">
+                        <FiUpload />
+                        <span className="text-amber-100">Choose Image</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                        />
+                      </label>
+                      <p className="text-amber-100/70 text-sm mt-2">Select a new image to replace the current one</p>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                   <div>
                     <label className="text-amber-100">Name</label>
@@ -235,20 +280,54 @@ const ListItems = () => {
                   </div>
                 </div>
                 <div className="flex justify-end gap-3">
-                  <button className="px-4 py-2 rounded bg-amber-800/30" onClick={() => setEditingItem(null)}>Cancel</button>
+                  <button className="px-4 py-2 rounded bg-amber-800/30" onClick={() => {
+                    setEditingItem(null);
+                    setImagePreview(null);
+                    setNewImage(null);
+                  }}>Cancel</button>
                   <button className="px-4 py-2 rounded bg-amber-700 text-white" onClick={async () => {
                     try {
-                      // Prepare payload: convert comma-separated strings into arrays
-                      const payload = { ...editingItem };
-                      if (typeof payload.modifierGroups === 'string') payload.modifierGroups = payload.modifierGroups.split(',').map(s => s.trim()).filter(Boolean);
-                      if (typeof payload.printerLabels === 'string') payload.printerLabels = payload.printerLabels.split(',').map(s => s.trim()).filter(Boolean);
-                      if (typeof payload.flavourOptions === 'string') payload.flavourOptions = payload.flavourOptions.split(',').map(s => s.trim()).filter(Boolean);
+                      // Prepare payload
+                      let payload;
+                      let config = { headers: { 'Content-Type': 'application/json' } };
+                      
+                      // If new image is selected, use FormData
+                      if (newImage) {
+                        payload = new FormData();
+                        payload.append('image', newImage);
+                        
+                        // Append all other fields
+                        const dataToSend = { ...editingItem };
+                        if (typeof dataToSend.modifierGroups === 'string') dataToSend.modifierGroups = dataToSend.modifierGroups.split(',').map(s => s.trim()).filter(Boolean);
+                        if (typeof dataToSend.printerLabels === 'string') dataToSend.printerLabels = dataToSend.printerLabels.split(',').map(s => s.trim()).filter(Boolean);
+                        if (typeof dataToSend.flavourOptions === 'string') dataToSend.flavourOptions = dataToSend.flavourOptions.split(',').map(s => s.trim()).filter(Boolean);
+                        
+                        Object.entries(dataToSend).forEach(([key, val]) => {
+                          if (Array.isArray(val)) {
+                            payload.append(key, JSON.stringify(val));
+                          } else {
+                            payload.append(key, val === undefined || val === null ? '' : String(val));
+                          }
+                        });
+                        
+                        // Update config for multipart form data
+                        config = { headers: { 'Content-Type': 'multipart/form-data' } };
+                      } else {
+                        // No image update, send as JSON
+                        payload = { ...editingItem };
+                        if (typeof payload.modifierGroups === 'string') payload.modifierGroups = payload.modifierGroups.split(',').map(s => s.trim()).filter(Boolean);
+                        if (typeof payload.printerLabels === 'string') payload.printerLabels = payload.printerLabels.split(',').map(s => s.trim()).filter(Boolean);
+                        if (typeof payload.flavourOptions === 'string') payload.flavourOptions = payload.flavourOptions.split(',').map(s => s.trim()).filter(Boolean);
+                      }
 
-                      // Send update (JSON) - backend will parse numbers/booleans
-                      const res = await axios.put(`${url}/api/items/${editingItem._id}`, payload, { headers: { 'Content-Type': 'application/json' } });
+                      // Send update
+                      const res = await axios.put(`${url}/api/items/${editingItem._id}`, payload, config);
+                      
                       // Update local list
                       setItems(prev => prev.map(it => it._id === res.data._id ? res.data : it));
                       setEditingItem(null);
+                      setImagePreview(null);
+                      setNewImage(null);
                       alert('Item updated');
                     } catch (err) {
                       console.error('Update error', err);
