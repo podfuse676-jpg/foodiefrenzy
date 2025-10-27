@@ -96,35 +96,74 @@ export const updateItem = async (req, res, next) => {
         const id = req.params.id;
         const updateData = { ...req.body };
 
+        console.log('Update request for item:', id);
+        console.log('Request body:', req.body);
+        console.log('File uploaded:', req.file);
+
         // Parse arrays if sent as JSON strings
         if (updateData.modifierGroups && typeof updateData.modifierGroups === 'string') {
-            try { updateData.modifierGroups = JSON.parse(updateData.modifierGroups); } catch { updateData.modifierGroups = updateData.modifierGroups.split(',').map(s => s.trim()).filter(Boolean); }
+            try { 
+                updateData.modifierGroups = JSON.parse(updateData.modifierGroups); 
+            } catch { 
+                updateData.modifierGroups = updateData.modifierGroups.split(',').map(s => s.trim()).filter(Boolean); 
+            }
         }
         if (updateData.printerLabels && typeof updateData.printerLabels === 'string') {
-            try { updateData.printerLabels = JSON.parse(updateData.printerLabels); } catch { updateData.printerLabels = updateData.printerLabels.split(',').map(s => s.trim()).filter(Boolean); }
+            try { 
+                updateData.printerLabels = JSON.parse(updateData.printerLabels); 
+            } catch { 
+                updateData.printerLabels = updateData.printerLabels.split(',').map(s => s.trim()).filter(Boolean); 
+            }
         }
         if (updateData.flavourOptions && typeof updateData.flavourOptions === 'string') {
-            try { updateData.flavourOptions = JSON.parse(updateData.flavourOptions); } catch { updateData.flavourOptions = updateData.flavourOptions.split(',').map(s => s.trim()).filter(Boolean); }
+            try { 
+                updateData.flavourOptions = JSON.parse(updateData.flavourOptions); 
+            } catch { 
+                updateData.flavourOptions = updateData.flavourOptions.split(',').map(s => s.trim()).filter(Boolean); 
+            }
         }
 
         // Convert boolean-like strings
-        if (updateData.hidden === 'true' || updateData.hidden === 'false') updateData.hidden = updateData.hidden === 'true';
-        if (updateData.nonRevenue === 'true' || updateData.nonRevenue === 'false') updateData.nonRevenue = updateData.nonRevenue === 'true';
+        if (updateData.hidden === 'true' || updateData.hidden === 'false') {
+            updateData.hidden = updateData.hidden === 'true';
+        }
+        if (updateData.nonRevenue === 'true' || updateData.nonRevenue === 'false') {
+            updateData.nonRevenue = updateData.nonRevenue === 'true';
+        }
 
         // Handle image upload path (req.file is set by multer in the route if used)
         if (req.file) {
+            console.log('New image uploaded:', req.file.filename);
             updateData.imageUrl = `/uploads/${req.file.filename}`;
+        } else {
+            console.log('No new image uploaded, keeping existing image');
+            // If no new image is uploaded, don't update the imageUrl field
+            delete updateData.imageUrl;
         }
 
         // Ensure numeric fields
         ['price','taxRate','gst','cost','quantity','rating','hearts','total'].forEach(k => {
-            if (updateData[k] !== undefined) updateData[k] = Number(updateData[k]) || 0;
+            if (updateData[k] !== undefined) {
+                updateData[k] = Number(updateData[k]) || 0;
+            }
         });
+
+        console.log('Update data to be saved:', updateData);
 
         const updated = await Item.findByIdAndUpdate(id, updateData, { new: true });
         if (!updated) return res.status(404).json({ message: 'Item not found' });
-        res.json(updated);
+        
+        // Prefix image URL with host for absolute path
+        const host = `${req.protocol}://${req.get('host')}`;
+        const updatedWithFullUrl = {
+            ...updated.toObject(),
+            imageUrl: updated.imageUrl ? host + updated.imageUrl : '',
+        };
+        
+        console.log('Updated item:', updatedWithFullUrl);
+        res.json(updatedWithFullUrl);
     } catch (err) {
+        console.error('Update item error:', err);
         next(err);
     }
 };
