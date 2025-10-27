@@ -1,3 +1,29 @@
+export const getItemById = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        console.log('Getting item by ID:', id);
+        
+        const item = await Item.findById(id);
+        if (!item) {
+            console.log('Item not found with ID:', id);
+            return res.status(404).json({ message: 'Item not found' });
+        }
+        
+        // Prefix image URL with host for absolute path
+        const host = `${req.protocol}://${req.get('host')}`;
+        const itemWithFullUrl = {
+            ...item.toObject(),
+            imageUrl: item.imageUrl ? host + item.imageUrl : '',
+        };
+        
+        console.log('Found item:', itemWithFullUrl.name);
+        res.json(itemWithFullUrl);
+    } catch (err) {
+        console.error('Get item by ID error:', err);
+        next(err);
+    }
+};
+
 export const updateItem = async (req, res, next) => {
     try {
         console.log('=== UPDATE ITEM REQUEST ===');

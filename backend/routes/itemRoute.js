@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { createItem, getItems, deleteItem, updateItem } from '../controllers/itemController.js';
+import { createItem, getItems, deleteItem, updateItem, getItemById } from '../controllers/itemController.js';
 
 const itemRouter = express.Router();
 
@@ -51,6 +51,7 @@ const handleMulterError = (err, _req, res, next) => {
 
 itemRouter.post('/', upload.single('image'), createItem);
 itemRouter.get('/', getItems);
+itemRouter.get('/:id', getItemById); // Add this route
 itemRouter.delete('/:id', deleteItem);
 itemRouter.put('/:id', upload.single('image'), handleMulterError, updateItem);
 
