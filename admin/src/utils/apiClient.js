@@ -14,7 +14,7 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     // Add auth token if available
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('adminToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -41,8 +41,8 @@ apiClient.interceptors.response.use(
     switch (error.response.status) {
       case 401:
         // Unauthorized - clear auth data
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('user');
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminRole');
         window.location.href = '/login';
         break;
       case 403:
