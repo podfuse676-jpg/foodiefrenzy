@@ -9,25 +9,21 @@ import fs from 'fs';
 // Load environment variables
 dotenv.config();
 
-// Import database connection
-import { connectDB } from './config/db.js';
+// Ensure uploads directory exists
+const uploadsDir = path.join(process.cwd(), 'uploads');
+const imagesDir = path.join(uploadsDir, 'images');
 
-// Add connection event listeners for debugging
-mongoose.connection.on('connected', () => {
-  console.log('Mongoose connected to DB (server.js)');
-});
+// Create uploads directory if it doesn't exist
+if (!fs.existsSync(uploadsDir)) {
+  console.log('Creating uploads directory...');
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
-mongoose.connection.on('error', (err) => {
-  console.log('Mongoose connection error (server.js):', err);
-});
-
-mongoose.connection.on('disconnected', () => {
-  console.log('Mongoose disconnected (server.js)');
-});
-
-// Connect to MongoDB
-console.log('Connecting to database...');
-connectDB();
+// Create images directory if it doesn't exist
+if (!fs.existsSync(imagesDir)) {
+  console.log('Creating uploads/images directory...');
+  fs.mkdirSync(imagesDir, { recursive: true });
+}
 
 // Import models after database connection
 import User from './modals/userModel.js';
