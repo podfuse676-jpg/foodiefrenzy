@@ -32,10 +32,15 @@ const AdminLogin = () => {
     setError('');
 
     try {
+      console.log('Attempting login with URL:', url);
+      console.log('Login data:', formData);
+      
       const res = await axios.post(`${url}/api/users/login`, {
         email: formData.email,
         password: formData.password,
       });
+
+      console.log('Login response:', res.data);
 
       if (res.data.success && res.data.token) {
         // Use the auth context login function
@@ -43,6 +48,7 @@ const AdminLogin = () => {
         
         // Check if user is admin
         if (res.data.role === 'admin') {
+          console.log('Login successful, redirecting to:', from);
           // Redirect to the page they were trying to access or to admin dashboard
           navigate(from, { replace: true });
         } else {
@@ -55,6 +61,8 @@ const AdminLogin = () => {
         setError(res.data.message || 'Login failed');
       }
     } catch (err) {
+      console.error('Login error:', err);
+      console.error('Error response:', err.response);
       setError(err.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);

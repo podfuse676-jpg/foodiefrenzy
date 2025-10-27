@@ -23,14 +23,18 @@ export const AuthProvider = ({ children }) => {
       const token = localStorage.getItem('adminToken');
       const role = localStorage.getItem('adminRole');
       
+      console.log('Checking auth status - Token:', token ? 'Present' : 'Missing', 'Role:', role);
+      
       if (token && role === 'admin') {
         try {
           // Verify token with backend
-          await axios.get(`${url}/api/users/admin/users`, {
+          console.log('Verifying token with backend:', `${url}/api/users/admin/users`);
+          const response = await axios.get(`${url}/api/users/admin/users`, {
             headers: {
               Authorization: `Bearer ${token}`
             }
           });
+          console.log('Token verification response:', response.data);
           setIsAuthenticated(true);
           setIsAdmin(true);
         } catch (error) {
@@ -42,6 +46,7 @@ export const AuthProvider = ({ children }) => {
           setIsAdmin(false);
         }
       } else {
+        console.log('No valid token or role found');
         setIsAuthenticated(false);
         setIsAdmin(false);
       }
@@ -52,6 +57,7 @@ export const AuthProvider = ({ children }) => {
   }, [url]);
 
   const login = (token, role) => {
+    console.log('Login function called with token and role:', role);
     if (role === 'admin') {
       localStorage.setItem('adminToken', token);
       localStorage.setItem('adminRole', role);
@@ -61,6 +67,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    console.log('Logout function called');
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminRole');
     setIsAuthenticated(false);
