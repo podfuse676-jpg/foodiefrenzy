@@ -100,6 +100,9 @@ app.get('/uploads/images/:imageName', (req, res) => {
   const imageName = req.params.imageName;
   const imagePath = path.join(process.cwd(), 'uploads', 'images', imageName);
   
+  console.log(`Request for image: ${imageName}`);
+  console.log(`Looking for file at: ${imagePath}`);
+  
   // Check if file exists
   if (!fs.existsSync(imagePath)) {
     console.log(`Image not found: ${imagePath}`);
@@ -438,6 +441,19 @@ app.get('/check-mongo-config', (req, res) => {
     dbConnectionHost: mongoose.connection.host,
     dbConnectionName: mongoose.connection.name,
     dbConnectionString: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
+  });
+});
+
+// Add a simple file upload endpoint for testing
+app.post('/api/test-upload', upload.single('image'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: 'No file uploaded' });
+  }
+  
+  res.json({
+    message: 'File uploaded successfully',
+    filename: req.file.filename,
+    path: req.file.path
   });
 });
 

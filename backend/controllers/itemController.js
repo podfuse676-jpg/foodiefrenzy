@@ -9,11 +9,15 @@ export const getItems = async (req, res, next) => {
         const itemsWithFullUrls = items.map(item => {
             const itemObj = item.toObject();
             
+            // Log the original imageUrl for debugging
+            console.log(`Item: ${itemObj.name}, Original imageUrl: ${itemObj.imageUrl}`);
+            
             // If imageUrl is already an absolute URL, use it as is
             // Otherwise, prefix with host for relative paths
             if (itemObj.imageUrl && !itemObj.imageUrl.startsWith('http')) {
                 const host = `${req.protocol}://${req.get('host')}`;
                 itemObj.imageUrl = host + itemObj.imageUrl;
+                console.log(`Converted relative URL to absolute: ${itemObj.imageUrl}`);
             }
             
             return itemObj;
