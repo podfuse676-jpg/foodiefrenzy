@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import path from 'path';
+import fs from 'fs';
 
 // Load environment variables
 dotenv.config();
@@ -89,6 +90,12 @@ app.get('/uploads/images/:imageName', (req, res) => {
   const imageName = req.params.imageName;
   const imagePath = path.join(process.cwd(), 'uploads', 'images', imageName);
   
+  // Check if file exists
+  if (!fs.existsSync(imagePath)) {
+    console.log(`Image not found: ${imagePath}`);
+    return res.status(404).json({ message: 'Image not found' });
+  }
+  
   // Set cache headers for better performance
   res.set('Cache-Control', 'public, max-age=31536000'); // 1 year
   
@@ -96,8 +103,39 @@ app.get('/uploads/images/:imageName', (req, res) => {
   res.sendFile(imagePath, (err) => {
     if (err) {
       console.error('Error serving image:', err);
-      res.status(404).json({ message: 'Image not found' });
+      res.status(500).json({ message: 'Error serving image' });
     }
+  });
+});
+
+// Add a route to list all available images (for debugging)
+app.get('/uploads/images', (req, res) => {
+  const imagesDir = path.join(process.cwd(), 'uploads', 'images');
+  
+  // Check if directory exists
+  if (!fs.existsSync(imagesDir)) {
+    return res.status(404).json({ message: 'Images directory not found' });
+  }
+  
+  // Read directory contents
+  fs.readdir(imagesDir, (err, files) => {
+    if (err) {
+      console.error('Error reading images directory:', err);
+      return res.status(500).json({ message: 'Error reading images directory' });
+    }
+    
+    // Filter to only include image files
+    const imageFiles = files.filter(file => 
+      file.endsWith('.jpg') || file.endsWith('.jpeg') || 
+      file.endsWith('.png') || file.endsWith('.gif') || 
+      file.endsWith('.webp')
+    );
+    
+    res.json({
+      message: 'Available images',
+      images: imageFiles,
+      count: imageFiles.length
+    });
   });
 });
 
