@@ -3,6 +3,7 @@ services:
     name: lakeshoreconveniencee-backend
     env: node
     plan: free
+    rootDir: src
     buildCommand: npm install
     startCommand: node server.js
     envVars:
