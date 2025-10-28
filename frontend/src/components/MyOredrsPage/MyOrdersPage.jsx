@@ -121,7 +121,13 @@ const UserOrdersPage = () => {
       color: 'text-[#8BC34A]',
       bg: 'bg-[#8BC34A]/20',
       icon: <FiCheckCircle className="text-lg" />,
-      label: 'Completed'
+      label: 'Payment Completed'
+    },
+    failed: {
+      color: 'text-red-600',
+      bg: 'bg-red-100/20',
+      icon: <FiClock className="text-lg" />,
+      label: 'Payment Failed'
     }
   };
 
@@ -289,7 +295,7 @@ const UserOrdersPage = () => {
                           <div className={`${paymentMethod.class} px-3 py-1.5 rounded-lg border text-sm`}>
                             {paymentMethod.label}
                           </div>
-                          <div className={`${paymentStatus.color} flex items-center gap-2 text-sm`}>
+                          <div className={`${paymentStatus.bg} ${paymentStatus.color} flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg border`}>
                             {paymentStatus.icon}
                             <span>{paymentStatus.label}</span>
                           </div>

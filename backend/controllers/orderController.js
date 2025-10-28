@@ -211,7 +211,7 @@ export const confirmPayment = async (req, res) => {
                     { sessionId: sessionId },
                     { 
                         paymentStatus: 'succeeded',
-                        // Optionally update the order status to processing since payment is complete
+                        // Update the order status to processing since payment is complete
                         status: 'processing'
                     },
                     { new: true }
