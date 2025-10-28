@@ -203,6 +203,11 @@ The application is designed for deployment on:
 ```env
 MONGODB_URI=your_mongodb_atlas_connection_string
 JWT_SECRET=your_jwt_secret_key_(at_least_32_characters)
+# STRIPE INTEGRATION - REPLACE WITH YOUR ACTUAL STRIPE SECRET KEY
+# To get your Stripe secret key:
+# 1. Go to https://dashboard.stripe.com/apikeys
+# 2. Copy your "Secret key" (starts with sk_test_ for test mode or sk_live_ for live mode)
+# 3. Paste it below replacing the placeholder value
 STRIPE_SECRET_KEY=your_stripe_secret_key
 FRONTEND_URL=https://your-frontend-url.vercel.app
 ADMIN_URL=https://your-admin-url.vercel.app

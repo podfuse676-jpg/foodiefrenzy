@@ -5,6 +5,7 @@
 1. A Render account (https://render.com/)
 2. A GitHub account with the repository connected to Render
 3. Your Cloudinary account credentials
+4. Your Stripe account credentials (for payment processing)
 
 ## Deploying to Render
 
@@ -37,6 +38,22 @@ The following environment variables are already configured in your `render.yaml`
 - `CLOUDINARY_API_SECRET`: A9rs3IOJK9TEcVNUOm7Dwrg2nlI
 - `JWT_SECRET`: Your JWT secret
 
+**Important**: You need to update the following environment variables with your actual values:
+
+1. **MONGODB_URI**: Your actual MongoDB connection string
+2. **JWT_SECRET**: A secure JWT secret (you can generate one using the provided script)
+3. **STRIPE_SECRET_KEY**: Your actual Stripe secret key (see instructions below)
+
+### Stripe Configuration
+
+To enable payment processing, you need to configure your Stripe secret key:
+
+1. Go to https://dashboard.stripe.com/apikeys
+2. Copy your "Secret key" (starts with sk_test_ for test mode or sk_live_ for live mode)
+3. In the Render dashboard, add a new environment variable:
+   - Key: `STRIPE_SECRET_KEY`
+   - Value: Your actual Stripe secret key
+
 ### Step 4: Deploy
 
 1. Click "Create Web Service"
@@ -67,6 +84,7 @@ If you need to update any environment variables after deployment:
 2. **Application crashes**: Check the application logs in Render
 3. **Database connection issues**: Verify your MongoDB URI is correct
 4. **Cloudinary issues**: Verify your Cloudinary credentials are correct
+5. **Stripe issues**: Verify your Stripe secret key is correct and properly formatted
 
 ### Testing Your Deployed Application
 
@@ -93,3 +111,6 @@ You can test various endpoints to ensure everything is working:
 2. Verify images are loading correctly from Cloudinary
 3. Test image uploads through the admin panel
 4. Verify CORS is working correctly with your frontend applications
+5. Test Stripe integration by placing a test order
+
+```
