@@ -225,13 +225,17 @@ app.get('/api/debug-env', (req, res) => {
     MONGODB_URI: process.env.MONGODB_URI ? 'SET' : 'NOT SET',
     JWT_SECRET: process.env.JWT_SECRET ? 'SET' : 'NOT SET',
     NODE_ENV: process.env.NODE_ENV || 'NOT SET',
-    CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME ? 'SET' : 'NOT SET',
-    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY ? 'SET' : 'NOT SET',
+    CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME || 'NOT SET',
+    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY || 'NOT SET',
     CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'NOT SET',
     dbConnectionState: mongoose.connection.readyState,
     dbConnectionHost: mongoose.connection.host,
     dbConnectionName: mongoose.connection.name,
-    PORT: process.env.PORT || 'NOT SET'
+    PORT: process.env.PORT || 'NOT SET',
+    // Add Render-specific environment variables
+    RENDER: process.env.RENDER || 'NOT SET',
+    RENDER_SERVICE_ID: process.env.RENDER_SERVICE_ID || 'NOT SET',
+    RENDER_EXTERNAL_HOSTNAME: process.env.RENDER_EXTERNAL_HOSTNAME || 'NOT SET'
   });
 });
 
@@ -289,6 +293,41 @@ app.get('/api/test-admin', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Admin user lookup failed',
+      error: error.message
+    });
+  }
+});
+
+// Test endpoint to verify Cloudinary configuration
+app.get('/api/test-cloudinary', async (req, res) => {
+  try {
+    console.log('=== TESTING CLOUDINARY CONFIGURATION ===');
+    
+    // Import the configured Cloudinary instance
+    const cloudinary = (await import('./config/cloudinary.js')).default;
+    
+    // Get current configuration
+    const config = cloudinary.config();
+    console.log('Current Cloudinary config:', config);
+    
+    // Test ping Cloudinary
+    const pingResult = await cloudinary.api.ping();
+    console.log('Cloudinary ping result:', pingResult);
+    
+    res.json({
+      success: true,
+      message: 'Cloudinary is properly configured',
+      config: {
+        cloud_name: config.cloud_name,
+        api_key: config.api_key ? 'SET' : 'NOT SET'
+      },
+      ping: pingResult
+    });
+  } catch (error) {
+    console.error('Cloudinary test error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Cloudinary configuration error',
       error: error.message
     });
   }
