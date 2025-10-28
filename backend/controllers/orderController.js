@@ -6,14 +6,19 @@ import Order from '../modals/order.js';
 // Helper to get a Stripe client; returns null if key is not configured.
 const getStripe = () => {
     const key = process.env.STRIPE_SECRET_KEY;
-    if (!key) {
-        console.error('Stripe key not found in environment variables');
+    if (!key || key === 'your_stripe_secret_key_here' || key.startsWith('your_stripe')) {
+        console.error('Stripe key not found or is still placeholder value in environment variables');
         return null;
     }
-    console.log('Initializing Stripe with key:', key.substring(0, 8) + '...');
-    return new Stripe(key, {
-        apiVersion: '2023-10-16'
-    });
+    try {
+        console.log('Initializing Stripe with key:', key.substring(0, 8) + '...');
+        return new Stripe(key, {
+            apiVersion: '2023-10-16'
+        });
+    } catch (error) {
+        console.error('Error initializing Stripe client:', error.message);
+        return null;
+    }
 };
 
 // Create Order
@@ -51,6 +56,7 @@ export const createOrder = async (req, res) => {
         if (paymentMethod === 'card') {
             const stripeClient = getStripe();
             if (!stripeClient) {
+                console.error('Stripe not configured on server - stripeClient is null');
                 return res.status(500).json({ message: 'Stripe not configured on server' });
             }
             
@@ -88,48 +94,61 @@ export const createOrder = async (req, res) => {
             const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
             console.log('Using frontend URL for Stripe redirect:', frontendUrl);
             
-            const successUrl = `${frontendUrl}/myorder/verify?success=true&session_id={CHECKOUT_SESSION_ID}`;
+            const successUrl = `${frontendUrl}/myorder/verify?success=true&session_url={CHECKOUT_SESSION_ID}`;
             const cancelUrl = `${frontendUrl}/checkout?payment_status=cancel`;
             
             console.log('Stripe success URL:', successUrl);
             console.log('Stripe cancel URL:', cancelUrl);
             
-            const session = await stripeClient.checkout.sessions.create({
-                payment_method_types: ['card'],
-                mode: 'payment',
-                line_items: lineItems,
-                customer_email: email,
-                success_url: successUrl,
-                cancel_url: cancelUrl,
-                metadata: { 
-                    firstName, 
-                    lastName, 
-                    email, 
-                    phone,
-                    address,
-                    city,
-                    zipCode
-                }
-            });
+            try {
+                const session = await stripeClient.checkout.sessions.create({
+                    payment_method_types: ['card'],
+                    mode: 'payment',
+                    line_items: lineItems,
+                    customer_email: email,
+                    success_url: successUrl,
+                    cancel_url: cancelUrl,
+                    metadata: { 
+                        firstName, 
+                        lastName, 
+                        email, 
+                        phone,
+                        address,
+                        city,
+                        zipCode
+                    }
+                });
 
-            newOrder = new Order({
-                user: req.user._id,
-                firstName, lastName, phone, email,
-                address, city, zipCode,
-                paymentMethod, 
-                subtotal, 
-                tax, 
-                total,
-                shipping: shippingCost,
-                codFee: 0,
-                items: orderItems,
-                paymentIntentId: session.payment_intent,
-                sessionId: session.id,
-                paymentStatus: 'pending'
-            });
+                newOrder = new Order({
+                    user: req.user._id,
+                    firstName, lastName, phone, email,
+                    address, city, zipCode,
+                    paymentMethod, 
+                    subtotal, 
+                    tax, 
+                    total,
+                    shipping: shippingCost,
+                    codFee: 0,
+                    items: orderItems,
+                    paymentIntentId: session.payment_intent,
+                    sessionId: session.id,
+                    paymentStatus: 'pending'
+                });
 
-            await newOrder.save();
-            return res.status(201).json({ order: newOrder, checkoutUrl: session.url });
+                await newOrder.save();
+                return res.status(201).json({ order: newOrder, checkoutUrl: session.url });
+            } catch (stripeError) {
+                console.error('Stripe API error:', stripeError);
+                return res.status(500).json({ 
+                    message: 'Payment processing error', 
+                    error: stripeError.message,
+                    stripeError: {
+                        type: stripeError.type,
+                        code: stripeError.code,
+                        decline_code: stripeError.decline_code
+                    }
+                });
+            }
         }
 
         // COD Handling - add COD fee
@@ -175,48 +194,60 @@ export const confirmPayment = async (req, res) => {
         }
         
         console.log('Retrieving Stripe session:', sessionId);
-        const session = await stripeClient.checkout.sessions.retrieve(sessionId);
-        console.log('Stripe session retrieved. Payment status:', session.payment_status);
-        // Log key session properties for debugging
-        console.log('Session details - id:', session.id, 'status:', session.payment_status, 'mode:', session.mode);
-        
-        // In production, only accept 'paid' status
-        // In development, we can be more lenient for testing purposes
-        const isPaymentSuccessful = session.payment_status === 'paid' || 
-            (process.env.NODE_ENV === 'development' && session.payment_status === 'unpaid');
-        
-        if (isPaymentSuccessful) {
-            console.log('Payment successful, updating order with sessionId:', sessionId);
-            const order = await Order.findOneAndUpdate(
-                { sessionId: sessionId },
-                { 
-                    paymentStatus: 'succeeded',
-                    // Optionally update the order status to processing since payment is complete
-                    status: 'processing'
-                },
-                { new: true }
-            );
-            console.log('Order update result:', order);
+        try {
+            const session = await stripeClient.checkout.sessions.retrieve(sessionId);
+            console.log('Stripe session retrieved. Payment status:', session.payment_status);
+            // Log key session properties for debugging
+            console.log('Session details - id:', session.id, 'status:', session.payment_status, 'mode:', session.mode);
             
-            if (!order) {
-                console.log('Order not found for sessionId:', sessionId);
-                return res.status(404).json({ message: 'Order not found' });
+            // In production, only accept 'paid' status
+            // In development, we can be more lenient for testing purposes
+            const isPaymentSuccessful = session.payment_status === 'paid' || 
+                (process.env.NODE_ENV === 'development' && session.payment_status === 'unpaid');
+            
+            if (isPaymentSuccessful) {
+                console.log('Payment successful, updating order with sessionId:', sessionId);
+                const order = await Order.findOneAndUpdate(
+                    { sessionId: sessionId },
+                    { 
+                        paymentStatus: 'succeeded',
+                        // Optionally update the order status to processing since payment is complete
+                        status: 'processing'
+                    },
+                    { new: true }
+                );
+                console.log('Order update result:', order);
+                
+                if (!order) {
+                    console.log('Order not found for sessionId:', sessionId);
+                    return res.status(404).json({ message: 'Order not found' });
+                }
+                return res.json(order);
             }
-            return res.json(order);
+            
+            // If payment was not successful, update the order status to failed
+            if (session.payment_status === 'unpaid' && process.env.NODE_ENV !== 'development') {
+                console.log('Payment not completed, updating order status to failed');
+                await Order.findOneAndUpdate(
+                    { sessionId: sessionId },
+                    { paymentStatus: 'failed' },
+                    { new: true }
+                );
+            }
+            
+            console.log('Payment not completed, status:', session.payment_status);
+            return res.status(400).json({ message: 'Payment not completed' });
+        } catch (stripeError) {
+            console.error('Stripe API error during session retrieval:', stripeError);
+            return res.status(500).json({ 
+                message: 'Payment verification error', 
+                error: stripeError.message,
+                stripeError: {
+                    type: stripeError.type,
+                    code: stripeError.code
+                }
+            });
         }
-        
-        // If payment was not successful, update the order status to failed
-        if (session.payment_status === 'unpaid' && process.env.NODE_ENV !== 'development') {
-            console.log('Payment not completed, updating order status to failed');
-            await Order.findOneAndUpdate(
-                { sessionId: sessionId },
-                { paymentStatus: 'failed' },
-                { new: true }
-            );
-        }
-        
-        console.log('Payment not completed, status:', session.payment_status);
-        return res.status(400).json({ message: 'Payment not completed' });
     } catch (err) {
         console.error('confirmPayment error:', err);
         // In case of an error, we might want to mark the order as failed
