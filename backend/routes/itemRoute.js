@@ -4,42 +4,71 @@ import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import { createItem, getItems, deleteItem, updateItem, getItemById } from '../controllers/itemController.js';
 
-// Log Cloudinary configuration
-console.log('=== CLOUDINARY CONFIGURATION ===');
-console.log('Cloudinary config available:', !!cloudinary);
-console.log('Cloudinary config:', {
+// Configure Cloudinary explicitly
+console.log('=== CONFIGURING CLOUDINARY ===');
+console.log('Cloudinary env vars:', {
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY ? 'SET' : 'NOT SET',
+    api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'NOT SET'
 });
+
+// Configure Cloudinary with explicit credentials
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Verify Cloudinary configuration
+console.log('Cloudinary configured:', cloudinary.config());
 
 const itemRouter = express.Router();
 
 // Configure Cloudinary storage
-const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-        folder: 'foodiefrenzy_items',
-        format: async (req, file) => {
-            // Determine format based on file mimetype
-            console.log('Determining format for file:', file.originalname, file.mimetype);
-            if (file.mimetype.includes('webp')) return 'webp';
-            if (file.mimetype.includes('png')) return 'png';
-            if (file.mimetype.includes('jpg') || file.mimetype.includes('jpeg')) return 'jpg';
-            return 'jpg'; // default
+let storage;
+try {
+    storage = new CloudinaryStorage({
+        cloudinary: cloudinary,
+        params: {
+            folder: 'foodiefrenzy_items',
+            format: async (req, file) => {
+                // Determine format based on file mimetype
+                console.log('Determining format for file:', file.originalname, file.mimetype);
+                if (file.mimetype.includes('webp')) return 'webp';
+                if (file.mimetype.includes('png')) return 'png';
+                if (file.mimetype.includes('jpg') || file.mimetype.includes('jpeg')) return 'jpg';
+                return 'jpg'; // default
+            },
+            public_id: (req, file) => {
+                // Generate unique public ID
+                const timestamp = Date.now();
+                // Sanitize filename to remove special characters and spaces
+                const originalname = file.originalname.split('.')[0].replace(/[^a-zA-Z0-9]/g, '_');
+                const publicId = `${originalname}_${timestamp}`;
+                console.log('Original filename:', file.originalname);
+                console.log('Sanitized public_id:', publicId);
+                return publicId;
+            },
         },
-        public_id: (req, file) => {
-            // Generate unique public ID
-            const timestamp = Date.now();
-            // Sanitize filename to remove special characters and spaces
-            const originalname = file.originalname.split('.')[0].replace(/[^a-zA-Z0-9]/g, '_');
-            const publicId = `${originalname}_${timestamp}`;
-            console.log('Original filename:', file.originalname);
-            console.log('Sanitized public_id:', publicId);
-            return publicId;
+    });
+    
+    console.log('Cloudinary storage configured successfully');
+} catch (storageError) {
+    console.error('=== CLOUDINARY STORAGE CONFIGURATION ERROR ===');
+    console.error('Error configuring Cloudinary storage:', storageError);
+    console.error('Error type:', storageError.constructor.name);
+    console.error('Error message:', storageError.message);
+    // Fallback to disk storage if Cloudinary fails
+    storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, 'uploads/images/')
         },
-    },
-});
+        filename: function (req, file, cb) {
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+            cb(null, file.fieldname + '-' + uniqueSuffix + '.' + file.mimetype.split('/')[1])
+        }
+    });
+}
 
 // Add file filter to only accept images
 const fileFilter = (req, file, cb) => {
