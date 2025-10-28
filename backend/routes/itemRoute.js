@@ -4,6 +4,15 @@ import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import { createItem, getItems, deleteItem, updateItem, getItemById } from '../controllers/itemController.js';
 
+// Log Cloudinary configuration
+console.log('=== CLOUDINARY CONFIGURATION ===');
+console.log('Cloudinary config available:', !!cloudinary);
+console.log('Cloudinary config:', {
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY ? 'SET' : 'NOT SET',
+    api_secret: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'NOT SET'
+});
+
 const itemRouter = express.Router();
 
 // Configure Cloudinary storage
@@ -13,6 +22,7 @@ const storage = new CloudinaryStorage({
         folder: 'foodiefrenzy_items',
         format: async (req, file) => {
             // Determine format based on file mimetype
+            console.log('Determining format for file:', file.originalname, file.mimetype);
             if (file.mimetype.includes('webp')) return 'webp';
             if (file.mimetype.includes('png')) return 'png';
             if (file.mimetype.includes('jpg') || file.mimetype.includes('jpeg')) return 'jpg';
@@ -21,8 +31,12 @@ const storage = new CloudinaryStorage({
         public_id: (req, file) => {
             // Generate unique public ID
             const timestamp = Date.now();
-            const originalname = file.originalname.split('.')[0];
-            return `${originalname}_${timestamp}`;
+            // Sanitize filename to remove special characters and spaces
+            const originalname = file.originalname.split('.')[0].replace(/[^a-zA-Z0-9]/g, '_');
+            const publicId = `${originalname}_${timestamp}`;
+            console.log('Original filename:', file.originalname);
+            console.log('Sanitized public_id:', publicId);
+            return publicId;
         },
     },
 });
