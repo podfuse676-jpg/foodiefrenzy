@@ -9,6 +9,7 @@
     "backend:dev": "cd backend && npm run dev",
     "frontend:build": "cd frontend && npm run build",
     "admin:build": "cd admin && npm run build",
+    "start": "cd backend && npm start",
     "dev": "concurrently \"npm run frontend:dev\" \"npm run admin:dev\" \"npm run backend:dev\""
   },
   "keywords": [],
