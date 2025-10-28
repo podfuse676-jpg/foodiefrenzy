@@ -21,7 +21,9 @@
     "test-production-db": "node testProductionDB.js",
     "test-production-user-model": "node testProductionUserModel.js",
     "test-production-login": "node testProductionLogin.js",
-    "test-production-request": "node testProductionRequest.js"
+    "test-production-request": "node testProductionRequest.js",
+    "test-cloudinary-env": "node testCloudinaryEnv.js",
+    "test-cloudinary-config": "node testCloudinaryConfig.js"
   },
   "author": "",
   "license": "ISC",
