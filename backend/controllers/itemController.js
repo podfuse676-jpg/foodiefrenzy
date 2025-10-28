@@ -142,6 +142,16 @@ export const updateItem = async (req, res, next) => {
         console.log('Request body:', req.body);
         console.log('Request file:', req.file);
         console.log('Request headers:', req.headers);
+        console.log('Content-Type:', req.headers['content-type']);
+        
+        // Log the raw request body if possible
+        let rawBody = '';
+        req.on('data', chunk => {
+            rawBody += chunk;
+        });
+        req.on('end', () => {
+            console.log('Raw request body (end event):', rawBody.substring(0, 200) + (rawBody.length > 200 ? '...' : ''));
+        });
         
         const id = req.params.id;
         const updateData = { ...req.body };
@@ -224,12 +234,19 @@ export const updateItem = async (req, res, next) => {
         // Handle image upload path (req.file is set by multer in the route if used)
         if (req.file) {
             console.log('New image uploaded:', req.file);
+            console.log('File details - fieldname:', req.file.fieldname);
+            console.log('File details - originalname:', req.file.originalname);
+            console.log('File details - mimetype:', req.file.mimetype);
+            console.log('File details - size:', req.file.size);
+            
             // For Cloudinary, the secure_url is the full URL to the image
             if (req.file.secure_url) {
                 updateData.imageUrl = req.file.secure_url;
+                console.log('Cloudinary secure_url:', req.file.secure_url);
             } else if (req.file.path) {
                 // Fallback for local storage
                 updateData.imageUrl = `/uploads/${req.file.filename}`;
+                console.log('Local file path:', `/uploads/${req.file.filename}`);
             }
         } else {
             console.log('No new image uploaded, preserving existing image');

@@ -51,46 +51,39 @@ const upload = multer({
     limits: {
         fileSize: 5 * 1024 * 1024 // 5MB limit
     }
-});
+}).single('image');
 
-// Error handling middleware for multer
-const handleMulterError = (err, req, res, next) => {
-    console.log('=== MULter ERROR HANDLING ===');
-    console.log('Error type:', err.constructor.name);
-    console.log('Error message:', err.message);
-    console.log('Error code:', err.code);
-    console.log('Request files:', req.files);
-    console.log('Request body:', req.body);
+// Wrapper function to handle multer errors properly
+const handleUpload = (req, res, next) => {
+    console.log('=== HANDLE UPLOAD START ===');
+    console.log('Request content-type:', req.headers['content-type']);
+    console.log('Request method:', req.method);
+    console.log('Request url:', req.url);
     
-    if (err instanceof multer.MulterError) {
-        console.log('Multer error details:', err);
-        if (err.code === 'LIMIT_FILE_SIZE') {
+    upload(req, res, (err) => {
+        console.log('=== MULter UPLOAD RESULT ===');
+        if (err) {
+            console.log('Multer upload error:', err);
+            console.log('Error type:', err.constructor.name);
+            console.log('Error message:', err.message);
             return res.status(400).json({ 
-                message: 'File too large. Maximum file size is 5MB.',
+                message: 'File upload failed',
                 error: err.message,
-                code: err.code
+                details: 'Please check that your file is a valid image (JPEG, PNG, WEBP, GIF) and under 5MB'
             });
         }
-        return res.status(400).json({ 
-            message: 'File upload error: ' + err.message,
-            error: err.message,
-            code: err.code
-        });
-    } else if (err) {
-        console.log('File filter error:', err.message);
-        return res.status(400).json({ 
-            message: 'Invalid file type. Only image files are allowed.',
-            error: err.message,
-            details: err.message.includes('unknown') ? 'The file type could not be determined. Please ensure you are uploading a valid image file (JPEG, PNG, WEBP, GIF).' : err.message
-        });
-    }
-    next();
+        
+        console.log('Upload successful');
+        console.log('File in request:', req.file);
+        console.log('Body in request:', req.body);
+        next();
+    });
 };
 
-itemRouter.post('/', upload.single('image'), createItem);
+itemRouter.post('/', handleUpload, createItem);
 itemRouter.get('/', getItems);
 itemRouter.get('/:id', getItemById); // Add this route
 itemRouter.delete('/:id', deleteItem);
-itemRouter.put('/:id', upload.single('image'), handleMulterError, updateItem);
+itemRouter.put('/:id', handleUpload, updateItem);
 
 export default itemRouter;
