@@ -89,6 +89,24 @@ const ListItems = () => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      console.log('Selected file:', file);
+      console.log('File type:', file.type);
+      console.log('File name:', file.name);
+      
+      // Check if the file is actually an image
+      if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file (JPEG, PNG, WEBP, GIF)');
+        e.target.value = ''; // Clear the input
+        return;
+      }
+      
+      // Check file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size exceeds 5MB limit. Please select a smaller image.');
+        e.target.value = ''; // Clear the input
+        return;
+      }
+      
       setNewImage(file);
       setImagePreview(URL.createObjectURL(file));
     }
@@ -302,8 +320,23 @@ const ListItems = () => {
                       // If new image is selected, use FormData
                       if (newImage) {
                         console.log('Updating with new image');
+                        console.log('New image file:', newImage);
+                        console.log('New image type:', newImage.type);
+                        console.log('New image name:', newImage.name);
+                        console.log('New image size:', newImage.size);
+                        
                         payload = new FormData();
                         payload.append('image', newImage);
+                        
+                        // Debug FormData
+                        console.log('FormData created');
+                        for (let [key, value] of payload.entries()) {
+                          if (key === 'image') {
+                            console.log('FormData image entry:', key, value.name, value.type, value.size);
+                          } else {
+                            console.log('FormData entry:', key, value);
+                          }
+                        }
                         
                         // Append all other fields
                         const dataToSend = { ...editingItem };
