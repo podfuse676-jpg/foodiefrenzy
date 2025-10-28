@@ -1,3 +1,140 @@
+import Item from '../modals/item.js';
+
+export const getItems = async (req, res, next) => {
+    try {
+        console.log('Fetching all items');
+        const items = await Item.find({});
+        
+        // For each item, ensure the imageUrl is correctly formatted
+        const itemsWithFullUrls = items.map(item => {
+            const itemObj = item.toObject();
+            
+            // Log the original imageUrl for debugging
+            console.log(`Item: ${itemObj.name}, Original imageUrl: ${itemObj.imageUrl}`);
+            
+            // For Cloudinary URLs, they should already be full URLs
+            // For local URLs, we need to prefix with host
+            if (itemObj.imageUrl && !itemObj.imageUrl.startsWith('http')) {
+                // This is a local URL, prefix with host
+                const host = `${req.protocol}://${req.get('host')}`;
+                // Convert relative URL to absolute
+                itemObj.imageUrl = host + itemObj.imageUrl;
+                console.log(`Converted relative URL to absolute: ${itemObj.imageUrl}`);
+            }
+            // If it's already an HTTP URL (Cloudinary), leave it as is
+            
+            return itemObj;
+        });
+        
+        console.log(`Found ${itemsWithFullUrls.length} items`);
+        res.json(itemsWithFullUrls);
+    } catch (err) {
+        console.error('Get items error:', err);
+        next(err);
+    }
+};
+
+export const getItemById = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        console.log('Getting item by ID:', id);
+        
+        const item = await Item.findById(id);
+        if (!item) {
+            console.log('Item not found with ID:', id);
+            return res.status(404).json({ message: 'Item not found' });
+        }
+        
+        // Prefix image URL with host for relative paths (local storage)
+        // Cloudinary URLs should already be absolute
+        const itemObj = item.toObject();
+        if (itemObj.imageUrl && !itemObj.imageUrl.startsWith('http')) {
+            const host = `${req.protocol}://${req.get('host')}`;
+            itemObj.imageUrl = host + itemObj.imageUrl;
+        }
+        
+        console.log('Found item:', itemObj.name);
+        res.json(itemObj);
+    } catch (err) {
+        console.error('Get item by ID error:', err);
+        next(err);
+    }
+};
+
+export const createItem = async (req, res, next) => {
+    try {
+        console.log('Creating new item');
+        console.log('Request body:', req.body);
+        console.log('Request file:', req.file);
+
+        const itemData = { ...req.body };
+
+        // Parse arrays if sent as JSON strings
+        ['modifierGroups', 'printerLabels', 'flavourOptions'].forEach(key => {
+            if (itemData[key] !== undefined) {
+                if (typeof itemData[key] === 'string') {
+                    try { 
+                        itemData[key] = JSON.parse(itemData[key]); 
+                    } catch (parseError) { 
+                        itemData[key] = itemData[key].split(',').map(s => s.trim()).filter(Boolean); 
+                    }
+                }
+            }
+        });
+
+        // Convert boolean-like strings
+        ['hidden', 'nonRevenue'].forEach(key => {
+            if (itemData[key] === 'true' || itemData[key] === 'false') {
+                itemData[key] = itemData[key] === 'true';
+            }
+        });
+
+        // Ensure numeric fields
+        ['price','taxRate','gst','cost','quantity','rating','hearts','total'].forEach(k => {
+            if (itemData[k] !== undefined) {
+                itemData[k] = Number(itemData[k]) || 0;
+            }
+        });
+
+        // Handle image upload path (req.file is set by multer in the route if used)
+        if (req.file) {
+            console.log('New image uploaded:', req.file);
+            // For Cloudinary, the secure_url is the full URL to the image
+            if (req.file.secure_url) {
+                itemData.imageUrl = req.file.secure_url;
+            } else if (req.file.path) {
+                // Fallback for local storage
+                itemData.imageUrl = `/uploads/${req.file.filename}`;
+            }
+        }
+
+        console.log('Item data to be saved:', itemData);
+
+        const newItem = new Item(itemData);
+        const savedItem = await newItem.save();
+        
+        // For Cloudinary URLs, they should already be full URLs
+        // For local URLs, prefix with host
+        const savedItemObj = savedItem.toObject();
+        if (savedItemObj.imageUrl && !savedItemObj.imageUrl.startsWith('http')) {
+            const host = `${req.protocol}://${req.get('host')}`;
+            savedItemObj.imageUrl = host + savedItemObj.imageUrl;
+        }
+        
+        console.log('New item created:', savedItemObj);
+        res.status(201).json(savedItemObj);
+    } catch (err) {
+        console.error('Create item error:', err);
+        if (err.name === 'ValidationError') {
+            return res.status(400).json({ message: 'Validation error', error: err.message });
+        }
+        if (err.code === 11000) {
+            return res.status(400).json({ message: 'Duplicate item name in category' });
+        }
+        res.status(500).json({ message: 'Failed to create item', error: err.message });
+    }
+};
+
 export const updateItem = async (req, res, next) => {
     try {
         console.log('=== UPDATE ITEM REQUEST ===');
@@ -225,5 +362,25 @@ export const updateItem = async (req, res, next) => {
             error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error',
             details: 'An unexpected error occurred while updating the item'
         });
+    }
+};
+
+export const deleteItem = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        console.log('Deleting item with ID:', id);
+        
+        const deleted = await Item.findByIdAndDelete(id);
+        
+        if (!deleted) {
+            console.log('Item not found with ID:', id);
+            return res.status(404).json({ message: 'Item not found' });
+        }
+        
+        console.log('Item deleted successfully:', deleted.name);
+        res.json({ message: 'Item deleted successfully' });
+    } catch (err) {
+        console.error('Delete item error:', err);
+        res.status(500).json({ message: 'Failed to delete item', error: err.message });
     }
 };
