@@ -1,22 +1,55 @@
 import express from 'express';
 import multer from 'multer';
-import cloudinary from '../config/cloudinary.js';
+// Use direct Cloudinary import for more control
+import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import { createItem, getItems, deleteItem, updateItem, getItemById } from '../controllers/itemController.js';
 
-// Log Cloudinary configuration to verify it's loaded
-console.log('=== CLOUDINARY CONFIGURATION FROM CONFIG FILE ===');
-console.log('Cloudinary config available:', !!cloudinary);
-console.log('Cloudinary config:', cloudinary.config());
+// Configure Cloudinary explicitly with environment variables
+console.log('=== CONFIGURING CLOUDINARY DIRECTLY ===');
+console.log('Environment variables:', {
+    CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
+    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+    CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET ? '[SET]' : '[NOT SET]'
+});
+
+// Configure Cloudinary with explicit credentials
+const cloudinaryConfig = {
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+};
+
+// Check if all required credentials are present
+if (!cloudinaryConfig.cloud_name || !cloudinaryConfig.api_key || !cloudinaryConfig.api_secret) {
+    console.error('=== CLOUDINARY CONFIGURATION ERROR ===');
+    console.error('Missing required Cloudinary credentials:', {
+        cloud_name: cloudinaryConfig.cloud_name ? 'SET' : 'MISSING',
+        api_key: cloudinaryConfig.api_key ? 'SET' : 'MISSING',
+        api_secret: cloudinaryConfig.api_secret ? 'SET' : 'MISSING'
+    });
+}
+
+// Apply the configuration
+cloudinary.config(cloudinaryConfig);
+
+// Verify the configuration was applied
+const appliedConfig = cloudinary.config();
+console.log('Applied Cloudinary configuration:', {
+    cloud_name: appliedConfig.cloud_name,
+    api_key: appliedConfig.api_key ? 'SET' : 'NOT SET',
+    api_secret: appliedConfig.api_secret ? 'SET' : 'NOT SET'
+});
 
 const itemRouter = express.Router();
 
 // Configure Cloudinary storage
 let storage;
 try {
+    console.log('=== CREATING CLOUDINARY STORAGE ===');
+    
     // Verify Cloudinary is properly configured before creating storage
     const cloudConfig = cloudinary.config();
-    console.log('=== CLOUDINARY CONFIG VERIFICATION ===');
     console.log('Cloudinary config before storage creation:', {
         cloud_name: cloudConfig.cloud_name,
         api_key: cloudConfig.api_key ? 'SET' : 'NOT SET',
@@ -26,6 +59,8 @@ try {
     if (!cloudConfig.cloud_name || !cloudConfig.api_key || !cloudConfig.api_secret) {
         throw new Error('Cloudinary not properly configured - missing required credentials');
     }
+    
+    console.log('Creating CloudinaryStorage with cloudinary instance:', !!cloudinary);
     
     storage = new CloudinaryStorage({
         cloudinary: cloudinary,
@@ -52,12 +87,14 @@ try {
         },
     });
     
-    console.log('Cloudinary storage configured successfully');
+    console.log('Cloudinary storage created successfully');
 } catch (storageError) {
-    console.error('=== CLOUDINARY STORAGE CONFIGURATION ERROR ===');
-    console.error('Error configuring Cloudinary storage:', storageError);
+    console.error('=== CLOUDINARY STORAGE CREATION ERROR ===');
+    console.error('Error creating Cloudinary storage:', storageError);
     console.error('Error type:', storageError.constructor.name);
     console.error('Error message:', storageError.message);
+    console.error('Error stack:', storageError.stack);
+    
     // Fallback to disk storage if Cloudinary fails
     storage = multer.diskStorage({
         destination: function (req, file, cb) {
@@ -68,6 +105,7 @@ try {
             cb(null, file.fieldname + '-' + uniqueSuffix + '.' + file.mimetype.split('/')[1])
         }
     });
+    console.log('Using disk storage as fallback');
 }
 
 // Add file filter to only accept images
@@ -103,12 +141,21 @@ const handleUpload = (req, res, next) => {
     console.log('Request method:', req.method);
     console.log('Request url:', req.url);
     
+    // Verify storage is configured
+    console.log('Storage configured:', !!storage);
+    
     upload(req, res, (err) => {
         console.log('=== MULter UPLOAD RESULT ===');
         if (err) {
             console.log('Multer upload error:', err);
             console.log('Error type:', err.constructor.name);
             console.log('Error message:', err.message);
+            // Add more detailed error information
+            if (err.message && err.message.includes('api_key')) {
+                console.log('=== CLOUDINARY API KEY ERROR DETECTED ===');
+                console.log('This suggests Cloudinary is not properly configured');
+                console.log('Current Cloudinary config:', cloudinary.config());
+            }
             return res.status(400).json({ 
                 message: 'File upload failed',
                 error: err.message,
