@@ -412,6 +412,12 @@ const ListItems = () => {
                       }
 
                       // Send update
+                      console.log('=== DEBUG ITEM UPDATE ===');
+                      console.log('Editing item:', editingItem);
+                      console.log('Item ID:', editingItem._id);
+                      console.log('Item ID type:', typeof editingItem._id);
+                      console.log('Item ID length:', editingItem._id.length);
+                      console.log('Item ID char codes:', [...editingItem._id].map(c => c.charCodeAt(0)));
                       console.log('Sending PUT request to:', `${url}/api/items/${editingItem._id}`);
                       const res = await axios.put(`${url}/api/items/${editingItem._id}`, payload, config);
                       console.log('Update response:', res.data);
@@ -423,8 +429,12 @@ const ListItems = () => {
                       setNewImage(null);
                       alert('Item updated successfully!');
                     } catch (err) {
+                      console.error('=== UPDATE ERROR ===');
                       console.error('Update error', err);
                       console.error('Error response:', err.response);
+                      console.error('Error request:', err.request);
+                      console.error('Error config:', err.config);
+                      
                       let errorMessage = 'Failed to update item. ';
                       
                       if (err.response) {
@@ -443,7 +453,7 @@ const ListItems = () => {
                       
                       // Show detailed error in development
                       if (process.env.NODE_ENV === 'development') {
-                        errorMessage += '\n\nDetails: ' + JSON.stringify(err.response?.data || err.message || 'Unknown error');
+                        errorMessage += '\n\nDetails: ' + JSON.stringify(err.response?.data || err.message || 'Unknown error', null, 2);
                       }
                       
                       alert(errorMessage);
