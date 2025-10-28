@@ -49,7 +49,7 @@ The following environment variables are already configured in your `render.yaml`
 To enable payment processing, you need to configure your Stripe secret key:
 
 1. Go to https://dashboard.stripe.com/apikeys
-2. Copy your "Secret key" (starts with sk_test_ for test mode or sk_live_ for live mode)
+2. Copy your "Secret key" (starts with sk*test* for test mode or sk*live* for live mode)
 3. In the Render dashboard, add a new environment variable:
    - Key: `STRIPE_SECRET_KEY`
    - Value: Your actual Stripe secret key
@@ -112,5 +112,7 @@ You can test various endpoints to ensure everything is working:
 3. Test image uploads through the admin panel
 4. Verify CORS is working correctly with your frontend applications
 5. Test Stripe integration by placing a test order
+
+```
 
 ```

@@ -78,6 +78,13 @@ const CustomizePopup = ({ item, onClose, onAddToCart }) => {
     onClose();
   };
 
+  // Function to get image URL with fallback
+  const getImageUrl = () => {
+    const url = item.imageUrl || item.image;
+    if (!url) return '/placeholder-image.jpg';
+    return url.includes('?') ? `${url}&size=large` : `${url}?size=large`;
+  };
+
   // Check if item has customization options
   const hasCustomizationOptions = (item.variants && item.variants.length > 0) || 
                                  (item.modifierGroups && item.modifierGroups.length > 0);
@@ -92,6 +99,20 @@ const CustomizePopup = ({ item, onClose, onAddToCart }) => {
               <button onClick={onClose} className="text-gray-500 hover:text-[#4CAF50]">
                 <FaTimes />
               </button>
+            </div>
+            
+            {/* Item Image */}
+            <div className="mb-6 flex justify-center">
+              <div className="w-48 h-48 rounded-lg overflow-hidden shadow-md">
+                <img 
+                  src={getImageUrl()} 
+                  alt={item.name} 
+                  className="w-full h-full object-contain bg-[#F9FFF6]"
+                  onError={(e) => {
+                    e.target.src = 'https://source.unsplash.com/200x200/?grocery';
+                  }}
+                />
+              </div>
             </div>
             
             <div className="text-center py-8">
@@ -147,6 +168,20 @@ const CustomizePopup = ({ item, onClose, onAddToCart }) => {
             <button onClick={onClose} className="text-gray-500 hover:text-[#4CAF50]">
               <FaTimes />
             </button>
+          </div>
+          
+          {/* Item Image */}
+          <div className="mb-6 flex justify-center">
+            <div className="w-48 h-48 rounded-lg overflow-hidden shadow-md">
+              <img 
+                src={getImageUrl()} 
+                alt={item.name} 
+                className="w-full h-full object-contain bg-[#F9FFF6]"
+                onError={(e) => {
+                  e.target.src = 'https://source.unsplash.com/200x200/?grocery';
+                }}
+              />
+            </div>
           </div>
           
           <div className="mb-6 p-4 bg-[#F9FFF6] rounded-xl">
