@@ -1,32 +1,32 @@
 import express from 'express';
 import multer from 'multer';
-import { v2 as cloudinary } from 'cloudinary';
+import cloudinary from '../config/cloudinary.js';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import { createItem, getItems, deleteItem, updateItem, getItemById } from '../controllers/itemController.js';
 
-// Configure Cloudinary explicitly
-console.log('=== CONFIGURING CLOUDINARY ===');
-console.log('Cloudinary env vars:', {
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'NOT SET'
-});
-
-// Configure Cloudinary with explicit credentials
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-// Verify Cloudinary configuration
-console.log('Cloudinary configured:', cloudinary.config());
+// Log Cloudinary configuration to verify it's loaded
+console.log('=== CLOUDINARY CONFIGURATION FROM CONFIG FILE ===');
+console.log('Cloudinary config available:', !!cloudinary);
+console.log('Cloudinary config:', cloudinary.config());
 
 const itemRouter = express.Router();
 
 // Configure Cloudinary storage
 let storage;
 try {
+    // Verify Cloudinary is properly configured before creating storage
+    const cloudConfig = cloudinary.config();
+    console.log('=== CLOUDINARY CONFIG VERIFICATION ===');
+    console.log('Cloudinary config before storage creation:', {
+        cloud_name: cloudConfig.cloud_name,
+        api_key: cloudConfig.api_key ? 'SET' : 'NOT SET',
+        api_secret: cloudConfig.api_secret ? 'SET' : 'NOT SET'
+    });
+    
+    if (!cloudConfig.cloud_name || !cloudConfig.api_key || !cloudConfig.api_secret) {
+        throw new Error('Cloudinary not properly configured - missing required credentials');
+    }
+    
     storage = new CloudinaryStorage({
         cloudinary: cloudinary,
         params: {
