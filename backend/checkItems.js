@@ -1,40 +1,40 @@
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 import Item from './modals/item.js';
 
-mongoose.connect('mongodb://localhost:27017/foodiefrenzy')
-  .then(async () => {
-    console.log('Connected to MongoDB');
-    
-    const count = await Item.countDocuments();
-    console.log(`\nTotal items in database: ${count}`);
-    
-    const categories = await Item.distinct('category');
-    console.log(`\nCategories (${categories.length}):`);
-    
-    for (const cat of categories.sort()) {
-      const catCount = await Item.countDocuments({ category: cat });
-      console.log(`  ${cat}: ${catCount} items`);
-    }
-    
-    console.log('\n=== Sample Food Items ===');
-    const foodCategories = ['Food', 'Wedges', 'Chai', 'Coffee', 'Speciality coffee', 'Slushy', 'Chicken wings'];
-    const sampleFood = await Item.find({ 
-      category: { $in: foodCategories } 
-    }).limit(15);
-    
-    sampleFood.forEach(item => {
-      console.log(`  - ${item.name} (${item.category}): $${item.price}`);
-    });
-    
-    console.log('\n=== Sample Convenience Items ===');
-    const sampleConv = await Item.find({ category: 'Convenience' }).limit(10);
-    sampleConv.forEach(item => {
-      console.log(`  - ${item.name}: $${item.price}`);
-    });
-    
-    process.exit(0);
-  })
-  .catch(err => {
-    console.error('Error:', err);
+dotenv.config();
+
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGODB_URI);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    return conn;
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
     process.exit(1);
-  });
+  }
+};
+
+const checkItems = async () => {
+  await connectDB();
+  
+  try {
+    console.log('Fetching all items from database...');
+    const items = await Item.find({});
+    
+    console.log(`Found ${items.length} items:`);
+    items.forEach((item, index) => {
+      console.log(`${index + 1}. ${item.name}`);
+      console.log(`   Image URL: ${item.imageUrl}`);
+      console.log(`   ID: ${item._id}`);
+      console.log('---');
+    });
+    
+    mongoose.connection.close();
+  } catch (error) {
+    console.error('Error fetching items:', error);
+    mongoose.connection.close();
+  }
+};
+
+checkItems();

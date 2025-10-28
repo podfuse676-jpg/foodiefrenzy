@@ -1,18 +1,29 @@
 import express from 'express';
 import multer from 'multer';
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import { createItem, getItems, deleteItem, updateItem, getItemById } from '../controllers/itemController.js';
 
 const itemRouter = express.Router();
 
-// Configure multer with error handling
-const storage = multer.diskStorage({
-    destination: (_req, _file, cb) => {
-        console.log('Setting destination for file upload');
-        cb(null, 'uploads/');
-    },
-    filename: (_req, file, cb) => {
-        console.log('Setting filename for file upload:', file.originalname);
-        cb(null, `${Date.now()}-${file.originalname}`);
+// Configure Cloudinary storage
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'foodiefrenzy_items',
+        format: async (req, file) => {
+            // Determine format based on file mimetype
+            if (file.mimetype.includes('webp')) return 'webp';
+            if (file.mimetype.includes('png')) return 'png';
+            if (file.mimetype.includes('jpg') || file.mimetype.includes('jpeg')) return 'jpg';
+            return 'jpg'; // default
+        },
+        public_id: (req, file) => {
+            // Generate unique public ID
+            const timestamp = Date.now();
+            const originalname = file.originalname.split('.')[0];
+            return `${originalname}_${timestamp}`;
+        },
     },
 });
 

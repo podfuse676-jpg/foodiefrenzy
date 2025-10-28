@@ -12,13 +12,15 @@ export const getItems = async (req, res, next) => {
             // Log the original imageUrl for debugging
             console.log(`Item: ${itemObj.name}, Original imageUrl: ${itemObj.imageUrl}`);
             
-            // If imageUrl is already an absolute URL, use it as is
-            // Otherwise, prefix with host for relative paths
+            // For Cloudinary URLs, they should already be full URLs
+            // For local URLs, we need to prefix with host
             if (itemObj.imageUrl && !itemObj.imageUrl.startsWith('http')) {
+                // This is a local URL, prefix with host
                 const host = `${req.protocol}://${req.get('host')}`;
                 itemObj.imageUrl = host + itemObj.imageUrl;
                 console.log(`Converted relative URL to absolute: ${itemObj.imageUrl}`);
             }
+            // If it's already an HTTP URL (Cloudinary), leave it as is
             
             return itemObj;
         });
@@ -42,7 +44,8 @@ export const getItemById = async (req, res, next) => {
             return res.status(404).json({ message: 'Item not found' });
         }
         
-        // Prefix image URL with host for absolute path if it's a relative path
+        // Prefix image URL with host for relative paths (local storage)
+        // Cloudinary URLs should already be absolute
         const itemObj = item.toObject();
         if (itemObj.imageUrl && !itemObj.imageUrl.startsWith('http')) {
             const host = `${req.protocol}://${req.get('host')}`;
@@ -94,8 +97,14 @@ export const createItem = async (req, res, next) => {
 
         // Handle image upload path (req.file is set by multer in the route if used)
         if (req.file) {
-            console.log('New image uploaded:', req.file.filename);
-            itemData.imageUrl = `/uploads/${req.file.filename}`;
+            console.log('New image uploaded:', req.file);
+            // For Cloudinary, the secure_url is the full URL to the image
+            if (req.file.secure_url) {
+                itemData.imageUrl = req.file.secure_url;
+            } else if (req.file.path) {
+                // Fallback for local storage
+                itemData.imageUrl = `/uploads/${req.file.filename}`;
+            }
         }
 
         console.log('Item data to be saved:', itemData);
@@ -103,7 +112,8 @@ export const createItem = async (req, res, next) => {
         const newItem = new Item(itemData);
         const savedItem = await newItem.save();
         
-        // Prefix image URL with host for absolute path if it's a relative path
+        // For Cloudinary URLs, they should already be full URLs
+        // For local URLs, prefix with host
         const savedItemObj = savedItem.toObject();
         if (savedItemObj.imageUrl && !savedItemObj.imageUrl.startsWith('http')) {
             const host = `${req.protocol}://${req.get('host')}`;
@@ -213,8 +223,14 @@ export const updateItem = async (req, res, next) => {
 
         // Handle image upload path (req.file is set by multer in the route if used)
         if (req.file) {
-            console.log('New image uploaded:', req.file.filename);
-            updateData.imageUrl = `/uploads/${req.file.filename}`;
+            console.log('New image uploaded:', req.file);
+            // For Cloudinary, the secure_url is the full URL to the image
+            if (req.file.secure_url) {
+                updateData.imageUrl = req.file.secure_url;
+            } else if (req.file.path) {
+                // Fallback for local storage
+                updateData.imageUrl = `/uploads/${req.file.filename}`;
+            }
         } else {
             console.log('No new image uploaded, preserving existing image');
             // If no new image is uploaded, don't update the imageUrl field at all
@@ -253,7 +269,8 @@ export const updateItem = async (req, res, next) => {
             return res.status(404).json({ message: 'Item not found' });
         }
         
-        // Prefix image URL with host for absolute path if it's a relative path
+        // For Cloudinary URLs, they should already be full URLs
+        // For local URLs, prefix with host
         const updatedObj = updated.toObject();
         if (updatedObj.imageUrl && !updatedObj.imageUrl.startsWith('http')) {
             const host = `${req.protocol}://${req.get('host')}`;

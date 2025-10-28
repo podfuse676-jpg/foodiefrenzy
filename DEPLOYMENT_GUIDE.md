@@ -1,147 +1,95 @@
-# Lakeshore Convenience Deployment Guide
-
-This guide will help you deploy the Lakeshore Convenience application to Vercel (frontend and admin) and Render (backend).
+# Deployment Guide for Foodie Frenzy Application
 
 ## Prerequisites
 
-1. GitHub account with the repository
-2. Vercel account
-3. Render account
-4. MongoDB Atlas account
-5. (Optional) Stripe account for payments
+1. A Render account (https://render.com/)
+2. A GitHub account with the repository connected to Render
+3. Your Cloudinary account credentials
 
-## Backend Deployment on Render
+## Deploying to Render
 
-### 1. Update Environment Variables
+### Step 1: Connect Your Repository to Render
 
-Make sure your `.env` file in the backend has the correct values:
+1. Log in to your Render account
+2. Click "New" and select "Web Service"
+3. Connect your GitHub account if not already connected
+4. Select your Foodie Frenzy repository
 
-```
-JWT_SECRET=your_jwt_secret_here_(at_least_32_characters)
-STRIPE_SECRET_KEY=your_stripe_secret_key_here
-FRONTEND_URL=https://foodiefrenzy-frontend.vercel.app
-ADMIN_URL=https://foodiefrenzy-admin.vercel.app
-NODE_ENV=production
-TWILIO_ACCOUNT_SID= (leave empty if not using SMS)
-TWILIO_AUTH_TOKEN= (leave empty if not using SMS)
-TWILIO_PHONE_NUMBER= (leave empty if not using SMS)
-TWILIO_VERIFIED_NUMBER= (leave empty if not using SMS)
-MONGODB_URI=your_mongodb_atlas_connection_string
-PORT=4000
-CORS_ORIGIN=https://foodiefrenzy-frontend.vercel.app
-```
+### Step 2: Configure the Web Service
 
-### 2. Deploy to Render
+Render should automatically detect your configuration from the `render.yaml` file:
 
-1. Go to [Render Dashboard](https://dashboard.render.com/)
-2. Click "New" → "Web Service"
-3. Connect your GitHub repository
-4. Set the following:
-   - Name: `foodiefrenzy-backend`
-   - Region: Choose the closest region
-   - Branch: `main`
-   - Root Directory: `backend`
-   - Runtime: `Node`
-   - Build Command: `npm install`
-   - Start Command: `npm start`
-5. Add Environment Variables (copy from your `.env` file)
-6. Click "Create Web Service"
+- **Name**: lakeshoreconveniencee-backend
+- **Environment**: Node
+- **Build Command**: npm install
+- **Start Command**: node server.js
+- **Plan**: Free (you can upgrade later if needed)
 
-### 3. Update MongoDB Atlas IP Whitelist
+### Step 3: Set Environment Variables
 
-After deployment, get the Render service IP and add it to your MongoDB Atlas IP whitelist:
+The following environment variables are already configured in your `render.yaml` file:
 
-1. In Render, go to your service → Settings → IP Address
-2. Copy the IP address
-3. In MongoDB Atlas, go to Network Access → Add IP Address
-4. Add the Render IP address
+- `NODE_ENV`: production
+- `PORT`: 10000
+- `MONGODB_URI`: Your MongoDB connection string
+- `CLOUDINARY_CLOUD_NAME`: dfjypp016
+- `CLOUDINARY_API_KEY`: 645785246981482
+- `CLOUDINARY_API_SECRET`: A9rs3IOJK9TEcVNUOm7Dwrg2nlI
+- `JWT_SECRET`: Your JWT secret
 
-## Frontend Deployment on Vercel
+### Step 4: Deploy
 
-### 1. Update Environment Variables
+1. Click "Create Web Service"
+2. Render will automatically start building and deploying your application
+3. Wait for the deployment to complete (this may take a few minutes)
 
-Make sure your `.env` file in the frontend has the correct value:
+### Step 5: Verify Deployment
 
-```
-VITE_API_URL=https://your-render-service-url.onrender.com
-```
+1. Once deployed, visit your service URL (should be something like `https://lakeshoreconveniencee-backend.onrender.com`)
+2. Test the health endpoint: `https://lakeshoreconveniencee-backend.onrender.com/health`
+3. Test the items endpoint: `https://lakeshoreconveniencee-backend.onrender.com/api/items`
 
-### 2. Deploy to Vercel
+## Updating Environment Variables in Render Dashboard
 
-1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
-2. Click "New Project"
-3. Import your GitHub repository
-4. Set the following:
-   - Project Name: `foodiefrenzy-frontend`
-   - Framework Preset: `Vite`
-   - Root Directory: `frontend`
-5. Add Environment Variables (copy from your `.env` file)
-6. Click "Deploy"
+If you need to update any environment variables after deployment:
 
-## Admin Panel Deployment on Vercel
-
-### 1. Update Environment Variables
-
-Make sure your `.env` file in the admin has the correct value:
-
-```
-VITE_API_URL=https://your-render-service-url.onrender.com
-```
-
-### 2. Deploy to Vercel
-
-1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
-2. Click "New Project"
-3. Import your GitHub repository
-4. Set the following:
-   - Project Name: `foodiefrenzy-admin`
-   - Framework Preset: `Vite`
-   - Root Directory: `admin`
-5. Add Environment Variables (copy from your `.env` file)
-6. Click "Deploy"
-
-## Deploying Services Independently
-
-If you want to deploy each service separately, you can use the specific deployment guides:
-
-- [Admin Panel Deployment Guide](ADMIN_DEPLOYMENT_GUIDE.md) - For deploying only the admin panel
-- Frontend Deployment Guide (this document) - For deploying only the frontend
-- Backend Deployment (this document) - For deploying only the backend
-
-Each service can be deployed and updated independently without affecting the others.
+1. Go to your Render dashboard
+2. Click on your service
+3. Click "Environment" in the sidebar
+4. Add or modify variables as needed
+5. Click "Save Changes" to redeploy with new variables
 
 ## Troubleshooting
 
-If you encounter any issues during or after deployment, please refer to our [Troubleshooting Login Issues Guide](TROUBLESHOOTING_LOGIN_ISSUES.md) for detailed steps to identify and resolve common problems.
+### Common Issues
 
-### Login Issues
+1. **Deployment fails**: Check the build logs in Render for specific error messages
+2. **Application crashes**: Check the application logs in Render
+3. **Database connection issues**: Verify your MongoDB URI is correct
+4. **Cloudinary issues**: Verify your Cloudinary credentials are correct
 
-If you're unable to log in on Vercel:
+### Testing Your Deployed Application
 
-1. Check that `VITE_API_URL` in your frontend `.env` file points to your Render backend URL
-2. Check that CORS is properly configured in your backend
-3. Check browser console for network errors
-4. Make sure your MongoDB connection is working
+You can test various endpoints to ensure everything is working:
 
-### MongoDB Connection Issues
+1. Health check: `GET /health`
+2. Environment variables: `GET /api/debug-env`
+3. Database connection: `GET /api/test-db`
+4. Items list: `GET /api/items`
 
-If your backend fails to connect to MongoDB:
+## Important Notes
 
-1. Verify your `MONGODB_URI` is correct
-2. Make sure your MongoDB Atlas cluster allows connections from Render IPs
-3. You may need to whitelist `0.0.0.0/0` for testing purposes
+1. **File Persistence**: With the free tier, files stored locally will be lost when the service restarts. This is why we implemented Cloudinary integration for image storage.
 
-### Twilio Issues
+2. **CORS Configuration**: The application is configured to allow requests from Vercel deployments, which is important for your frontend and admin panel.
 
-If you don't want to use Twilio for SMS:
+3. **Image URLs**: All images are now served from Cloudinary URLs, ensuring they persist across service restarts.
 
-1. Leave the Twilio environment variables empty
-2. The application will work without SMS functionality
+4. **Health Check**: The `/health` endpoint is configured for Render to monitor your service health.
 
-## Updating Deployments
+## Post-Deployment Steps
 
-To update your deployments after making changes:
-
-1. Push your changes to GitHub
-2. Vercel and Render will automatically redeploy
-3. For Render, you may need to manually trigger a deploy if auto-deploy is disabled
+1. Test all API endpoints
+2. Verify images are loading correctly from Cloudinary
+3. Test image uploads through the admin panel
+4. Verify CORS is working correctly with your frontend applications

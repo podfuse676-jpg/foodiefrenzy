@@ -5,11 +5,14 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import fs from 'fs';
+import multer from 'multer';
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
 // Load environment variables
 dotenv.config();
 
-// Ensure uploads directory exists
+// Ensure uploads directory exists (for any local fallback)
 const uploadsDir = path.join(process.cwd(), 'uploads');
 const imagesDir = path.join(uploadsDir, 'images');
 
@@ -24,6 +27,47 @@ if (!fs.existsSync(imagesDir)) {
   console.log('Creating uploads/images directory...');
   fs.mkdirSync(imagesDir, { recursive: true });
 }
+
+// Configure Cloudinary storage for test endpoint
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'foodiefrenzy_items',
+        format: async (req, file) => {
+            // Determine format based on file mimetype
+            if (file.mimetype.includes('webp')) return 'webp';
+            if (file.mimetype.includes('png')) return 'png';
+            if (file.mimetype.includes('jpg') || file.mimetype.includes('jpeg')) return 'jpg';
+            return 'jpg'; // default
+        },
+        public_id: (req, file) => {
+            // Generate unique public ID
+            const timestamp = Date.now();
+            const originalname = file.originalname.split('.')[0];
+            // Sanitize filename for Cloudinary
+            const sanitized = originalname.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_');
+            return `${sanitized}_${timestamp}`;
+        },
+    },
+});
+
+// Add file filter to only accept images
+const fileFilter = (_req, file, cb) => {
+    console.log('File filter checking file:', file.mimetype);
+    if (file.mimetype.startsWith('image/')) {
+        cb(null, true);
+    } else {
+        cb(new Error('Only image files are allowed'), false);
+    }
+};
+
+const upload = multer({ 
+    storage,
+    fileFilter,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit
+    }
+});
 
 // Connect to MongoDB
 const connectDB = async () => {
@@ -47,6 +91,7 @@ import userRoutes from './routes/userRoute.js';
 import phoneAuthRoutes from './routes/phoneAuthRoute.js';
 
 const app = express();
+// Use PORT from environment variable (Render will set this) or default to 4000
 const PORT = process.env.PORT || 4000;
 
 // Connect to database
@@ -92,10 +137,11 @@ app.use(cookieParser());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Serve static files from uploads directory
+// Serve static files from uploads directory (for local fallback)
+// Note: With Cloudinary, images will be served directly from Cloudinary URLs
 app.use('/uploads', express.static('uploads'));
 
-// Add a route to serve images with proper headers
+// Add a route to serve images with proper headers (for local fallback)
 app.get('/uploads/images/:imageName', (req, res) => {
   const imageName = req.params.imageName;
   const imagePath = path.join(process.cwd(), 'uploads', 'images', imageName);
@@ -121,7 +167,7 @@ app.get('/uploads/images/:imageName', (req, res) => {
   });
 });
 
-// Add a route to list all available images (for debugging)
+// Add a route to list all available images (for debugging - local fallback)
 app.get('/uploads/images', (req, res) => {
   const imagesDir = path.join(process.cwd(), 'uploads', 'images');
   
@@ -152,6 +198,20 @@ app.get('/uploads/images', (req, res) => {
   });
 });
 
+// Add a simple file upload endpoint for testing
+app.post('/api/test-upload', upload.single('image'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: 'No file uploaded' });
+  }
+  
+  res.json({
+    message: 'File uploaded successfully',
+    filename: req.file.filename,
+    path: req.file.path,
+    url: req.file.secure_url || req.file.path
+  });
+});
+
 // Routes
 app.use('/api/items', itemRoutes);
 app.use('/api/cart', cartRoutes);
@@ -165,9 +225,13 @@ app.get('/api/debug-env', (req, res) => {
     MONGODB_URI: process.env.MONGODB_URI ? 'SET' : 'NOT SET',
     JWT_SECRET: process.env.JWT_SECRET ? 'SET' : 'NOT SET',
     NODE_ENV: process.env.NODE_ENV || 'NOT SET',
+    CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME ? 'SET' : 'NOT SET',
+    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY ? 'SET' : 'NOT SET',
+    CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'NOT SET',
     dbConnectionState: mongoose.connection.readyState,
     dbConnectionHost: mongoose.connection.host,
-    dbConnectionName: mongoose.connection.name
+    dbConnectionName: mongoose.connection.name,
+    PORT: process.env.PORT || 'NOT SET'
   });
 });
 
@@ -240,7 +304,11 @@ app.get('/test-env', (req, res) => {
   res.json({
     MONGODB_URI: process.env.MONGODB_URI ? 'SET' : 'NOT SET',
     JWT_SECRET: process.env.JWT_SECRET ? 'SET' : 'NOT SET',
-    NODE_ENV: process.env.NODE_ENV || 'NOT SET'
+    NODE_ENV: process.env.NODE_ENV || 'NOT SET',
+    CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME ? 'SET' : 'NOT SET',
+    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY ? 'SET' : 'NOT SET',
+    CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'NOT SET',
+    PORT: process.env.PORT || 'NOT SET'
   });
 });
 
@@ -318,7 +386,7 @@ app.get('/test-admin-user', async (req, res) => {
     console.error('Test admin user error:', error);
     res.status(500).json({
       success: false,
-      message: 'Error testing admin user',
+      message: 'Admin user lookup failed',
       error: error.message
     });
   }
@@ -382,28 +450,14 @@ app.get('/test-admin-user-db', async (req, res) => {
       });
     }
     
-    // List all collections
-    const collections = await db.db.listCollections().toArray();
-    console.log('Collections:', collections.map(c => c.name));
-    
-    // Check if the users collection exists
-    const usersCollectionExists = collections.some(c => c.name === 'users');
-    console.log('Users collection exists:', usersCollectionExists);
-    
-    if (!usersCollectionExists) {
-      console.log('Users collection does not exist');
-      return res.json({
-        success: false,
-        message: 'Users collection does not exist'
-      });
-    }
+    // Import the user model
+    const User = (await import('./modals/userModel.js')).default;
     
     // Try to find the admin user
-    const users = await db.db.collection('users').find({ email: 'admin@foodiefrenzy.com' }).toArray();
-    console.log('Users found:', users.length);
+    const user = await User.findOne({ email: 'admin@foodiefrenzy.com' });
+    console.log('Admin user lookup result with explicit database connection:', user ? 'Found' : 'Not found');
     
-    if (users.length > 0) {
-      const user = users[0];
+    if (user) {
       res.json({
         success: true,
         message: 'Admin user found with explicit database connection',
@@ -429,46 +483,18 @@ app.get('/test-admin-user-db', async (req, res) => {
   }
 });
 
-// Endpoint to check MongoDB URI and connection details
-app.get('/check-mongo-config', (req, res) => {
-  const mongoUri = process.env.MONGODB_URI || 'Not set';
-  const sanitizedUri = mongoUri.replace(/:[^:@]+@/, ':****@'); // Hide password
-  
-  res.json({
-    MONGODB_URI: sanitizedUri,
-    NODE_ENV: process.env.NODE_ENV || 'Not set',
-    dbConnectionState: mongoose.connection.readyState,
-    dbConnectionHost: mongoose.connection.host,
-    dbConnectionName: mongoose.connection.name,
-    dbConnectionString: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
-  });
-});
-
-// Add a simple file upload endpoint for testing
-app.post('/api/test-upload', upload.single('image'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: 'No file uploaded' });
-  }
-  
-  res.json({
-    message: 'File uploaded successfully',
-    filename: req.file.filename,
-    path: req.file.path
-  });
-});
-
-// Endpoint to create an admin user (for testing purposes)
-app.post('/create-admin', async (req, res) => {
+// Test endpoint to create an admin user
+app.post('/test-create-admin', async (req, res) => {
   try {
-    console.log('Creating admin user...');
+    console.log('Creating test admin user...');
     
     // Import required modules
     const bcrypt = (await import('bcryptjs')).default;
     const User = (await import('./modals/userModel.js')).default;
     
-    // Check if admin already exists
-    const existingAdmin = await User.findOne({ email: 'admin@foodiefrenzy.com' });
-    if (existingAdmin) {
+    // Check if admin user already exists
+    const existingUser = await User.findOne({ email: 'admin@foodiefrenzy.com' });
+    if (existingUser) {
       console.log('Admin user already exists');
       return res.json({
         success: false,
@@ -506,45 +532,6 @@ app.post('/create-admin', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error creating admin user',
-      error: error.message
-    });
-  }
-});
-
-// Test endpoint to directly authenticate admin user (for testing purposes)
-app.post('/test-admin-login', async (req, res) => {
-  try {
-    console.log('Test admin login endpoint called');
-    
-    // Import required modules
-    const User = (await import('./modals/userModel.js')).default;
-    
-    // Find the admin user
-    const adminUser = await User.findOne({ email: 'admin@foodiefrenzy.com' });
-    if (!adminUser) {
-      console.log('Admin user not found');
-      return res.json({
-        success: false,
-        message: 'Admin user not found'
-      });
-    }
-    
-    // Create token
-    const { createToken } = await import('./controllers/userController.js');
-    const token = createToken(adminUser);
-    
-    console.log('Test admin login successful');
-    
-    res.json({
-      success: true,
-      token: token,
-      role: adminUser.role
-    });
-  } catch (error) {
-    console.error('Test admin login error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Test admin login error',
       error: error.message
     });
   }
@@ -617,7 +604,7 @@ process.on('unhandledRejection', (err) => {
   });
 });
 
-// Start server
+// Start server - Listen on all interfaces for Render deployment
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server Started on http://0.0.0.0:${PORT}`);
 });

@@ -1,32 +1,29 @@
+// Script to test database connection
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { connectDB } from './config/db.js';
 
+// Load environment variables
 dotenv.config();
 
-const testDbConnection = async () => {
+// Connect to MongoDB
+const connectDB = async () => {
   try {
-    console.log('MONGODB_URI from env:', process.env.MONGODB_URI);
+    console.log('Connecting to MongoDB...');
+    console.log('MONGODB_URI:', process.env.MONGODB_URI ? 'SET' : 'NOT SET');
     
-    // Connect to MongoDB
-    await connectDB();
+    const conn = await mongoose.connect(process.env.MONGODB_URI);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
     
-    console.log('DB CONNECTED');
-    console.log('Database name:', mongoose.connection.name);
-    console.log('Database host:', mongoose.connection.host);
-    
-    // List all collections
+    // Test a simple query
+    console.log('Testing database query...');
     const collections = await mongoose.connection.db.listCollections().toArray();
-    console.log('Collections:', collections.map(c => c.name));
+    console.log('Available collections:', collections.map(c => c.name));
     
-    // Try to find items
-    const items = await mongoose.connection.db.collection('items').find({}).toArray();
-    console.log('Items in items collection:', items.length);
-    
-    mongoose.connection.close();
-  } catch (err) {
-    console.error('DB CONNECTION ERROR:', err.message || err);
+    process.exit(0);
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    process.exit(1);
   }
 };
 
-testDbConnection();
+connectDB();
