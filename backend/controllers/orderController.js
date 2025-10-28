@@ -90,11 +90,11 @@ export const createOrder = async (req, res) => {
                 }
             ];
             
-            // Use FRONTEND_URL from environment variables or default to localhost:5173
-            const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+            // Use FRONTEND_URL from environment variables or default to Vercel deployment
+            const frontendUrl = process.env.FRONTEND_URL || 'https://frontend-me6ivkq5o-podfuse676-6967s-projects.vercel.app';
             console.log('Using frontend URL for Stripe redirect:', frontendUrl);
             
-            const successUrl = `${frontendUrl}/myorder/verify?success=true&session_url={CHECKOUT_SESSION_ID}`;
+            const successUrl = `${frontendUrl}/myorder/verify?success=true&session_id={CHECKOUT_SESSION_ID}`;
             const cancelUrl = `${frontendUrl}/checkout?payment_status=cancel`;
             
             console.log('Stripe success URL:', successUrl);

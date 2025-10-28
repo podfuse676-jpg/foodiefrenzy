@@ -21,5 +21,9 @@ services:
         value: A9rs3IOJK9TEcVNUOm7Dwrg2nlI
       - key: JWT_SECRET
         value: cefa5906a5fc476696d4b5f508fd42e2eac737d44adfcc42ca17c600658e58d7c6ed9875fb4270bb91e9b26dfe30cfc67b0f2cb7664acc1d400ce8e56c615ae7
+      - key: FRONTEND_URL
+        value: https://frontend-me6ivkq5o-podfuse676-6967s-projects.vercel.app
+      - key: ADMIN_URL
+        value: https://admin-7y4pypy16-podfuse676-6967s-projects.vercel.app
     healthCheckPath: /health
     autoDeploy: true
