@@ -311,6 +311,10 @@ const ListItems = () => {
                         // Remove _id field as it shouldn't be updated
                         delete dataToSend._id;
                         
+                        // IMPORTANT: Remove imageUrl from payload to prevent conflicts
+                        // The backend will handle the new image URL from the uploaded file
+                        delete dataToSend.imageUrl;
+                        
                         if (typeof dataToSend.modifierGroups === 'string') dataToSend.modifierGroups = dataToSend.modifierGroups.split(',').map(s => s.trim()).filter(Boolean);
                         if (typeof dataToSend.printerLabels === 'string') dataToSend.printerLabels = dataToSend.printerLabels.split(',').map(s => s.trim()).filter(Boolean);
                         if (typeof dataToSend.flavourOptions === 'string') dataToSend.flavourOptions = dataToSend.flavourOptions.split(',').map(s => s.trim()).filter(Boolean);
@@ -346,6 +350,10 @@ const ListItems = () => {
                         // No image update, send as JSON
                         console.log('Updating without new image');
                         payload = { ...editingItem };
+                        
+                        // IMPORTANT: Remove imageUrl from payload when not updating image
+                        // to prevent overwriting with potentially incorrect URLs
+                        delete payload.imageUrl;
                         
                         // Handle array fields
                         if (typeof payload.modifierGroups === 'string') payload.modifierGroups = payload.modifierGroups.split(',').map(s => s.trim()).filter(Boolean);
@@ -447,9 +455,6 @@ const ListItems = () => {
       </div>
     </div>
   );
-};
-
-export default ListItems;
 };
 
 export default ListItems;
