@@ -190,6 +190,16 @@ const logRequestDetails = (req, res, next) => {
     console.log('Headers:', req.headers);
     console.log('Body exists:', !!req.body);
     console.log('File exists:', !!req.file);
+    
+    // Detailed parameter logging
+    if (req.params && req.params.id) {
+        console.log('=== DETAILED PARAM LOGGING ===');
+        console.log('Param ID:', req.params.id);
+        console.log('Param ID type:', typeof req.params.id);
+        console.log('Param ID length:', req.params.id.length);
+        console.log('Param ID char codes:', [...req.params.id].map(c => c.charCodeAt(0)));
+    }
+    
     next();
 };
 
@@ -229,6 +239,27 @@ itemRouter.put('/68fe1ec19090329489752b18', (req, res) => {
     
     // Forward to the regular updateItem handler
     return updateItem(req, res);
+});
+
+// Add a route to test parameter parsing
+itemRouter.put('/test-param/:id', (req, res) => {
+    console.log('=== TEST PARAM ROUTE ===');
+    console.log('Request params:', req.params);
+    console.log('ID param:', req.params.id);
+    console.log('ID param type:', typeof req.params.id);
+    console.log('ID param length:', req.params.id.length);
+    
+    // Test the ID validation
+    const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+    const isValid = objectIdRegex.test(req.params.id);
+    console.log('ID is valid:', isValid);
+    
+    res.json({
+        message: 'Param test',
+        params: req.params,
+        id: req.params.id,
+        isValid: isValid
+    });
 });
 
 export default itemRouter;
