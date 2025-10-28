@@ -113,20 +113,30 @@ const corsOptions = {
       'https://admin-7y4pypy16-podfuse676-6967s-projects.vercel.app'
     ];
     
+    console.log('=== CORS REQUEST ===');
+    console.log('Origin:', origin);
+    console.log('Allowed origins:', allowedOrigins);
+    
     // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
+    if (!origin) {
+      console.log('No origin, allowing request');
+      return callback(null, true);
+    }
     
     // Check if the origin is in our allowed list
     if (allowedOrigins.includes(origin)) {
+      console.log('Origin is in allowed list, allowing request');
       return callback(null, true);
     }
     
     // Check if it's a Vercel subdomain
     if (origin && origin.endsWith('.vercel.app')) {
+      console.log('Origin is a Vercel subdomain, allowing request');
       return callback(null, true);
     }
     
     // Reject the request
+    console.log('Origin not allowed, rejecting request');
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true
@@ -652,18 +662,19 @@ process.on('SIGTERM', () => {
 
 // Global error handler
 process.on('uncaughtException', (err) => {
-  console.error('UNCAUGHT EXCEPTION! Shutting down...');
-  console.error(err.name, err.message);
-  console.error(err.stack);
-  process.exit(1);
+  console.error('=== UNCAUGHT EXCEPTION ===');
+  console.error('Error:', err);
+  console.error('Error name:', err.name);
+  console.error('Error message:', err.message);
+  console.error('Error stack:', err.stack);
 });
 
 process.on('unhandledRejection', (err) => {
-  console.error('UNHANDLED REJECTION! Shutting down...');
-  console.error(err.name, err.message);
-  server.close(() => {
-    process.exit(1);
-  });
+  console.error('=== UNHANDLED REJECTION ===');
+  console.error('Error:', err);
+  console.error('Error name:', err.name);
+  console.error('Error message:', err.message);
+  console.error('Error stack:', err.stack);
 });
 
 // Start server - Listen on all interfaces for Render deployment
