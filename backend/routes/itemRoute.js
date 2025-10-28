@@ -180,6 +180,22 @@ const handleUpload = (req, res, next) => {
     });
 };
 
+// Add a middleware to log all request details
+const logRequestDetails = (req, res, next) => {
+    console.log('=== REQUEST DETAILS ===');
+    console.log('Method:', req.method);
+    console.log('URL:', req.url);
+    console.log('Params:', req.params);
+    console.log('Query:', req.query);
+    console.log('Headers:', req.headers);
+    console.log('Body exists:', !!req.body);
+    console.log('File exists:', !!req.file);
+    next();
+};
+
+// Apply the logging middleware to all item routes
+itemRouter.use(logRequestDetails);
+
 // Add a debug route to test item ID handling
 itemRouter.put('/debug/:id', (req, res) => {
     console.log('=== DEBUG ITEM ID ===');
@@ -202,5 +218,17 @@ itemRouter.get('/', getItems);
 itemRouter.get('/:id', getItemById); // Add this route
 itemRouter.delete('/:id', deleteItem);
 itemRouter.put('/:id', handleUpload, updateItem);
+
+// Add a specific route for testing the exact ID that's failing
+itemRouter.put('/68fe1ec19090329489752b18', (req, res) => {
+    console.log('=== SPECIAL DEBUG ROUTE FOR PROBLEMATIC ID ===');
+    console.log('This route was hit for the specific ID that was failing');
+    console.log('Request params:', req.params);
+    console.log('Request body:', req.body);
+    console.log('Request file:', req.file);
+    
+    // Forward to the regular updateItem handler
+    return updateItem(req, res);
+});
 
 export default itemRouter;
