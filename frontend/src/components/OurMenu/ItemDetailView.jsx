@@ -127,7 +127,7 @@ const ItemDetailView = ({ item, onClose }) => {
             <div className="md:w-2/5">
               <div className="relative rounded-2xl overflow-hidden shadow-xl transform transition-transform duration-300 hover:scale-105">
                 <img 
-                  src={getImageUrl(item.image)} 
+                  src={getImageUrl(item.imageUrl || item.image)} 
                   alt={item.name} 
                   className="w-full h-80 object-contain bg-[#F9FFF6]"
                 />
