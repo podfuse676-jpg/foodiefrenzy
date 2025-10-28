@@ -23,7 +23,8 @@
     "test-production-login": "node testProductionLogin.js",
     "test-production-request": "node testProductionRequest.js",
     "test-cloudinary-env": "node testCloudinaryEnv.js",
-    "test-cloudinary-config": "node testCloudinaryConfig.js"
+    "test-cloudinary-config": "node testCloudinaryConfig.js",
+    "test-item-id": "node testItemId.js"
   },
   "author": "",
   "license": "ISC",
