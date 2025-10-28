@@ -333,6 +333,29 @@ app.get('/api/test-cloudinary', async (req, res) => {
   }
 });
 
+// Test endpoint to verify item ID format
+app.get('/api/test-item-id/:id', (req, res) => {
+  const { id } = req.params;
+  console.log('=== TESTING ITEM ID ===');
+  console.log('Item ID:', id);
+  console.log('Item ID length:', id ? id.length : 0);
+  
+  // Validate MongoDB ObjectId format
+  const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+  const isValid = objectIdRegex.test(id);
+  
+  console.log('Is valid ObjectId format:', isValid);
+  
+  res.json({
+    id: id,
+    length: id ? id.length : 0,
+    isValidObjectId: isValid,
+    details: isValid 
+      ? 'This is a valid MongoDB ObjectId format' 
+      : 'This is NOT a valid MongoDB ObjectId format. It should be 24 hexadecimal characters (0-9, a-f, A-F).'
+  });
+});
+
 // Basic route for testing
 app.get('/', (req, res) => {
   res.json({ message: 'Server is running!', port: PORT });

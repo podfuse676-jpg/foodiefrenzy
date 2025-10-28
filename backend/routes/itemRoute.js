@@ -141,9 +141,18 @@ const handleUpload = (req, res, next) => {
     console.log('Request method:', req.method);
     console.log('Request url:', req.url);
     console.log('Request params:', req.params);
+    console.log('Request query:', req.query);
     
     // Verify storage is configured
     console.log('Storage configured:', !!storage);
+    
+    // Check if this is a PUT request to update an item
+    if (req.method === 'PUT' && req.params.id) {
+        console.log('=== ITEM UPDATE REQUEST ===');
+        console.log('Item ID from params:', req.params.id);
+        console.log('Item ID length:', req.params.id ? req.params.id.length : 0);
+        console.log('Item ID format valid:', /^[0-9a-fA-F]{24}$/.test(req.params.id));
+    }
     
     upload(req, res, (err) => {
         console.log('=== MULter UPLOAD RESULT ===');

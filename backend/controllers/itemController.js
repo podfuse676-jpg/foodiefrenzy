@@ -144,6 +144,11 @@ export const updateItem = async (req, res, next) => {
         console.log('Request headers:', req.headers);
         console.log('Content-Type:', req.headers['content-type']);
         
+        // Log the raw request body if possible
+        if (req.body && typeof req.body === 'object') {
+            console.log('Request body (detailed):', JSON.stringify(req.body, null, 2));
+        }
+        
         const id = req.params.id;
         const updateData = { ...req.body };
 
@@ -154,6 +159,18 @@ export const updateItem = async (req, res, next) => {
         if (!id) {
             console.log('ERROR: Item ID is missing');
             return res.status(400).json({ message: 'Item ID is required' });
+        }
+
+        // Validate that the ID is a valid MongoDB ObjectId format
+        const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+        if (!objectIdRegex.test(id)) {
+            console.log('ERROR: Invalid item ID format');
+            console.log('Problematic ID value:', id);
+            console.log('ID length:', id ? id.length : 0);
+            return res.status(400).json({ 
+                message: 'Invalid item ID format',
+                details: `The provided ID "${id}" is not a valid MongoDB ObjectId. It should be 24 hexadecimal characters.`
+            });
         }
 
         // Log the raw values before parsing
@@ -259,13 +276,7 @@ export const updateItem = async (req, res, next) => {
             delete updateData._id;
         }
 
-        console.log('Final update data to be saved:', updateData);
-
-        // Validate that we have a valid item ID
-        if (!id) {
-            console.log('ERROR: Item ID is missing');
-            return res.status(400).json({ message: 'Item ID is required' });
-        }
+        console.log('Final update data to be saved:', JSON.stringify(updateData, null, 2));
 
         console.log('Attempting to find and update item with ID:', id);
         // When returning the updated item, ensure the imageUrl is correctly formatted
@@ -296,7 +307,7 @@ export const updateItem = async (req, res, next) => {
         
         // Provide more specific error messages
         if (err.name === 'CastError') {
-            console.log('ERROR: Invalid item ID format');
+            console.log('ERROR: Invalid item ID format (CastError)');
             console.log('Problematic ID value:', req.params.id);
             return res.status(400).json({ 
                 message: 'Invalid item ID format',
