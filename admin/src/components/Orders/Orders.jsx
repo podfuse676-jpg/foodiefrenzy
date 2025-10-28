@@ -109,7 +109,14 @@ const Orders = () => {
                         <div className="space-y-1 max-h-52 overflow-auto">
                           {order.items.map((itm, idx) => (
                             <div key={idx} className="flex items-center gap-3 p-2 rounded-lg">
-                              <img src={`${url}${itm.item.imageUrl}`} alt={itm.item.name} className="w-10 h-10 object-cover rounded-lg" />
+                              <img 
+                                src={itm.item.imageUrl ? (itm.item.imageUrl.startsWith('http') ? itm.item.imageUrl : `${url}${itm.item.imageUrl}`) : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2RkZCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4='}
+                                alt={itm.item.name} 
+                                className="w-10 h-10 object-cover rounded-lg"
+                                onError={(e) => {
+                                  e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2RkZCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZSBFcnJvcjwvdGV4dD48L3N2Zz4=';
+                                }}
+                              />
                               <div className="flex-1">
                                 <span className="text-green-100/80 text-sm block truncate">{itm.item.name}</span>
                                 <div className="flex items-center gap-2 text-xs text-green-400/60">
