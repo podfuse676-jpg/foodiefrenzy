@@ -144,15 +144,6 @@ export const updateItem = async (req, res, next) => {
         console.log('Request headers:', req.headers);
         console.log('Content-Type:', req.headers['content-type']);
         
-        // Log the raw request body if possible
-        let rawBody = '';
-        req.on('data', chunk => {
-            rawBody += chunk;
-        });
-        req.on('end', () => {
-            console.log('Raw request body (end event):', rawBody.substring(0, 200) + (rawBody.length > 200 ? '...' : ''));
-        });
-        
         const id = req.params.id;
         const updateData = { ...req.body };
 
@@ -300,26 +291,40 @@ export const updateItem = async (req, res, next) => {
         console.error('=== UPDATE ITEM ERROR ===');
         console.error('Update item error:', err);
         console.error('Error stack:', err.stack);
+        console.error('Error name:', err.name);
+        console.error('Error message:', err.message);
         
         // Provide more specific error messages
         if (err.name === 'CastError') {
             console.log('ERROR: Invalid item ID format');
-            return res.status(400).json({ message: 'Invalid item ID format' });
+            console.log('Problematic ID value:', req.params.id);
+            return res.status(400).json({ 
+                message: 'Invalid item ID format',
+                details: `The provided ID "${req.params.id}" is not a valid MongoDB ObjectId`
+            });
         }
         if (err.name === 'ValidationError') {
             console.log('ERROR: Validation error');
-            return res.status(400).json({ message: 'Validation error: ' + err.message });
+            return res.status(400).json({ 
+                message: 'Validation error', 
+                error: err.message,
+                details: 'Check that all required fields are provided and in the correct format'
+            });
         }
         if (err.code === 11000) {
             console.log('ERROR: Duplicate key error');
-            return res.status(400).json({ message: 'Duplicate item name in category' });
+            return res.status(400).json({ 
+                message: 'Duplicate item name in category',
+                details: 'An item with this name already exists in the same category'
+            });
         }
         
         // Generic error response
         console.log('ERROR: Generic internal server error');
         res.status(500).json({ 
             message: 'Failed to update item',
-            error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+            error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error',
+            details: 'An unexpected error occurred while updating the item'
         });
     }
 };

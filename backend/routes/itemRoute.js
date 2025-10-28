@@ -140,6 +140,7 @@ const handleUpload = (req, res, next) => {
     console.log('Request content-type:', req.headers['content-type']);
     console.log('Request method:', req.method);
     console.log('Request url:', req.url);
+    console.log('Request params:', req.params);
     
     // Verify storage is configured
     console.log('Storage configured:', !!storage);
@@ -169,6 +170,23 @@ const handleUpload = (req, res, next) => {
         next();
     });
 };
+
+// Add a debug route to test item ID handling
+itemRouter.put('/debug/:id', (req, res) => {
+    console.log('=== DEBUG ITEM ID ===');
+    console.log('Request params:', req.params);
+    console.log('Item ID from params:', req.params.id);
+    console.log('Item ID length:', req.params.id ? req.params.id.length : 0);
+    console.log('Item ID is valid ObjectId:', /^[0-9a-fA-F]{24}$/.test(req.params.id));
+    
+    res.json({
+        message: 'ID debug info',
+        params: req.params,
+        id: req.params.id,
+        length: req.params.id ? req.params.id.length : 0,
+        isValidFormat: /^[0-9a-fA-F]{24}$/.test(req.params.id)
+    });
+});
 
 itemRouter.post('/', handleUpload, createItem);
 itemRouter.get('/', getItems);
