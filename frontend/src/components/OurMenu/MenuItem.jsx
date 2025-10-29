@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaPlus, FaMinus } from 'react-icons/fa';
+import { FaPlus, FaMinus, FaStar } from 'react-icons/fa';
 
 const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, removeFromCart, onOpenDetail }) => {
   const [isAnimating, setIsAnimating] = useState(false);
@@ -52,6 +52,10 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
   const taxAmount = item.taxRate ? (item.price * item.taxRate / 100) : 0;
   const gstAmount = item.gst ? (item.price * item.gst / 100) : 0;
   const totalPrice = Number(item.price) + taxAmount + gstAmount;
+  
+  // Get rating information (support both new and legacy fields)
+  const averageRating = item.averageRating || item.rating || 0;
+  const totalReviews = item.totalReviews || item.total || 0;
 
   return (
     // Updated to light fresh colors with improved mobile responsiveness
@@ -80,6 +84,23 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
         <h3 className="text-lg font-dancingscript text-gray-800 mb-1 line-clamp-2 sm:line-clamp-1">
           {item.name}
         </h3>
+        
+        {/* Rating Display */}
+        {averageRating > 0 && (
+          <div className="flex items-center justify-center gap-1 mb-1">
+            <div className="flex">
+              {[...Array(5)].map((_, i) => (
+                <FaStar 
+                  key={i} 
+                  className={`${i < Math.floor(averageRating) ? 'text-yellow-400' : 'text-gray-300'} text-xs`} 
+                />
+              ))}
+            </div>
+            <span className="text-gray-800 text-xs font-cinzel">
+              {averageRating.toFixed(1)} ({totalReviews})
+            </span>
+          </div>
+        )}
         
         {/* Price Information - improved for mobile */}
         <div className="mt-2 text-left w-full">

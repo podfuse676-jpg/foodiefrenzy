@@ -89,6 +89,7 @@ import cartRoutes from './routes/cartRoute.js';
 import orderRoutes from './routes/orderRoute.js';
 import userRoutes from './routes/userRoute.js';
 import phoneAuthRoutes from './routes/phoneAuthRoute.js';
+import reviewRoutes from './routes/reviewRoute.js';
 
 const app = express();
 // Use PORT from environment variable (Render will set this) or default to 4000
@@ -228,6 +229,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/auth', phoneAuthRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 // Debug endpoint to check environment variables
 app.get('/api/debug-env', (req, res) => {

@@ -240,11 +240,10 @@ const OurMenu = () => {
         <ItemDetailView 
           item={selectedItem}
           onClose={() => setSelectedItem(null)}
-          onAddToCart={(item, quantity, selectedOptions) => {
-            addToCart(item, quantity, selectedOptions);
+          onAddToCart={(item, quantity, variant, flavors) => {
+            addToCart(item, quantity, variant, flavors);
             setSelectedItem(null);
           }}
-          cartItems={cartItems}
         />
       )}
     </div>

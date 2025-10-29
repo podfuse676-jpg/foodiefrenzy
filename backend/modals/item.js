@@ -24,6 +24,10 @@ const itemSchema = new mongoose.Schema({
     hidden: { type: Boolean, default: false },
     nonRevenue: { type: Boolean, default: false },
     flavourOptions: { type: [String], default: [] },
+    // Rating system
+    averageRating: { type: Number, default: 0 },
+    totalReviews: { type: Number, default: 0 },
+    // Legacy fields (kept for backward compatibility)
     rating: { type: Number, default: 0 },
     hearts: { type: Number, default: 0 },
     total: { type: Number, default: 0 },

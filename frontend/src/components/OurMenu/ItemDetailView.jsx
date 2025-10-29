@@ -2,14 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { FaTimes, FaMinus, FaPlus, FaShoppingCart } from 'react-icons/fa';
 import { useCart } from '../../CartContext/CartContext';
 import FlavorSelection from './FlavorSelection';
+// Import review components
+import ReviewStats from '../Review/ReviewStats';
+import ReviewList from '../Review/ReviewList';
+import ReviewForm from '../Review/ReviewForm';
+import apiClient from '../../utils/apiClient';
 
-const ItemDetailView = ({ item, onClose }) => {
+const ItemDetailView = ({ item, onClose, onAddToCart }) => {
   const cartContext = useCart();
   const [selectedModifiers, setSelectedModifiers] = useState({});
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [selectedFlavors, setSelectedFlavors] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  // Review states
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
   useEffect(() => {
     if (!item) return;
@@ -85,7 +93,9 @@ const ItemDetailView = ({ item, onClose }) => {
       variant: selectedVariant
     };
 
-    if (cartContext && typeof cartContext.addToCart === 'function') {
+    if (onAddToCart) {
+      onAddToCart(item, quantity, selectedVariant, selectedFlavors);
+    } else if (cartContext && typeof cartContext.addToCart === 'function') {
       cartContext.addToCart(item, quantity, selectedVariant, selectedFlavors);
     }
     
@@ -105,6 +115,20 @@ const ItemDetailView = ({ item, onClose }) => {
   const hasCustomizationOptions = (item.variants && item.variants.length > 0) || 
                                  (item.modifierGroups && item.modifierGroups.length > 0) ||
                                  (item.flavourOptions && item.flavourOptions.length > 0);
+
+  // Handle review submission
+  const handleReviewSubmit = async (reviewData) => {
+    try {
+      const response = await apiClient.post('/api/reviews', reviewData);
+      console.log('Review submitted:', response.data);
+      setReviewSubmitted(true);
+      setShowReviewForm(false);
+      // You might want to refresh the reviews here
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      throw new Error(error.response?.data?.message || 'Failed to submit review');
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-2 sm:p-4 animate-fade-in">
@@ -282,6 +306,48 @@ const ItemDetailView = ({ item, onClose }) => {
                   <FaShoppingCart className={`mr-3 ${isAddingToCart ? 'animate-bounce' : ''}`} /> 
                   {isAddingToCart ? 'Adding to Cart...' : 'Add to Cart'}
                 </button>
+              </div>
+              
+              {/* Reviews Section */}
+              <div className="mt-8 pt-6 border-t border-[#8BC34A]/20">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-2xl font-dancingscript text-gray-800">
+                    Customer Reviews
+                  </h3>
+                  <button 
+                    onClick={() => setShowReviewForm(true)}
+                    className="bg-[#8BC34A]/20 text-[#8BC34A] px-4 py-2 rounded-full font-cinzel hover:bg-[#8BC34A]/30 transition-colors"
+                  >
+                    Write a Review
+                  </button>
+                </div>
+                
+                {/* Review Statistics */}
+                <div className="mb-6">
+                  <ReviewStats itemId={item._id || item.id} apiClient={apiClient} />
+                </div>
+                
+                {/* Review Form */}
+                {showReviewForm && (
+                  <div className="mb-6">
+                    <ReviewForm 
+                      item={item} 
+                      orderId="" // This would need to be passed from context or props
+                      onSubmit={handleReviewSubmit}
+                      onCancel={() => setShowReviewForm(false)}
+                    />
+                  </div>
+                )}
+                
+                {/* Success Message */}
+                {reviewSubmitted && (
+                  <div className="bg-green-50 text-green-700 p-4 rounded-lg mb-6">
+                    <p className="font-cinzel">Thank you for your review!</p>
+                  </div>
+                )}
+                
+                {/* Reviews List */}
+                <ReviewList itemId={item._id || item.id} apiClient={apiClient} />
               </div>
             </div>
           </div>

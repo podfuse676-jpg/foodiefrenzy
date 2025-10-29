@@ -90,7 +90,7 @@ export const createItem = async (req, res, next) => {
         });
 
         // Ensure numeric fields
-        ['price','taxRate','gst','cost','quantity','rating','hearts','total'].forEach(k => {
+        ['price','taxRate','gst','cost','quantity','rating','hearts','total', 'averageRating', 'totalReviews'].forEach(k => {
             if (itemData[k] !== undefined) {
                 itemData[k] = Number(itemData[k]) || 0;
             }
@@ -288,7 +288,7 @@ export const updateItem = async (req, res, next) => {
         }
 
         // Ensure numeric fields
-        ['price','taxRate','gst','cost','quantity','rating','hearts','total'].forEach(k => {
+        ['price','taxRate','gst','cost','quantity','rating','hearts','total', 'averageRating', 'totalReviews'].forEach(k => {
             if (updateData[k] !== undefined) {
                 console.log(`Converting ${k} to number:`, updateData[k], 'Type:', typeof updateData[k]);
                 updateData[k] = Number(updateData[k]) || 0;
