@@ -305,6 +305,13 @@ export const updateItem = async (req, res, next) => {
 
         console.log('Attempting to find and update item with ID:', id);
         
+        // Add detailed debugging before the Mongoose call
+        console.log('=== PRE-MONGOOSE DEBUG INFO ===');
+        console.log('ID value:', id);
+        console.log('ID type:', typeof id);
+        console.log('ID length:', id.length);
+        console.log('ID char codes:', [...id].map(c => c.charCodeAt(0)));
+        
         // When returning the updated item, ensure the imageUrl is correctly formatted
         const updated = await Item.findByIdAndUpdate(id, updateData, { new: true });
         console.log('Find and update result:', updated ? 'Found' : 'Not found');
