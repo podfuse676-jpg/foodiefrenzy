@@ -305,25 +305,6 @@ export const updateItem = async (req, res, next) => {
 
         console.log('Attempting to find and update item with ID:', id);
         
-        // Add debugging for the Mongoose call
-        console.log('=== MONGOOSE DEBUG INFO ===');
-        console.log('ID before Mongoose call:', id);
-        console.log('ID type before Mongoose call:', typeof id);
-        console.log('ID length before Mongoose call:', id.length);
-        
-        // Test if Mongoose can create an ObjectId from this ID
-        try {
-            const mongoose = await import('mongoose');
-            const objectId = new mongoose.Types.ObjectId(id);
-            console.log('Successfully created Mongoose ObjectId:', objectId);
-        } catch (mongooseError) {
-            console.log('ERROR: Could not create Mongoose ObjectId:', mongooseError.message);
-            return res.status(400).json({ 
-                message: 'Invalid item ID format',
-                details: `The provided ID "${id}" could not be converted to a MongoDB ObjectId: ${mongooseError.message}`
-            });
-        }
-        
         // When returning the updated item, ensure the imageUrl is correctly formatted
         const updated = await Item.findByIdAndUpdate(id, updateData, { new: true });
         console.log('Find and update result:', updated ? 'Found' : 'Not found');
