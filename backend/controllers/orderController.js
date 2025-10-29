@@ -1,5 +1,6 @@
 // controllers/orderController.js
-import 'dotenv/config';
+import dotenv from 'dotenv';
+dotenv.config();
 import Stripe from 'stripe';
 import Order from '../modals/order.js';
 
