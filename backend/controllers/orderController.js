@@ -201,13 +201,24 @@ export const confirmPayment = async (req, res) => {
             // Log key session properties for debugging
             console.log('Session details - id:', session.id, 'status:', session.payment_status, 'mode:', session.mode);
             
+            // Add more detailed logging
+            console.log('Session payment_intent:', session.payment_intent);
+            console.log('Session customer_details:', session.customer_details);
+            
             // In production, only accept 'paid' status
-            // In development, we can be more lenient for testing purposes
-            const isPaymentSuccessful = session.payment_status === 'paid' || 
-                (process.env.NODE_ENV === 'development' && session.payment_status === 'unpaid');
+            const isPaymentSuccessful = session.payment_status === 'paid';
             
             if (isPaymentSuccessful) {
                 console.log('Payment successful, updating order with sessionId:', sessionId);
+                
+                // First, let's see if we can find the order
+                const existingOrder = await Order.findOne({ sessionId: sessionId });
+                console.log('Existing order found:', !!existingOrder);
+                if (existingOrder) {
+                    console.log('Existing order paymentStatus:', existingOrder.paymentStatus);
+                    console.log('Existing order status:', existingOrder.status);
+                }
+                
                 const order = await Order.findOneAndUpdate(
                     { sessionId: sessionId },
                     { 
@@ -227,7 +238,7 @@ export const confirmPayment = async (req, res) => {
             }
             
             // If payment was not successful, update the order status to failed
-            if (session.payment_status === 'unpaid' && process.env.NODE_ENV !== 'development') {
+            if (session.payment_status === 'unpaid') {
                 console.log('Payment not completed, updating order status to failed');
                 await Order.findOneAndUpdate(
                     { sessionId: sessionId },

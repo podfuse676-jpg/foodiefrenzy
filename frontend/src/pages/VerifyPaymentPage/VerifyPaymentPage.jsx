@@ -68,9 +68,11 @@ const VerifyPaymentPage = () => {
                 console.error('Error response:', err.response?.data);
                 setStatusMsg('There was an error confirming your payment. Please check your order history.');
                 // Don't clear cart on error - user might want to try again
-                setTimeout(() => {
-                    navigate('/myorder', { replace: true });
-                }, 3000);
+                // Only redirect to orders page if we're sure the payment was processed
+                // For now, let's stay on this page so user can see the error
+                // setTimeout(() => {
+                //     navigate('/myorder', { replace: true });
+                // }, 3000);
             });
     }, [search, clearCart, navigate, authHeaders]);
 
