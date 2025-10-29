@@ -136,7 +136,7 @@ const AboutHome = () => {
                         </svg>
                         <div>
                           <h4 className="text-xl font-bold text-gray-800">Contact</h4>
-                          <p className="text-gray-600 text-lg">Phone: +1 403-437-1551</p>
+                          <p className="text-gray-600 text-lg">Phone: (825) 205-5115</p>
                           <p className="text-gray-600 text-lg">Email: 2424200lakeshore@gmail.com</p>
                         </div>
                       </div>

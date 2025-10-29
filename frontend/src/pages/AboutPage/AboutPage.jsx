@@ -53,7 +53,7 @@ const AboutPage = () => {
                       <FaPhone className="text-[#8BC34A] text-2xl mt-1 flex-shrink-0" />
                       <div>
                         <h3 className="text-xl font-bold text-gray-800">Contact</h3>
-                        <p className="text-gray-600 text-lg">Phone: +1 403-437-1551</p>
+                        <p className="text-gray-600 text-lg">Phone: (825) 205-5115</p>
                         <p className="text-gray-600 text-lg">Email: 2424200lakeshore@gmail.com</p>
                       </div>
                     </div>
