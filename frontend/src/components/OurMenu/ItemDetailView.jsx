@@ -18,6 +18,9 @@ const ItemDetailView = ({ item, onClose, onAddToCart }) => {
   // Review states
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  // Order states
+  const [userOrders, setUserOrders] = useState([]);
+  const [orderId, setOrderId] = useState('');
 
   useEffect(() => {
     if (!item) return;
@@ -44,7 +47,35 @@ const ItemDetailView = ({ item, onClose, onAddToCart }) => {
       // For single flavor selection, we might want to select the first one by default
       // But for now, we'll leave it empty and let the user select
     }
+    
+    // Fetch user orders to get order ID for reviews
+    fetchUserOrders();
   }, [item]);
+
+  const fetchUserOrders = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) return;
+      
+      const response = await apiClient.get('/api/orders');
+      setUserOrders(response.data);
+      
+      // Find the first order that contains this item
+      const orderWithItem = response.data.find(order => 
+        order.items && order.items.some(orderItem => 
+          (orderItem.item._id && orderItem.item._id === (item._id || item.id)) ||
+          (orderItem.item.id && orderItem.item.id === (item._id || item.id)) ||
+          (orderItem.item.name && orderItem.item.name === item.name)
+        )
+      );
+      
+      if (orderWithItem) {
+        setOrderId(orderWithItem._id || orderWithItem.id);
+      }
+    } catch (error) {
+      console.error('Error fetching user orders:', error);
+    }
+  };
 
   const handleModifierChange = (modifierGroup, option) => {
     setSelectedModifiers(prev => ({
@@ -119,7 +150,10 @@ const ItemDetailView = ({ item, onClose, onAddToCart }) => {
   // Handle review submission
   const handleReviewSubmit = async (reviewData) => {
     try {
-      const response = await apiClient.post('/api/reviews', reviewData);
+      const response = await apiClient.post('/api/reviews', {
+        ...reviewData,
+        orderId: orderId || reviewData.orderId
+      });
       console.log('Review submitted:', response.data);
       setReviewSubmitted(true);
       setShowReviewForm(false);
@@ -129,6 +163,15 @@ const ItemDetailView = ({ item, onClose, onAddToCart }) => {
       throw new Error(error.response?.data?.message || 'Failed to submit review');
     }
   };
+
+  // Check if user has purchased this item
+  const hasPurchasedItem = userOrders.some(order => 
+    order.items && order.items.some(orderItem => 
+      (orderItem.item._id && orderItem.item._id === (item._id || item.id)) ||
+      (orderItem.item.id && orderItem.item.id === (item._id || item.id)) ||
+      (orderItem.item.name && orderItem.item.name === item.name)
+    )
+  );
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-2 sm:p-4 animate-fade-in">
@@ -314,12 +357,14 @@ const ItemDetailView = ({ item, onClose, onAddToCart }) => {
                   <h3 className="text-2xl font-dancingscript text-gray-800">
                     Customer Reviews
                   </h3>
-                  <button 
-                    onClick={() => setShowReviewForm(true)}
-                    className="bg-[#8BC34A]/20 text-[#8BC34A] px-4 py-2 rounded-full font-cinzel hover:bg-[#8BC34A]/30 transition-colors"
-                  >
-                    Write a Review
-                  </button>
+                  {hasPurchasedItem && (
+                    <button 
+                      onClick={() => setShowReviewForm(true)}
+                      className="bg-[#8BC34A]/20 text-[#8BC34A] px-4 py-2 rounded-full font-cinzel hover:bg-[#8BC34A]/30 transition-colors"
+                    >
+                      Write a Review
+                    </button>
+                  )}
                 </div>
                 
                 {/* Review Statistics */}
@@ -332,7 +377,7 @@ const ItemDetailView = ({ item, onClose, onAddToCart }) => {
                   <div className="mb-6">
                     <ReviewForm 
                       item={item} 
-                      orderId="" // This would need to be passed from context or props
+                      orderId={orderId}
                       onSubmit={handleReviewSubmit}
                       onCancel={() => setShowReviewForm(false)}
                     />
