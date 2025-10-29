@@ -40,7 +40,8 @@ const CartPage = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {/* Improved grid for mobile responsiveness */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
               {cartItems
                 .filter(ci => ci.item)
                 .map(({ _id, item, quantity, selectedSize }) => {
@@ -54,7 +55,7 @@ const CartPage = () => {
                       className="group bg-white p-4 rounded-2xl border-4 border-dashed border-[#8BC34A] backdrop-blur-sm flex flex-col items-center gap-4 transition-all duration-300 hover:border-solid hover:shadow-xl hover:shadow-[#8BC34A]/10 transform hover:-translate-y-1"
                     >
                       <div
-                        className="w-24 h-24 flex-shrink-0 cursor-pointer relative overflow-hidden rounded-lg transition-transform duration-300"
+                        className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 cursor-pointer relative overflow-hidden rounded-lg transition-transform duration-300"
                         onClick={() => setSelectedImage(buildImageUrl(item.imageUrl || item.image))}
                       >
                         <img
@@ -65,7 +66,7 @@ const CartPage = () => {
                       </div>
 
                       <div className="w-full text-center">
-                        <h3 className="text-xl font-dancingscript text-gray-800">
+                        <h3 className="text-lg sm:text-xl font-dancingscript text-gray-800 line-clamp-2">
                           {item.name}
                         </h3>
                         {/* Display selected size if available */}
@@ -74,38 +75,40 @@ const CartPage = () => {
                             Size: {selectedSize.size}
                           </p>
                         )}
-                        <p className="text-gray-800/80 font-cinzel mt-1">
+                        <p className="text-gray-800/80 font-cinzel mt-1 text-sm sm:text-base">
                           ${Number(price).toFixed(2)} CAD
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-3">
+                      {/* Improved quantity controls for mobile */}
+                      <div className="flex items-center gap-2 sm:gap-3">
                         <button
                           onClick={() => updateQuantity(_id, Math.max(1, quantity - 1), selectedSize)}
-                          className="w-8 h-8 rounded-full bg-[#8BC34A]/40 flex items-center justify-center hover:bg-[#8BC34A]/50 transition duration-200 active:scale-95"
+                          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#8BC34A]/40 flex items-center justify-center hover:bg-[#8BC34A]/50 transition duration-200 active:scale-95"
                         >
-                          <FaMinus className="w-4 h-4 text-white" />
+                          <FaMinus className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                         </button>
-                        <span className="w-8 text-center text-gray-800 font-cinzel">
+                        <span className="w-8 sm:w-10 text-center text-gray-800 font-cinzel text-sm sm:text-base">
                           {quantity}
                         </span>
                         <button
                           onClick={() => updateQuantity(_id, quantity + 1, selectedSize)}
-                          className="w-8 h-8 rounded-full bg-[#8BC34A]/40 flex items-center justify-center hover:bg-[#8BC34A]/50 transition duration-200 active:scale-95"
+                          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#8BC34A]/40 flex items-center justify-center hover:bg-[#8BC34A]/50 transition duration-200 active:scale-95"
                         >
-                          <FaPlus className="w-4 h-4 text-white" />
+                          <FaPlus className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                         </button>
                       </div>
 
-                      <div className="flex items-center justify-between w-full">
+                      {/* Improved remove button and price display for mobile */}
+                      <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-2">
                         <button
                           onClick={() => removeFromCart(_id)}
                           className="bg-[#8BC34A]/40 px-3 py-1 rounded-full font-cinzel text-xs uppercase transition duration-300 hover:bg-[#8BC34A]/50 flex items-center gap-1 active:scale-95"
                         >
-                          <FaTrash className="w-4 h-4 text-white" />
+                          <FaTrash className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                           <span className="text-gray-800">Remove</span>
                         </button>
-                        <p className="text-sm font-dancingscript text-[#FFC107]">
+                        <p className="text-sm font-dancingscript text-[#FFC107] text-center">
                           ${totalPrice.toFixed(2)} CAD
                         </p>
                       </div>
@@ -114,21 +117,22 @@ const CartPage = () => {
                 })}
             </div>
 
-            <div className="mt-12 pt-8 border-t border-[#8BC34A]/30">
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-8">
+            {/* Improved checkout section for mobile */}
+            <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-[#8BC34A]/30">
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-6 sm:gap-8">
                 <Link
                   to="/menu"
-                  className="bg-[#8BC34A]/40 px-8 py-3 rounded-full font-cinzel uppercase tracking-wider hover:bg-[#8BC34A]/50 transition duration-300 text-gray-800 inline-flex items-center gap-2 active:scale-95"
+                  className="bg-[#8BC34A]/40 px-6 py-3 rounded-full font-cinzel uppercase tracking-wider hover:bg-[#8BC34A]/50 transition duration-300 text-gray-800 inline-flex items-center gap-2 active:scale-95 text-sm sm:text-base"
                 >
                   Continue Shopping
                 </Link>
-                <div className="flex items-center gap-8">
-                  <h2 className="text-3xl font-dancingscript text-gray-800">
+                <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
+                  <h2 className="text-2xl sm:text-3xl font-dancingscript text-gray-800 text-center">
                     Total: ${totalAmount.toFixed(2)} CAD
                   </h2>
                   <Link
                     to="/checkout"
-                    className="bg-gradient-to-r from-[#8BC34A] to-[#7CB342] px-8 py-3 rounded-full font-cinzel uppercase tracking-wider hover:from-[#7CB342] hover:to-[#8BC34A] transition duration-300 text-white flex items-center gap-2 active:scale-95 shadow-lg hover:shadow-[#8BC34A]/30"
+                    className="bg-gradient-to-r from-[#8BC34A] to-[#7CB342] px-6 py-3 rounded-full font-cinzel uppercase tracking-wider hover:from-[#7CB342] hover:to-[#8BC34A] transition duration-300 text-white flex items-center gap-2 active:scale-95 shadow-lg hover:shadow-[#8BC34A]/30 text-sm sm:text-base"
                   >
                     Checkout Now
                   </Link>

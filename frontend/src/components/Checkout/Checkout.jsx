@@ -133,18 +133,20 @@ const CheckoutPage = () => {
   };
 
   return (
-    // Updated to light fresh colors
+    // Updated to light fresh colors with improved mobile responsiveness
     <div className="min-h-screen bg-gradient-to-b from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] text-gray-800 py-16 px-4">
       <div className="max-w-4xl mx-auto">
-        <Link to="/cart" className="flex items-center gap-2 text-[#8BC34A] mb-8">
+        <Link to="/cart" className="flex items-center gap-2 text-[#8BC34A] mb-6 sm:mb-8">
           <FaArrowLeft /> Back to Cart
         </Link>
-        <h1 className="text-4xl font-bold text-center mb-8">Checkout</h1>
-        <form onSubmit={handleSubmit} className="grid lg:grid-cols-2 gap-12">
+        <h1 className="text-3xl sm:text-4xl font-bold text-center mb-6 sm:mb-8">Checkout</h1>
+        
+        {/* Improved form layout for mobile */}
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
 
-          {/* Personal Info Section */}
-          <div className="bg-white/80 p-6 rounded-3xl space-y-6 border border-[#8BC34A]/20">
-            <h2 className="text-2xl font-bold">Personal Information</h2>
+          {/* Personal Info Section - improved for mobile */}
+          <div className="bg-white/80 p-4 sm:p-6 rounded-2xl space-y-4 sm:space-y-6 border border-[#8BC34A]/20">
+            <h2 className="text-xl sm:text-2xl font-bold">Personal Information</h2>
             <Input label="First Name" name="firstName" value={formData.firstName} onChange={handleInputChange} required />
             <Input label="Last Name" name="lastName" value={formData.lastName} onChange={handleInputChange} required />
             <Input label="Phone" name="phone" value={formData.phone} onChange={handleInputChange} required />
@@ -154,12 +156,12 @@ const CheckoutPage = () => {
             <Input label="Zip Code" name="zipCode" value={formData.zipCode} onChange={handleInputChange} required />
           </div>
 
-          {/* Payment Section */}
-          <div className="bg-white/80 p-6 rounded-3xl space-y-6 border border-[#8BC34A]/20">
-            <h2 className="text-2xl font-bold">Payment Details</h2>
+          {/* Payment Section - improved for mobile */}
+          <div className="bg-white/80 p-4 sm:p-6 rounded-2xl space-y-4 sm:space-y-6 border border-[#8BC34A]/20">
+            <h2 className="text-xl sm:text-2xl font-bold">Payment Details</h2>
 
-            {/* Order Items */}
-            <div className="space-y-4 mb-6">
+            {/* Order Items - improved for mobile */}
+            <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
               <h3 className="text-lg font-semibold text-gray-800">Your Order Items</h3>
               {cartItems.map(({ _id, item, quantity, selectedSize }) => {
                 // Use selected size price if available, otherwise use item price
@@ -167,15 +169,17 @@ const CheckoutPage = () => {
                 const totalPrice = price * quantity;
                 
                 return (
-                  <div key={_id} className="flex justify-between items-center bg-gray-100 p-3 rounded-lg">
-                    <div className="flex-1">
-                      <span className="text-gray-800">{item.name}</span>
-                      {selectedSize && (
-                        <span className="ml-2 text-[#8BC34A]/80 text-sm">({selectedSize.size})</span>
-                      )}
-                      <span className="ml-2 text-[#8BC34A]/80 text-sm">x{quantity}</span>
+                  <div key={_id} className="flex justify-between items-center bg-gray-100 p-2 sm:p-3 rounded-lg">
+                    <div className="flex-1 min-w-0">
+                      <span className="text-gray-800 text-sm sm:text-base truncate block">{item.name}</span>
+                      <div className="flex flex-wrap items-center gap-1 mt-1">
+                        {selectedSize && (
+                          <span className="text-[#8BC34A]/80 text-xs">({selectedSize.size})</span>
+                        )}
+                        <span className="text-[#8BC34A]/80 text-xs">x{quantity}</span>
+                      </div>
                     </div>
-                    <span className="text-[#FFC107]">${totalPrice.toFixed(2)} CAD</span>
+                    <span className="text-[#FFC107] text-sm sm:text-base whitespace-nowrap ml-2">${totalPrice.toFixed(2)} CAD</span>
                   </div>
                 );
               })}
@@ -186,46 +190,45 @@ const CheckoutPage = () => {
               paymentMethod={formData.paymentMethod}
             />
 
-            {/* Payment Method */}
+            {/* Payment Method - improved for mobile */}
             <div>
-              <label className="block mb-2">Payment Method</label>
+              <label className="block mb-2 text-sm sm:text-base">Payment Method</label>
               <select
                 name="paymentMethod"
                 value={formData.paymentMethod}
                 onChange={handleInputChange}
                 required
-                className="w-full bg-white border border-[#8BC34A]/30 rounded-xl px-4 py-3"
+                className="w-full bg-white border border-[#8BC34A]/30 rounded-xl px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base"
               >
                 <option value="">Select Method</option>
                 <option value="cod">Cash on Delivery (+$5.00 CAD)</option>
                 <option value="card">Credit/Debit Card</option>
               </select>
-              {formData.paymentMethod === 'cod' && (
-                <p className="text-[#8BC34A] text-sm mt-2">
-                  ⚠️ Additional $5.00 CAD fee for Cash on Delivery
-                </p>
-              )}
             </div>
 
-            {/* Card Payment Info */}
-            {formData.paymentMethod === 'card' && (
-              <div className="bg-[#8BC34A]/20 border border-[#8BC34A]/30 rounded-xl p-4">
-                <p className="text-gray-800 text-sm mb-2">
-                  🔒 Secure payment powered by Stripe
-                </p>
-                <p className="text-gray-800/70 text-xs">
-                  You will be redirected to a secure payment page to complete your purchase.
-                </p>
+            {/* Error message - improved for mobile */}
+            {error && (
+              <div className="text-red-500 text-sm sm:text-base bg-red-50 p-3 rounded-lg">
+                {error}
               </div>
             )}
 
-            {error && <p className="text-[#FF9800] mt-2">{error}</p>}
+            {/* Submit Button - improved for mobile */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-[#8BC34A] to-[#7CB342] py-4 rounded-xl font-bold flex justify-center items-center text-white"
+              className="w-full bg-gradient-to-r from-[#8BC34A] to-[#7CB342] text-white py-3 sm:py-4 rounded-xl font-cinzel uppercase tracking-wider hover:from-[#7CB342] hover:to-[#8BC34A] transition duration-300 flex items-center justify-center gap-2 active:scale-95 shadow-lg hover:shadow-[#8BC34A]/30 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
-              <FaLock className="mr-2" /> {loading ? 'Processing...' : 'Complete Order'}
+              {loading ? (
+                <>
+                  <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <FaLock /> Place Order
+                </>
+              )}
             </button>
           </div>
         </form>
@@ -234,51 +237,52 @@ const CheckoutPage = () => {
   );
 };
 
-const Input = ({ label, name, type = 'text', value, onChange, required = false }) => (
+// Input component - improved for mobile
+const Input = ({ label, name, type = 'text', value, onChange, required }) => (
   <div>
-    <label className="block mb-1">{label} {required && <span className="text-[#FF9800]">*</span>}</label>
+    <label className="block mb-1 text-sm sm:text-base">{label} {required && <span className="text-red-500">*</span>}</label>
     <input
       type={type}
       name={name}
       value={value}
       onChange={onChange}
       required={required}
-      className="w-full bg-white border border-[#8BC34A]/30 rounded-xl px-4 py-2"
+      className="w-full bg-white border border-[#8BC34A]/30 rounded-xl px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base"
     />
   </div>
 );
 
+// PaymentSummary component - improved for mobile
 const PaymentSummary = ({ totalAmount, paymentMethod }) => {
   const subtotal = Number(totalAmount.toFixed(2));
   const tax = Number((subtotal * 0.05).toFixed(2));
   const deliveryCharge = 5.00;
   const codFee = paymentMethod === 'cod' ? 5.00 : 0;
   const total = Number((subtotal + tax + deliveryCharge + codFee).toFixed(2));
-  
+
   return (
-    <div className="space-y-2 bg-[#8BC34A]/10 p-4 rounded-xl border border-[#8BC34A]/20">
-      <h3 className="text-lg font-semibold text-gray-800 mb-3">Order Summary</h3>
-      <div className="flex justify-between text-gray-800/80">
-        <span>Subtotal:</span>
-        <span>${subtotal.toFixed(2)} CAD</span>
+    <div className="space-y-2 sm:space-y-3">
+      <div className="flex justify-between">
+        <span className="text-gray-800 text-sm sm:text-base">Subtotal:</span>
+        <span className="text-gray-800 text-sm sm:text-base">${subtotal.toFixed(2)} CAD</span>
       </div>
-      <div className="flex justify-between text-gray-800/80">
-        <span>Tax (5% GST):</span>
-        <span>${tax.toFixed(2)} CAD</span>
+      <div className="flex justify-between">
+        <span className="text-gray-800 text-sm sm:text-base">Tax (5%):</span>
+        <span className="text-gray-800 text-sm sm:text-base">${tax.toFixed(2)} CAD</span>
       </div>
-      <div className="flex justify-between text-gray-800/80">
-        <span>Delivery Charge:</span>
-        <span>${deliveryCharge.toFixed(2)} CAD</span>
+      <div className="flex justify-between">
+        <span className="text-gray-800 text-sm sm:text-base">Delivery:</span>
+        <span className="text-gray-800 text-sm sm:text-base">${deliveryCharge.toFixed(2)} CAD</span>
       </div>
       {codFee > 0 && (
-        <div className="flex justify-between text-[#FFC107]">
-          <span>COD Fee:</span>
-          <span>+${codFee.toFixed(2)} CAD</span>
+        <div className="flex justify-between">
+          <span className="text-gray-800 text-sm sm:text-base">COD Fee:</span>
+          <span className="text-gray-800 text-sm sm:text-base">${codFee.toFixed(2)} CAD</span>
         </div>
       )}
-      <div className="flex justify-between font-bold text-lg border-t border-[#8BC34A]/30 pt-2 mt-2 text-[#FFC107]">
-        <span>Total:</span>
-        <span>${total.toFixed(2)} CAD</span>
+      <div className="border-t border-[#8BC34A]/30 pt-2 flex justify-between font-bold">
+        <span className="text-gray-800 text-sm sm:text-base">Total:</span>
+        <span className="text-[#FFC107] text-sm sm:text-base">${total.toFixed(2)} CAD</span>
       </div>
     </div>
   );
