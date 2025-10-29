@@ -1,5 +1,9 @@
 import express from 'express';
 import multer from 'multer';
+// Load environment variables first
+import dotenv from 'dotenv';
+dotenv.config();
+
 // Use direct Cloudinary import for more control
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
