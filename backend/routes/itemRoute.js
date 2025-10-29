@@ -241,6 +241,19 @@ itemRouter.put('/68fe1ec19090329489752b18', (req, res) => {
     return updateItem(req, res);
 });
 
+// Add a route for the new problematic ID
+itemRouter.put('/68fe1ec29090329489752b1b', (req, res) => {
+    console.log('=== SPECIAL DEBUG ROUTE FOR NEW PROBLEMATIC ID ===');
+    console.log('This route was hit for the new specific ID that is failing');
+    console.log('Request params:', req.params);
+    console.log('Request body:', req.body);
+    console.log('Request file:', req.file);
+    console.log('Request headers:', req.headers);
+    
+    // Forward to the regular updateItem handler
+    return updateItem(req, res);
+});
+
 // Add a route to test parameter parsing
 itemRouter.put('/test-param/:id', (req, res) => {
     console.log('=== TEST PARAM ROUTE ===');
