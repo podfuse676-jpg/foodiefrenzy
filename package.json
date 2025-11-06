@@ -1,0 +1,25 @@
+{
+  "name": "foodiefrenzy",
+  "version": "1.0.0",
+  "description": "Foodie Frenzy - Full Stack Food Ordering Application",
+  "main": "server.js",
+  "scripts": {
+    "frontend:dev": "cd frontend && npm run dev",
+    "admin:dev": "cd admin && npm run dev",
+    "backend:dev": "cd backend && npm run dev",
+    "frontend:build": "cd frontend && npm run build",
+    "admin:build": "cd admin && npm run build",
+    "start": "node server.js",
+    "dev": "concurrently \"npm run frontend:dev\" \"npm run admin:dev\" \"npm run backend:dev\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.12.2",
+    "xlsx": "^0.18.5"
+  }
+}

@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: lakeshoreconveniencee-backend
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        value: mongodb+srv://podfuse676_db_user:yashuprenny1231@cluster0.86ejws0.mongodb.net/foodiefrenzy?retryWrites=true&w=majority
+      - key: CLOUDINARY_CLOUD_NAME
+        value: dfjypp016
+      - key: CLOUDINARY_API_KEY
+        value: 645785246981482
+      - key: CLOUDINARY_API_SECRET
+        value: A9rs3IOJK9TEcVNUOm7Dwrg2nlI
+      - key: JWT_SECRET
+        value: cefa5906a5fc476696d4b5f508fd42e2eac737d44adfcc42ca17c600658e58d7c6ed9875fb4270bb91e9b26dfe30cfc67b0f2cb7664acc1d400ce8e56c615ae7
+      - key: STRIPE_SECRET_KEY
+        value: sk_test_51Rr20x1e1XYDeZ9dUx1XaKUnyH61PMLi6mpP1SGzfUgllugXSJ9NOoKOXK9Zj7mEJJ80NAEBhBfwUPZuCg1ngWd500S6REKOVk
+      - key: FRONTEND_URL
+        value: https://frontend-me6ivkq5o-podfuse676-6967s-projects.vercel.app
+      - key: ADMIN_URL
+        value: https://admin-7y4pypy16-podfuse676-6967s-projects.vercel.app
+    healthCheckPath: /health
+    autoDeploy: true

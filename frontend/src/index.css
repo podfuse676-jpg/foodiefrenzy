@@ -1,0 +1,80 @@
+/* stylelint-disable at-rule-no-unknown */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* stylelint-enable at-rule-no-unknown */
+
+:root {
+  --brand-green: #8BC34A; /* Fresh Green - main accent */
+  --brand-light-green: #7CB342; /* Secondary green */
+  --brand-yellow: #FFC107; /* Highlights, buttons */
+  --brand-orange: #FF9800; /* Secondary accent */
+  --brand-light: #FFFFFF; /* Navbar and background */
+  --brand-soft-background: #F9FFF6; /* Soft pale green tint */
+  --brand-dark: #333333; /* Text and icons */
+  --brand-card: #FFFFFF; /* Product cards */
+  --brand-shadow: #E0E0E0; /* Subtle shadows */
+}
+
+.brand-gradient {
+  background: linear-gradient(90deg, var(--brand-green), var(--brand-yellow));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.grocery-gradient {
+  background: linear-gradient(180deg, var(--brand-soft-background), var(--brand-card));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg) translateX(150px) rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg) translateX(150px) rotate(-360deg);
+  }
+}
+
+.orbit {
+  animation: orbit 20s linear infinite;
+}
+
+.orbit-delay-5 {
+  animation: orbit 20s linear infinite -5s;
+}
+
+.orbit-delay-10 {
+  animation: orbit 20s linear infinite -10s;
+}
+
+.orbit-delay-15 {
+  animation: orbit 20s linear infinite -15s;
+}
+
+/* Responsive adjustments for orbiting images */
+@media (max-width: 640px) {
+  @keyframes orbit {
+    0% {
+      transform: rotate(0deg) translateX(100px) rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg) translateX(100px) rotate(-360deg);
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  @keyframes orbit {
+    0% {
+      transform: rotate(0deg) translateX(180px) rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg) translateX(180px) rotate(-360deg);
+    }
+  }
+}

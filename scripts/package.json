@@ -1,0 +1,17 @@
+{
+  "name": "foodiefrenzy-scripts",
+  "version": "1.0.0",
+  "description": "Scripts for testing and deploying Foodie Frenzy application",
+  "main": "test-admin-connection.js",
+  "type": "module",
+  "scripts": {
+    "test-admin": "node test-admin-connection.js",
+    "test-render": "node test-render-backend.js",
+    "test-vercel": "node test-vercel-connection.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.4"
+  },
+  "author": "Foodie Frenzy Team",
+  "license": "MIT"
+}

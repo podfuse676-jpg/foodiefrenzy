@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .image-test {
+        margin: 20px 0;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+      img {
+        max-width: 200px;
+        height: auto;
+        display: block;
+        margin: 10px 0;
+      }
+      .status {
+        padding: 10px;
+        border-radius: 4px;
+        margin: 10px 0;
+      }
+      .success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      .error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Image Display Test</h1>
+
+    <div class="image-test">
+      <h2>Car Perfume (JPEG)</h2>
+      <img
+        id="carPerfume"
+        src="https://lakeshoreconveniencee-backend.onrender.com/uploads/images/car-perfume.jpg"
+        alt="Car Perfume"
+        onerror="handleImageError('carPerfume')"
+      />
+      <div id="carPerfumeStatus" class="status">Loading...</div>
+    </div>
+
+    <div class="image-test">
+      <h2>Dashboard Polish (WebP)</h2>
+      <img
+        id="dashboardPolish"
+        src="https://lakeshoreconveniencee-backend.onrender.com/uploads/images/dash-board-polish.webp"
+        alt="Dashboard Polish"
+        onerror="handleImageError('dashboardPolish')"
+      />
+      <div id="dashboardPolishStatus" class="status">Loading...</div>
+    </div>
+
+    <script>
+      function handleImageError(imageId) {
+        const img = document.getElementById(imageId);
+        const status = document.getElementById(imageId + "Status");
+
+        status.textContent =
+          "Failed to load image - backend may still be deploying";
+        status.className = "status error";
+        img.style.display = "none";
+      }
+
+      // Check if images load successfully
+      window.addEventListener("load", function () {
+        const carPerfumeImg = document.getElementById("carPerfume");
+        const dashboardPolishImg = document.getElementById("dashboardPolish");
+
+        const carPerfumeStatus = document.getElementById("carPerfumeStatus");
+        const dashboardPolishStatus = document.getElementById(
+          "dashboardPolishStatus"
+        );
+
+        if (carPerfumeImg.complete && carPerfumeImg.naturalHeight !== 0) {
+          carPerfumeStatus.textContent = "Successfully loaded JPEG image";
+          carPerfumeStatus.className = "status success";
+        }
+
+        if (
+          dashboardPolishImg.complete &&
+          dashboardPolishImg.naturalHeight !== 0
+        ) {
+          dashboardPolishStatus.textContent = "Successfully loaded WebP image";
+          dashboardPolishStatus.className = "status success";
+        }
+      });
+    </script>
+  </body>
+</html>
