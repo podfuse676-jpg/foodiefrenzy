@@ -1,6 +1,9 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
+import { useLoading } from './LoadingContext/LoadingContext';
 import Home from './pages/Home/Home';
 import Cart from './pages/Cart/Cart';
 import SignUp from './components/SignUp/SignUp';
@@ -14,7 +17,35 @@ import MyOrders from './pages/MyOredrs/MyOrders';
 import VerifyPaymentPage from './pages/VerifyPaymentPage/VerifyPaymentPage';
 import Login from './components/Login/Login';
 
+// Configure NProgress
+NProgress.configure({ 
+  minimum: 0.1,
+  easing: 'ease',
+  speed: 500,
+  showSpinner: false,
+});
+
 function App() {
+  const location = useLocation();
+  const { startLoading, completeLoading } = useLoading();
+
+  // Handle route changes with loading indicator
+  useEffect(() => {
+    // Start progress bar on route change
+    startLoading();
+    
+    // Simulate a small delay to show the progress bar
+    const timer = setTimeout(() => {
+      completeLoading();
+    }, 300);
+
+    // Cleanup timer
+    return () => {
+      clearTimeout(timer);
+      NProgress.done();
+    };
+  }, [location, startLoading, completeLoading]);
+
   return (
     <HelmetProvider>
       <Helmet>

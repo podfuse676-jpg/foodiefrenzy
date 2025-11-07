@@ -1,5 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useInView } from 'react-intersection-observer';
 import Navbar from '../../components/Navbar/Navbar';
 import Banner from '../../components/Banner/Banner';
 import SpecialOffer from '../../components/SpecialOffer/SpecialOffer';
@@ -7,6 +8,22 @@ import AboutHome from '../../components/AboutHome/AboutHome';
 import Footer from '../../components/Footer/Footer';
 
 const Home = () => {
+    // Intersection Observers for scroll animations
+    const [bannerRef, bannerInView] = useInView({
+        threshold: 0.1,
+        triggerOnce: false
+    });
+    
+    const [specialOfferRef, specialOfferInView] = useInView({
+        threshold: 0.1,
+        triggerOnce: false
+    });
+    
+    const [aboutRef, aboutInView] = useInView({
+        threshold: 0.1,
+        triggerOnce: false
+    });
+
     return (
         <>
             <Helmet>
@@ -23,9 +40,24 @@ const Home = () => {
                 <link rel="canonical" href="https://lakeshoreconvenience.com" />
             </Helmet>
             <Navbar />
-            <Banner />
-            <SpecialOffer />
-            <AboutHome />
+            <div 
+                ref={bannerRef}
+                className={`transition-all duration-700 ${bannerInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+            >
+                <Banner />
+            </div>
+            <div 
+                ref={specialOfferRef}
+                className={`transition-all duration-700 delay-100 ${specialOfferInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+            >
+                <SpecialOffer />
+            </div>
+            <div 
+                ref={aboutRef}
+                className={`transition-all duration-700 delay-200 ${aboutInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+            >
+                <AboutHome />
+            </div>
             <Footer />
         </>
     )

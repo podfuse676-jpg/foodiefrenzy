@@ -1,10 +1,34 @@
-import React from 'react'
-import Navbar from '../../components/Navbar/Navbar'
-import Footer from '../../components/Footer/Footer'
-import CartPage from '../../components/CartPage/CartPage'
+import React, { useState, useEffect } from 'react';
+import { useInView } from 'react-intersection-observer';
+import Navbar from '../../components/Navbar/Navbar';
+import Footer from '../../components/Footer/Footer';
+import CartPage from '../../components/CartPage/CartPage';
 import { Helmet } from 'react-helmet-async';
+import { useLoading } from '../../LoadingContext/LoadingContext';
 
 const Cart = () => {
+  const [loading, setLoading] = useState(true);
+  const { startLoading, completeLoading } = useLoading();
+  
+  // Intersection Observer for scroll animations
+  const [ref, inView] = useInView({
+    threshold: 0.1,
+    triggerOnce: false
+  });
+
+  useEffect(() => {
+    // Simulate loading for demonstration
+    startLoading('Loading your cart...');
+    const timer = setTimeout(() => {
+      setLoading(false);
+      completeLoading();
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [startLoading, completeLoading]);
+
   return (
     <>
       <Helmet>
@@ -21,10 +45,15 @@ const Cart = () => {
         <link rel="canonical" href="https://lakeshoreconvenience.com/cart" />
       </Helmet>
       <Navbar />
-      <CartPage />
+      <div 
+        ref={ref}
+        className={`transition-all duration-700 ${inView ? 'opacity-100' : 'opacity-90'}`}
+      >
+        <CartPage />
+      </div>
       <Footer />
     </>
   )
 }
 
-export default Cart
+export default Cart;

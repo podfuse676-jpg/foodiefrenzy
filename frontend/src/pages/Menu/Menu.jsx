@@ -1,10 +1,17 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useInView } from 'react-intersection-observer';
 import Navbar from '../../components/Navbar/Navbar';
 import OurMenu from '../../components/OurMenu/OurMenu';
 import Footer from '../../components/Footer/Footer';
 
 const Menu = () => {
+    // Intersection Observer for scroll animations
+    const [ref, inView] = useInView({
+        threshold: 0.1,
+        triggerOnce: false
+    });
+
     return (
         <>
             <Helmet>
@@ -21,7 +28,12 @@ const Menu = () => {
                 <link rel="canonical" href="https://lakeshoreconvenience.com/menu" />
             </Helmet>
             <Navbar />
-            <OurMenu />
+            <div 
+                ref={ref}
+                className={`transition-all duration-700 ${inView ? 'opacity-100' : 'opacity-90'}`}
+            >
+                <OurMenu />
+            </div>
             <Footer />
         </>
     )

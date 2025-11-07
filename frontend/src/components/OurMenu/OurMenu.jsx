@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useInView } from 'react-intersection-observer';
 import apiClient, { apiCallWithFallback } from '../../utils/apiClient';
 import { useCart } from '../../CartContext/CartContext';
 import MenuItem from './MenuItem';
-import ItemDetailView from './ItemDetailView'; // Add this import
+import ItemDetailView from './ItemDetailView';
 import apiConfig from '../../utils/apiConfig';
+import { useLoading } from '../../LoadingContext/LoadingContext';
+import { ProductCardSkeleton, CategorySkeleton } from '../SkeletonLoader/SkeletonLoader';
 import './Om.css';
 
 const OurMenu = () => {
@@ -13,15 +16,22 @@ const OurMenu = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedItem, setSelectedItem] = useState(null); // Add this state for detail view
+  const [selectedItem, setSelectedItem] = useState(null);
   const { cartItems: rawCart, addToCart, updateQuantity, removeFromCart } = useCart();
+  const { startLoading, completeLoading } = useLoading();
   const cartItems = rawCart.filter(ci => ci.item);
   const url = apiConfig.baseURL;
   
+  // Intersection Observer for scroll-based animations
+  const { ref, inView } = useInView({
+    threshold: 0.1,
+    triggerOnce: false
+  });
+
   useEffect(() => {
     const fetchMenu = async () => {
       try {
-        setLoading(true);
+        startLoading('Loading grocery items...');
         setError(null);
         
         // Use our improved API client with fallback
@@ -82,11 +92,17 @@ const OurMenu = () => {
         setError('Failed to load menu items. Please try again later.');
       } finally {
         setLoading(false);
+        completeLoading();
       }
     };
     fetchMenu();
   }, []);
   
+  // Throttled scroll handler
+  const handleScroll = useCallback(() => {
+    // This is handled by the Intersection Observer hook
+  }, []);
+
   // helper: find cart entry by product ID or item id
   const getCartEntry = id => cartItems.find(ci => ci.item && (ci.item._id === id || ci.item.id === id));
   const getQuantity  = id => getCartEntry(id)?.quantity ?? 0;
@@ -110,8 +126,33 @@ const OurMenu = () => {
   
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] min-h-screen pt-24 sm:pt-32 pb-16 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-        <p className="text-[#333333]/80 text-xl font-cinzel">Loading grocery items...</p>
+      <div className="bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] min-h-screen pt-24 sm:pt-32 pb-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Title skeleton */}
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="skeleton h-16 w-3/4 mx-auto mb-4 rounded-full" />
+            <div className="skeleton h-8 w-1/2 mx-auto rounded-full" />
+          </div>
+          
+          {/* Search bar skeleton */}
+          <div className="max-w-2xl mx-auto mb-8 sm:mb-12">
+            <div className="skeleton h-14 rounded-full" />
+          </div>
+          
+          {/* Category tabs skeleton */}
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-8 sm:mb-16">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <CategorySkeleton key={index} />
+            ))}
+          </div>
+          
+          {/* Product grid skeleton */}
+          <div className="grid gap-4 sm:gap-6 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <ProductCardSkeleton key={index} />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -133,7 +174,10 @@ const OurMenu = () => {
   }
   
   return (
-    <div className="bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] min-h-screen pt-24 sm:pt-32 pb-16 px-4 sm:px-6 lg:px-8">
+    <div 
+      ref={ref}
+      className={`bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] min-h-screen pt-24 sm:pt-32 pb-16 px-4 sm:px-6 lg:px-8 transition-opacity duration-500 ${inView ? 'opacity-100' : 'opacity-90'}`}
+    >
       <div className="max-w-7xl mx-auto">
         {/* Title - improved for mobile */}
         <h2 className="text-center mb-6 sm:mb-8">
@@ -192,7 +236,7 @@ const OurMenu = () => {
           )}
         </div>
         
-        {/* Menu Grid - improved for mobile */}
+        {/* Menu Grid - improved for mobile with scroll animations */}
         <div className="grid gap-4 sm:gap-6 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
           {displayItems && displayItems.length > 0 ? (
             displayItems.map((item, i) => {
@@ -205,16 +249,21 @@ const OurMenu = () => {
               const quantity = getQuantity(item._id || item.id);
               
               return (
-                <MenuItem
+                <div 
                   key={item._id || item.id}
-                  item={item}
-                  cartEntry={cartEntry}
-                  quantity={quantity}
-                  addToCart={addToCart}
-                  updateQuantity={updateQuantity}
-                  removeFromCart={removeFromCart}
-                  onOpenDetail={() => setSelectedItem(item)}
-                />
+                  className={`transition-all duration-300 ${inView ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
+                  style={{ transitionDelay: `${i * 50}ms` }}
+                >
+                  <MenuItem
+                    item={item}
+                    cartEntry={cartEntry}
+                    quantity={quantity}
+                    addToCart={addToCart}
+                    updateQuantity={updateQuantity}
+                    removeFromCart={removeFromCart}
+                    onOpenDetail={() => setSelectedItem(item)}
+                  />
+                </div>
               );
             })
           ) : (
