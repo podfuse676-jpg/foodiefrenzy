@@ -160,3 +160,445 @@ html {
 .fade-in {
   animation: fade-in 0.3s ease-out forwards;
 }
+/* High-performance animations for 120 FPS */
+
+/* Fade in up with hardware acceleration */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  will-change: opacity, transform;
+}
+
+/* Scale in animation */
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  will-change: opacity, transform;
+}
+
+/* Slide in from left */
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  will-change: opacity, transform;
+}
+
+/* Slide in from right */
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  will-change: opacity, transform;
+}
+
+/* Bounce effect for buttons */
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-8px);
+  }
+  60% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1s ease infinite;
+  will-change: transform;
+}
+
+/* Pulse animation for special offers */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(139, 195, 74, 0.4);
+  }
+  70% {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 12px rgba(139, 195, 74, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(139, 195, 74, 0);
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+  will-change: transform, box-shadow;
+}
+
+/* High-performance parallax effect */
+.parallax {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Smooth hover effects */
+.smooth-hover {
+  transition: all 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+}
+
+.smooth-hover:hover {
+  transform: translateY(-2px);
+}
+
+/* High-performance button animations */
+.btn-animated {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  will-change: transform;
+}
+
+.btn-animated::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+  will-change: width, height;
+}
+
+.btn-animated:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn-animated:active {
+  transform: scale(0.95);
+}
+
+/* High-performance spinner */
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(139, 195, 74, 0.3);
+  border-radius: 50%;
+  border-top-color: #8BC34A;
+  animation: spin 1s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Floating animation */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Rotation animation */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-rotate {
+  animation: rotate 15s linear infinite;
+  will-change: transform;
+}
+
+/* Optimized fade in animation */
+@keyframes fade-in-optimized {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in-optimized 0.3s ease-out forwards;
+  will-change: opacity;
+}
+
+/* Micro-interactions for enhanced user experience */
+
+/* Subtle button hover effects */
+.btn-subtle-hover {
+  transition: all 0.2s ease-in-out;
+  will-change: transform, box-shadow;
+}
+
+.btn-subtle-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-subtle-hover:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: all 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform, box-shadow;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Smooth transitions between pages */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.page-transition-exit {
+  opacity: 1;
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transition: opacity 300ms;
+}
+
+/* Visual feedback for button presses */
+.btn-press-feedback {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.btn-press-feedback:active {
+  transform: scale(0.98);
+}
+
+.btn-press-feedback::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.btn-press-feedback:active::after {
+  width: 200px;
+  height: 200px;
+}
+
+/* Form submission feedback */
+.form-submitting {
+  position: relative;
+  pointer-events: none;
+}
+
+.form-submitting::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 10;
+}
+
+/* Input focus effects */
+.input-focus {
+  transition: all 0.2s ease;
+  border-color: var(--brand-green);
+  box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2);
+}
+
+/* Smooth icon transitions */
+.icon-smooth {
+  transition: all 0.2s ease;
+  will-change: transform;
+}
+
+.icon-smooth:hover {
+  transform: scale(1.1);
+}
+
+/* Ripple effect for buttons */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.ripple:hover::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* Smooth loading spinner */
+.spinner-smooth {
+  animation: spin 1s linear infinite;
+  will-change: transform;
+}
+
+/* Fade in elements */
+.fade-in-element {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fade-in-element 0.5s forwards;
+}
+
+@keyframes fade-in-element {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Staggered animations */
+.staggered-animation {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.staggered-animation.animate {
+  animation: fade-in-element 0.5s forwards;
+}
+
+/* Smooth quantity counter */
+.quantity-counter {
+  transition: all 0.2s ease;
+}
+
+.quantity-counter:hover {
+  transform: scale(1.05);
+}
+
+.quantity-counter:active {
+  transform: scale(0.95);
+}
+
+/* Smooth cart item removal */
+.cart-item-removal {
+  transition: all 0.3s ease;
+}
+
+.cart-item-removal.removing {
+  opacity: 0;
+  transform: translateX(100px);
+}
+
+/* Smooth modal transitions */
+.modal-overlay {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+}
+
+.modal-content {
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+
+.modal-content.open {
+  transform: scale(1);
+}
+
+/* Smooth tab transitions */
+.tab-transition {
+  transition: all 0.3s ease;
+  will-change: transform, opacity;
+}
+
+/* Smooth category switching */
+.category-switch {
+  transition: all 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform, opacity;
+}

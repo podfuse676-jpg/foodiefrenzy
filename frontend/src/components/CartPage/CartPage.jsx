@@ -10,6 +10,7 @@ const API_URL = apiConfig.baseURL;
 const CartPage = () => {
   const { cartItems, removeFromCart, updateQuantity, totalAmount } = useCart();
   const [selectedImage, setSelectedImage] = useState(null);
+  const [removingItems, setRemovingItems] = useState(new Set());
 
   // Helper to construct full image URL
   const buildImageUrl = (path) => {
@@ -17,6 +18,19 @@ const CartPage = () => {
     return path.startsWith('http')
       ? path
       : `${API_URL}/uploads/${path.replace(/^\/uploads\//, '')}`;
+  };
+
+  const handleRemoveItem = async (_id) => {
+    setRemovingItems(prev => new Set([...prev, _id]));
+    // Add a small delay for visual feedback
+    setTimeout(() => {
+      removeFromCart(_id);
+      setRemovingItems(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(_id);
+        return newSet;
+      });
+    }, 300);
   };
 
   return (
@@ -33,7 +47,7 @@ const CartPage = () => {
             <p className="text-gray-800/80 text-xl mb-4">Your cart is empty</p>
             <Link
               to="/menu"
-              className="bg-[#8BC34A]/40 px-6 py-2 rounded-full font-cinzel text-sm uppercase hover:bg-[#8BC34A]/50 transition duration-300 text-gray-800 inline-flex items-center gap-2"
+              className="bg-[#8BC34A]/40 px-6 py-2 rounded-full font-cinzel text-sm uppercase hover:bg-[#8BC34A]/50 transition duration-300 text-gray-800 inline-flex items-center gap-2 btn-subtle-hover"
             >
               Browse All Items
             </Link>
@@ -48,11 +62,14 @@ const CartPage = () => {
                   // Use selected size price if available, otherwise use item price
                   const price = selectedSize?.price ?? item?.price ?? 0;
                   const totalPrice = price * quantity;
+                  const isRemoving = removingItems.has(_id);
                   
                   return (
                     <div
                       key={_id}
-                      className="group bg-white p-4 rounded-2xl border-4 border-dashed border-[#8BC34A] backdrop-blur-sm flex flex-col items-center gap-4 transition-all duration-300 hover:border-solid hover:shadow-xl hover:shadow-[#8BC34A]/10 transform hover:-translate-y-1"
+                      className={`group bg-white p-4 rounded-2xl border-4 border-dashed border-[#8BC34A] backdrop-blur-sm flex flex-col items-center gap-4 transition-all duration-300 hover:border-solid hover:shadow-xl hover:shadow-[#8BC34A]/10 transform hover:-translate-y-1 card-hover ${
+                        isRemoving ? 'cart-item-removal removing' : 'cart-item-removal'
+                      }`}
                     >
                       <div
                         className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 cursor-pointer relative overflow-hidden rounded-lg transition-transform duration-300"
@@ -84,7 +101,7 @@ const CartPage = () => {
                       <div className="flex items-center gap-2 sm:gap-3">
                         <button
                           onClick={() => updateQuantity(_id, Math.max(1, quantity - 1), selectedSize)}
-                          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#8BC34A]/40 flex items-center justify-center hover:bg-[#8BC34A]/50 transition duration-200 active:scale-95"
+                          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#8BC34A]/40 flex items-center justify-center hover:bg-[#8BC34A]/50 transition duration-200 active:scale-95 quantity-counter btn-press-feedback"
                         >
                           <FaMinus className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                         </button>
@@ -93,7 +110,7 @@ const CartPage = () => {
                         </span>
                         <button
                           onClick={() => updateQuantity(_id, quantity + 1, selectedSize)}
-                          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#8BC34A]/40 flex items-center justify-center hover:bg-[#8BC34A]/50 transition duration-200 active:scale-95"
+                          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#8BC34A]/40 flex items-center justify-center hover:bg-[#8BC34A]/50 transition duration-200 active:scale-95 quantity-counter btn-press-feedback"
                         >
                           <FaPlus className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                         </button>
@@ -102,11 +119,12 @@ const CartPage = () => {
                       {/* Improved remove button and price display for mobile */}
                       <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-2">
                         <button
-                          onClick={() => removeFromCart(_id)}
-                          className="bg-[#8BC34A]/40 px-3 py-1 rounded-full font-cinzel text-xs uppercase transition duration-300 hover:bg-[#8BC34A]/50 flex items-center gap-1 active:scale-95"
+                          onClick={() => handleRemoveItem(_id)}
+                          className="bg-[#8BC34A]/40 px-3 py-1 rounded-full font-cinzel text-xs uppercase transition duration-300 hover:bg-[#8BC34A]/50 flex items-center gap-1 active:scale-95 btn-press-feedback"
+                          disabled={isRemoving}
                         >
                           <FaTrash className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                          <span className="text-gray-800">Remove</span>
+                          <span className="text-gray-800">{isRemoving ? 'Removing...' : 'Remove'}</span>
                         </button>
                         <p className="text-sm font-dancingscript text-[#FFC107] text-center">
                           ${totalPrice.toFixed(2)} CAD
@@ -122,7 +140,7 @@ const CartPage = () => {
               <div className="flex flex-col sm:flex-row justify-between items-center gap-6 sm:gap-8">
                 <Link
                   to="/menu"
-                  className="bg-[#8BC34A]/40 px-6 py-3 rounded-full font-cinzel uppercase tracking-wider hover:bg-[#8BC34A]/50 transition duration-300 text-gray-800 inline-flex items-center gap-2 active:scale-95 text-sm sm:text-base"
+                  className="bg-[#8BC34A]/40 px-6 py-3 rounded-full font-cinzel uppercase tracking-wider hover:bg-[#8BC34A]/50 transition duration-300 text-gray-800 inline-flex items-center gap-2 active:scale-95 text-sm sm:text-base btn-subtle-hover"
                 >
                   Continue Shopping
                 </Link>
@@ -132,7 +150,7 @@ const CartPage = () => {
                   </h2>
                   <Link
                     to="/checkout"
-                    className="bg-gradient-to-r from-[#8BC34A] to-[#7CB342] px-6 py-3 rounded-full font-cinzel uppercase tracking-wider hover:from-[#7CB342] hover:to-[#8BC34A] transition duration-300 text-white flex items-center gap-2 active:scale-95 shadow-lg hover:shadow-[#8BC34A]/30 text-sm sm:text-base"
+                    className="bg-gradient-to-r from-[#8BC34A] to-[#7CB342] px-6 py-3 rounded-full font-cinzel uppercase tracking-wider hover:from-[#7CB342] hover:to-[#8BC34A] transition duration-300 text-white flex items-center gap-2 active:scale-95 shadow-lg hover:shadow-[#8BC34A]/30 text-sm sm:text-base btn-subtle-hover"
                   >
                     Checkout Now
                   </Link>
@@ -145,10 +163,10 @@ const CartPage = () => {
 
       {selectedImage && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800/40 bg-opacity-75 backdrop-blur-sm p-4 overflow-auto"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800/40 bg-opacity-75 backdrop-blur-sm p-4 overflow-auto modal-overlay open"
           onClick={() => setSelectedImage(null)}
         >
-          <div className="relative max-w-full max-h-full">
+          <div className="relative max-w-full max-h-full modal-content open">
             <img
               src={selectedImage}
               alt="Full view"
@@ -156,7 +174,7 @@ const CartPage = () => {
             />
             <button
               onClick={() => setSelectedImage(null)}
-              className="absolute top-1 right-1 bg-[#8BC34A]/80 rounded-full p-2 text-white hover:bg-[#7CB342]/90 transition duration-200 active:scale-90"
+              className="absolute top-1 right-1 bg-[#8BC34A]/80 rounded-full p-2 text-white hover:bg-[#7CB342]/90 transition duration-200 active:scale-90 btn-press-feedback"
             >
               <FaTimes className="w-6 h-6" />
             </button>

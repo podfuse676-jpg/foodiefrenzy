@@ -84,13 +84,17 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-gradient-to-r from-[#8BC34A] to-[#7CB342] text-white shadow-lg sticky top-0 z-40">
+      <nav className="bg-gradient-to-r from-[#8BC34A] to-[#7CB342] text-white shadow-lg sticky top-0 z-40 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo - improved for mobile */}
             <div className="flex-shrink-0 flex items-center">
-              <div className="bg-white p-1 rounded-full">
-                <img className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-contain" src={LakeshoreLogo} alt="Lakeshore Convenience" />
+              <div className="bg-white p-1 rounded-full transition-transform duration-300 hover:scale-105 btn-subtle-hover">
+                <img 
+                  className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-contain" 
+                  src={LakeshoreLogo} 
+                  alt="Lakeshore Convenience" 
+                />
               </div>
               <span className="ml-2 sm:ml-3 text-base sm:text-xl font-bold font-serif text-white hidden sm:block">Lakeshore Convenience</span>
             </div>
@@ -103,14 +107,14 @@ const Navbar = () => {
                     key={link.name}
                     to={link.href}
                     className={({ isActive }) =>
-                      `px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-xs sm:text-sm font-medium flex items-center transition-colors ${
+                      `px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-xs sm:text-sm font-medium flex items-center transition-colors btn-subtle-hover ${
                         isActive
                           ? 'bg-white text-[#8BC34A]'
                           : 'text-white hover:bg-white/20'
                       }`
                     }
                   >
-                    <span className="mr-1 sm:mr-2 text-sm sm:text-base">{link.icon}</span>
+                    <span className="mr-1 sm:mr-2 text-sm sm:text-base icon-smooth">{link.icon}</span>
                     <span className="hidden lg:inline">{link.name}</span>
                   </NavLink>
                 ))}
@@ -120,10 +124,13 @@ const Navbar = () => {
             {/* Cart and Auth Buttons - improved for mobile */}
             <div className="flex items-center">
               {/* Cart */}
-              <NavLink to="/cart" className="relative p-1.5 sm:p-2 rounded-full hover:bg-white/20 transition-colors">
-                <FiShoppingCart className="h-5 w-5 sm:h-6 sm:w-6" />
+              <NavLink 
+                to="/cart" 
+                className="relative p-1.5 sm:p-2 rounded-full hover:bg-white/20 transition-colors btn-subtle-hover"
+              >
+                <FiShoppingCart className="h-5 w-5 sm:h-6 sm:w-6 icon-smooth" />
                 {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-[#FFC107] text-[#333333] text-xs font-bold rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-[#FFC107] text-[#333333] text-xs font-bold rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center animate-pulse">
                     {totalItems}
                   </span>
                 )}
@@ -133,17 +140,17 @@ const Navbar = () => {
               {isAuthenticated ? (
                 <button
                   onClick={handleLogout}
-                  className="ml-2 sm:ml-4 px-2 py-1 sm:px-3 sm:py-2 rounded-md text-xs sm:text-sm font-medium bg-white text-[#8BC34A] hover:bg-gray-100 transition-colors flex items-center"
+                  className="ml-2 sm:ml-4 px-2 py-1 sm:px-3 sm:py-2 rounded-md text-xs sm:text-sm font-medium bg-white text-[#8BC34A] hover:bg-gray-100 transition-colors flex items-center btn-press-feedback"
                 >
-                  <FiLogOut className="mr-1 sm:mr-2 text-sm sm:text-base" />
+                  <FiLogOut className="mr-1 sm:mr-2 text-sm sm:text-base icon-smooth" />
                   <span className="hidden sm:inline">Logout</span>
                 </button>
               ) : (
                 <button
                   onClick={() => setShowLoginModal(true)}
-                  className="ml-2 sm:ml-4 px-2 py-1 sm:px-3 sm:py-2 rounded-md text-xs sm:text-sm font-medium bg-white text-[#8BC34A] hover:bg-gray-100 transition-colors flex items-center"
+                  className="ml-2 sm:ml-4 px-2 py-1 sm:px-3 sm:py-2 rounded-md text-xs sm:text-sm font-medium bg-white text-[#8BC34A] hover:bg-gray-100 transition-colors flex items-center btn-press-feedback"
                 >
-                  <FiKey className="mr-1 sm:mr-2 text-sm sm:text-base" />
+                  <FiKey className="mr-1 sm:mr-2 text-sm sm:text-base icon-smooth" />
                   <span className="hidden sm:inline">Login</span>
                 </button>
               )}
@@ -151,14 +158,14 @@ const Navbar = () => {
               {/* Mobile menu button */}
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="md:hidden ml-2 sm:ml-4 p-1.5 sm:p-2 rounded-md text-white hover:bg-white/20 focus:outline-none"
+                className="md:hidden ml-2 sm:ml-4 p-1.5 sm:p-2 rounded-md text-white hover:bg-white/20 focus:outline-none btn-press-feedback"
               >
                 {isOpen ? (
-                  <svg className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="h-5 w-5 sm:h-6 sm:w-6 icon-smooth" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 ) : (
-                  <svg className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="h-5 w-5 sm:h-6 sm:w-6 icon-smooth" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                   </svg>
                 )}
@@ -169,14 +176,14 @@ const Navbar = () => {
 
         {/* Mobile Navigation - improved for mobile */}
         {isOpen && (
-          <div className="md:hidden">
+          <div className="md:hidden animate-fade-in-down">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-[#8BC34A]/90 backdrop-blur-sm">
               {navLinks.map((link) => (
                 <NavLink
                   key={link.name}
                   to={link.href}
                   className={({ isActive }) =>
-                    `block px-3 py-2 rounded-md text-sm font-medium flex items-center ${
+                    `block px-3 py-2 rounded-md text-sm font-medium flex items-center btn-subtle-hover ${
                       isActive
                         ? 'bg-white text-[#8BC34A]'
                         : 'text-white hover:bg-white/20'
@@ -184,7 +191,7 @@ const Navbar = () => {
                   }
                   onClick={() => setIsOpen(false)}
                 >
-                  <span className="mr-2">{link.icon}</span>
+                  <span className="mr-2 icon-smooth">{link.icon}</span>
                   {link.name}
                 </NavLink>
               ))}
@@ -195,8 +202,8 @@ const Navbar = () => {
 
       {/* Login Modal */}
       {showLoginModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-overlay open">
+          <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto modal-content open">
             <div className="p-1 bg-gradient-to-br from-[#8BC34A] to-[#7CB342] rounded-lg">
               <Login onLoginSuccess={handleLoginSuccess} />
             </div>

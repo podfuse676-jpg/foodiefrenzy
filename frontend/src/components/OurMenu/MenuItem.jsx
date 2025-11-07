@@ -59,7 +59,7 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
 
   return (
     // Updated to light fresh colors with improved mobile responsiveness
-    <div className="relative bg-white rounded-2xl overflow-hidden border-2 border-[#8BC34A]/30 backdrop-blur-sm flex flex-col items-center gap-3 transition-all duration-300 hover:border-[#8BC34A] hover:shadow-xl hover:shadow-[#8BC34A]/10 transform hover:-translate-y-1 p-4 group">
+    <div className="relative bg-white rounded-2xl overflow-hidden border-2 border-[#8BC34A]/30 backdrop-blur-sm flex flex-col items-center gap-3 transition-all duration-300 hover:border-[#8BC34A] hover:shadow-xl hover:shadow-[#8BC34A]/10 transform hover:-translate-y-1 p-4 group card-hover">
       {/* Image Container - improved for mobile */}
       <div className="w-full h-32 flex-shrink-0 relative overflow-hidden rounded-lg transition-transform duration-300 group-hover:scale-105">
         {imageUrl ? (
@@ -92,7 +92,7 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
               {[...Array(5)].map((_, i) => (
                 <FaStar 
                   key={i} 
-                  className={`${i < Math.floor(averageRating) ? 'text-yellow-400' : 'text-gray-300'} text-xs`} 
+                  className={`${i < Math.floor(averageRating) ? 'text-yellow-400' : 'text-gray-300'} text-xs icon-smooth`} 
                 />
               ))}
             </div>
@@ -141,7 +141,7 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
                   ? updateQuantity(cartEntry._id, quantity - 1)
                   : removeFromCart(cartEntry._id);
               }}
-              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#8BC34A]/40 flex items-center justify-center hover:bg-[#8BC34A]/50 transition duration-200 active:scale-95 shadow-sm"
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#8BC34A]/40 flex items-center justify-center hover:bg-[#8BC34A]/50 transition duration-200 active:scale-95 shadow-sm quantity-counter btn-press-feedback"
               aria-label="Decrease quantity"
             >
               <FaMinus className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
@@ -154,7 +154,7 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
                 e.stopPropagation();
                 updateQuantity(cartEntry._id, quantity + 1);
               }}
-              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#8BC34A]/40 flex items-center justify-center hover:bg-[#8BC34A]/50 transition duration-200 active:scale-95 shadow-sm"
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#8BC34A]/40 flex items-center justify-center hover:bg-[#8BC34A]/50 transition duration-200 active:scale-95 shadow-sm quantity-counter btn-press-feedback"
               aria-label="Increase quantity"
             >
               <FaPlus className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
@@ -171,12 +171,12 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
                 handleAddToCart();
               }
             }}
-            className={`bg-gradient-to-r from-[#8BC34A] to-[#7CB342] border-2 border-[#8BC34A] px-3 py-1 sm:px-4 sm:py-1 rounded-full font-cinzel text-xs uppercase transition duration-300 hover:from-[#7CB342] hover:to-[#8BC34A] flex items-center gap-1 active:scale-95 shadow-md hover:shadow-lg transform ${
+            className={`bg-gradient-to-r from-[#8BC34A] to-[#7CB342] border-2 border-[#8BC34A] px-3 py-1 sm:px-4 sm:py-1 rounded-full font-cinzel text-xs uppercase transition duration-300 hover:from-[#7CB342] hover:to-[#8BC34A] flex items-center gap-1 active:scale-95 shadow-md hover:shadow-lg transform btn-subtle-hover ${
               isAnimating ? 'scale-110' : ''
             }`}
             aria-label={`Add ${item.name} to cart`}
           >
-            <FaPlus className="w-2 h-2" />
+            <FaPlus className="w-2 h-2 icon-smooth" />
             <span className="truncate max-w-[60px] sm:max-w-none">{hasCustomizationOptions ? 'Customize' : 'Add'}</span>
           </button>
         )}

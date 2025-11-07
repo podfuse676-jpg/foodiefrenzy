@@ -108,7 +108,7 @@ const LoginWrapper = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] p-4">
+    <div className="min-h-screen min-w-full flex items-center justify-center bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] p-4 md:p-8">
       <div className="w-full max-w-md">
         <Login onLoginSuccess={handleLoginSuccess} onClose={handleClose} />
       </div>

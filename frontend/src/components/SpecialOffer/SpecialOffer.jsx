@@ -14,7 +14,6 @@ const SpecialOffer = () => {
   // only keep cart entries with a real `item`
   const cartItems = rawCart.filter(ci => ci.item);
 
-
   // Fetch menu items
   useEffect(() => {
     axios
@@ -65,7 +64,7 @@ const SpecialOffer = () => {
             return (
               <div
                 key={item._id}
-                className="relative group bg-white rounded-3xl overflow-hidden shadow-2xl hover:-translate-y-4 transition duration-500 hover:shadow-[#8BC34A]/40 border-2 border-transparent hover:border-[#8BC34A]/20"
+                className="relative group bg-white rounded-3xl overflow-hidden shadow-2xl hover:-translate-y-4 transition duration-500 hover:shadow-[#8BC34A]/40 border-2 border-transparent hover:border-[#8BC34A]/20 card-hover"
               >
                 {/* Image & Stats */}
                 <div className="relative h-72 overflow-hidden">
@@ -80,10 +79,10 @@ const SpecialOffer = () => {
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10" />
                   <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center bg-white/60 backdrop-blur-sm px-4 py-2 rounded-full">
                     <span className="flex items-center gap-2 text-[#8BC34A]">
-                      <FaStar /><b>{item.rating}</b>
+                      <FaStar className="icon-smooth" /><b>{item.rating}</b>
                     </span>
                     <span className="flex items-center gap-2 text-[#FFC107]">
-                      <FaHeart /><b>{item.hearts}</b>
+                      <FaHeart className="icon-smooth" /><b>{item.hearts}</b>
                     </span>
                   </div>
                 </div>
@@ -107,14 +106,14 @@ const SpecialOffer = () => {
                               ? updateQuantity(cartId, qty - 1)
                               : removeFromCart(cartId)
                           }
-                          className="w-8 h-8 rounded-full bg-[#8BC34A]/40 flex items-center justify-center"
+                          className="w-8 h-8 rounded-full bg-[#8BC34A]/40 flex items-center justify-center quantity-counter btn-press-feedback"
                         >
                           <HiMinus className="w-4 h-4 text-gray-800" />
                         </button>
                         <span className="w-8 text-center text-gray-800">{qty}</span>
                         <button
                           onClick={() => updateQuantity(cartId, qty + 1)}
-                          className="w-8 h-8 rounded-full bg-[#8BC34A]/40 flex items-center justify-center"
+                          className="w-8 h-8 rounded-full bg-[#8BC34A]/40 flex items-center justify-center quantity-counter btn-press-feedback"
                         >
                           <HiPlus className="w-4 h-4 text-gray-800" />
                         </button>
@@ -132,9 +131,9 @@ const SpecialOffer = () => {
                             console.error('Error adding to cart:', error);
                           }
                         }}
-                        className="flex items-center gap-2 bg-gradient-to-r from-[#8BC34A] to-[#7CB342] text-white px-5 py-2.5 rounded-xl font-bold"
+                        className="flex items-center gap-2 bg-gradient-to-r from-[#8BC34A] to-[#7CB342] text-white px-5 py-2.5 rounded-xl font-bold btn-subtle-hover"
                       >
-                        <FaPlus />
+                        <FaPlus className="icon-smooth" />
                         <span>Add</span>
                       </button>
                     )}
@@ -152,9 +151,9 @@ const SpecialOffer = () => {
         <div className="mt-12 flex justify-center">
           <button
             onClick={() => setShowAll(!showAll)}
-            className="flex items-center gap-3 bg-gradient-to-r from-[#8BC34A] to-[#7CB342] text-white px-8 py-4 rounded-2xl font-bold uppercase"
+            className="flex items-center gap-3 bg-gradient-to-r from-[#8BC34A] to-[#7CB342] text-white px-8 py-4 rounded-2xl font-bold uppercase btn-subtle-hover animate-pulse"
           >
-            <FaFire className="animate-pulse" />
+            <FaFire className="animate-pulse icon-smooth" />
             <span>{showAll ? 'Show Less' : 'Show More'}</span>
           </button>
         </div>
