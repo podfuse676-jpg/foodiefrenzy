@@ -68,7 +68,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen min-w-full flex items-center justify-center bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] p-4 md:p-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] p-4 w-full overflow-x-hidden">
       {toast.visible && <AwesomeToast message={toast.message} icon={toast.icon} />}
       <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border-4 border-[#8BC34A]/30 transform transition-all duration-300 hover:shadow-2xl">
         <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-[#8BC34A] to-[#FFC107] bg-clip-text text-transparent mb-6 hover:scale-105 transition-transform">

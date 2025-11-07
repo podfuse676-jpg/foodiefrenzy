@@ -117,7 +117,7 @@ const Login = ({ onLoginSuccess, onClose }) => {
   };
 
   return (
-    <div className="min-h-screen min-w-full flex items-center justify-center bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] p-4 md:p-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] p-4 w-full overflow-x-hidden">
       {/* Toast Notification */}
       <div
         className={`fixed top-4 right-4 z-50 transition-all duration-300 ${toast.visible ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0'
