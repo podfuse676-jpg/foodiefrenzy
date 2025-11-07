@@ -2,15 +2,29 @@ import React from 'react'
 import Navbar from '../../components/Navbar/Navbar'
 import Footer from '../../components/Footer/Footer'
 import CartPage from '../../components/CartPage/CartPage'
+import { Helmet } from 'react-helmet-async';
 
 const Cart = () => {
-    return (
-        <>
-            <Navbar />
-            <CartPage />
-            <Footer />
-        </>
-    )
+  return (
+    <>
+      <Helmet>
+        <title>Your Shopping Cart - Lakeshore Convenience Grocery Delivery</title>
+        <meta name="description" content="Review and manage your grocery shopping cart from Lakeshore Convenience. Fresh produce, quality groceries, and convenience items ready for checkout and delivery to your door in Sylvan Lake, Alberta." />
+        <meta name="keywords" content="grocery shopping cart, online grocery cart, Sylvan Lake grocery delivery, Alberta grocery checkout" />
+        <meta property="og:title" content="Your Shopping Cart - Lakeshore Convenience Grocery Delivery" />
+        <meta property="og:description" content="Review and manage your grocery shopping cart from Lakeshore Convenience. Fresh produce, quality groceries, and convenience items ready for checkout and delivery to your door in Sylvan Lake, Alberta." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://lakeshoreconvenience.com/cart" />
+        <meta property="og:locale" content="en_CA" />
+        <meta name="twitter:title" content="Your Shopping Cart - Lakeshore Convenience Grocery Delivery" />
+        <meta name="twitter:description" content="Review and manage your grocery shopping cart from Lakeshore Convenience. Fresh produce, quality groceries, and convenience items ready for checkout." />
+        <link rel="canonical" href="https://lakeshoreconvenience.com/cart" />
+      </Helmet>
+      <Navbar />
+      <CartPage />
+      <Footer />
+    </>
+  )
 }
 
 export default Cart

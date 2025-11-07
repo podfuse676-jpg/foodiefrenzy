@@ -2,10 +2,24 @@ import React from 'react';
 import Navbar from '../../components/Navbar/Navbar';
 import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaBuilding, FaIdCard } from 'react-icons/fa';
 import Footer from '../../components/Footer/Footer';
+import { Helmet } from 'react-helmet-async';
 
 const AboutPage = () => {
   return (
     <>
+      <Helmet>
+        <title>About Lakeshore Convenience - Sylvan Lake, Alberta Grocery Store</title>
+        <meta name="description" content="Learn about Lakeshore Convenience, your local grocery store in Sylvan Lake, Alberta. We offer fresh produce, quality groceries, and convenience items with fast delivery to your door." />
+        <meta name="keywords" content="about grocery store, Sylvan Lake convenience store, Alberta grocery delivery, local grocery store, Lakeshore Convenience" />
+        <meta property="og:title" content="About Lakeshore Convenience - Sylvan Lake, Alberta Grocery Store" />
+        <meta property="og:description" content="Learn about Lakeshore Convenience, your local grocery store in Sylvan Lake, Alberta. We offer fresh produce, quality groceries, and convenience items with fast delivery to your door." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://lakeshoreconvenience.com/about" />
+        <meta property="og:locale" content="en_CA" />
+        <meta name="twitter:title" content="About Lakeshore Convenience - Sylvan Lake, Alberta Grocery Store" />
+        <meta name="twitter:description" content="Learn about Lakeshore Convenience, your local grocery store in Sylvan Lake, Alberta. We offer fresh produce, quality groceries, and convenience items with fast delivery to your door." />
+        <link rel="canonical" href="https://lakeshoreconvenience.com/about" />
+      </Helmet>
       <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
