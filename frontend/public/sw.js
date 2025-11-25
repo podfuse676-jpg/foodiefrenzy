@@ -6,8 +6,7 @@ const urlsToCache = [
   '/about',
   '/contact',
   '/manifest.json',
-  '/logo.png',
-  '/src/assets/lakeshore-logo.png'
+  '/logo.png'
 ];
 
 // Install event - cache static assets
