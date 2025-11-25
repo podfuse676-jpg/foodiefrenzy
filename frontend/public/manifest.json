@@ -3,12 +3,12 @@
   "name": "Lakeshore Convenience",
   "icons": [
     {
-      "src": "/logo.png",
+      "src": "/src/assets/lakeshore-logo.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/logo.png",
+      "src": "/src/assets/lakeshore-logo.png",
       "type": "image/png",
       "sizes": "512x512"
     }

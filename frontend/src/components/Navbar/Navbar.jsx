@@ -237,7 +237,7 @@ const Navbar = () => {
                 </motion.button>
               ) : (
                 <motion.button
-                  onClick={() => setShowLoginModal(true)}
+                  onClick={handleLoginClick}
                   className="ml-2 sm:ml-4 px-2 py-1 sm:px-3 sm:py-2 rounded-md text-xs sm:text-sm font-medium bg-white text-[#8BC34A] hover:bg-gray-100 transition-colors flex items-center btn-press-feedback"
                   whileHover={{ 
                     scale: 1.05,
