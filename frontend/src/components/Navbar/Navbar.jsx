@@ -260,9 +260,9 @@ const Navbar = () => {
               {/* Mobile menu button */}
               <motion.button
                 onClick={() => setIsOpen(!isOpen)}
-                className="md:hidden ml-2 sm:ml-4 p-1.5 sm:p-2 rounded-md text-white hover:bg-white/20 focus:outline-none btn-press-feedback"
+                className="md:hidden ml-2 sm:ml-4 p-1.5 sm:p-2 rounded-md text-[#4CAF50] hover:bg-[#4CAF50]/10 focus:outline-none btn-press-feedback"
                 whileHover={{ 
-                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                  backgroundColor: "rgba(76, 175, 80, 0.1)",
                   transition: { duration: 0.2 } 
                 }}
                 whileTap={{ scale: 0.9 }}
@@ -303,7 +303,7 @@ const Navbar = () => {
                     className={`block px-3 py-2 rounded-md text-sm font-medium flex items-center btn-subtle-hover ${
                       location.pathname === link.href
                         ? 'bg-white text-[#8BC34A]'
-                        : 'text-white hover:bg-white/20'
+                        : 'text-gray-800 hover:bg-white/20'
                     }`}
                     onClick={() => setIsOpen(false)}
                   >
