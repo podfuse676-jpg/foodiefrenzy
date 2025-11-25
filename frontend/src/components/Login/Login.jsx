@@ -119,15 +119,15 @@ const Login = ({ onLoginSuccess, onClose }) => {
   };
 
   return (
-    // Updated to match PhoneLogin styling
+    // Updated to have a distinct email login styling
     <div className="min-h-screen bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white backdrop-blur-sm rounded-2xl shadow-2xl border-2 border-[#8BC34A]/30 p-8">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-[#8BC34A] to-[#FFC107] bg-clip-text text-transparent mb-2">
-            Email Login
+            Welcome Back
           </h2>
           <p className="text-gray-800/80">
-            Enter your email and password to sign in
+            Sign in to your account
           </p>
         </div>
         
@@ -135,7 +135,7 @@ const Login = ({ onLoginSuccess, onClose }) => {
           {/* Email Field */}
           <div>
             <label className="block text-gray-800 text-sm font-bold mb-2" htmlFor="email">
-              Email Address
+              Email
             </label>
             <div className="relative">
               <input
@@ -257,7 +257,6 @@ const Login = ({ onLoginSuccess, onClose }) => {
             Don't have an account?{' '}
             <Link 
               to="/signup"
-              onClick={onClose}
               className="text-[#8BC34A] hover:text-[#FFC107] font-semibold transition-colors"
             >
               Create Account
@@ -266,15 +265,12 @@ const Login = ({ onLoginSuccess, onClose }) => {
           
           <p className="text-sm text-gray-800/70">
             Want to login with phone instead?{' '}
-            <button 
-              onClick={() => {
-                onClose && onClose();
-                navigate('/phone-login');
-              }}
+            <Link 
+              to="/phone-login"
               className="text-[#8BC34A] hover:text-[#FFC107] font-semibold transition-colors"
             >
               Login with Phone
-            </button>
+            </Link>
           </p>
         </div>
       </div>

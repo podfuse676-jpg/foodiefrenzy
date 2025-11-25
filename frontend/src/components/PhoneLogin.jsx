@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import apiConfig from '../utils/apiConfig';
 
@@ -271,12 +271,12 @@ const PhoneLogin = () => {
         <div className="mt-8 pt-6 border-t border-[#8BC34A]/30 text-center">
           <p className="text-sm text-gray-800/70">
             Want to login with email instead?{' '}
-            <button 
-              onClick={() => navigate('/login')}
+            <Link 
+              to="/login"
               className="text-[#8BC34A] hover:text-[#FFC107] font-semibold transition-colors"
             >
               Login with Email
-            </button>
+            </Link>
           </p>
         </div>
       </div>
