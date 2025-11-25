@@ -311,25 +311,7 @@ const Navbar = () => {
         )}
       </nav>
 
-      {/* Login Modal */}
-      {showLoginModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 modal-overlay open">
-          <motion.div 
-            className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto modal-content open"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ 
-              type: "spring", 
-              stiffness: 300,
-              damping: 30
-            }}
-          >
-            <div className="p-1 bg-gradient-to-br from-[#8BC34A] to-[#7CB342] rounded-lg">
-              <Login onLoginSuccess={handleLoginSuccess} />
-            </div>
-          </motion.div>
-        </div>
-      )}
+
     </>
   );
 };
