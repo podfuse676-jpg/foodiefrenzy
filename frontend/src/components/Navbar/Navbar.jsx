@@ -8,7 +8,8 @@ import {
   FiShoppingCart,
   FiLogOut,
   FiKey,
-  FiPackage
+  FiPackage,
+  FiHelpCircle
 } from 'react-icons/fi';
 import { FaShoppingBasket, FaLeaf, FaCarrot, FaAppleAlt, FaUserFriends } from 'react-icons/fa';
 // Fixed the import path for SVG in Vite
@@ -50,6 +51,7 @@ const Navbar = () => {
   const navLinks = [
     { name: 'Home', href: '/', icon: <FiHome /> },
     { name: 'Products', href: '/menu', icon: <FaShoppingBasket /> }, // Only Products menu item
+    { name: 'FAQ', href: '/faq', icon: <FiHelpCircle /> },
     { name: 'Contact', href: '/contact', icon: <FiPhone /> },
     ...(isAuthenticated ? [
       { name: 'My Orders', href: '/myorder', icon: <FiPackage /> }
@@ -118,6 +120,16 @@ const Navbar = () => {
                 }`}
               >
                 Menu
+              </Link>
+              <Link 
+                to="/faq" 
+                className={`px-3 py-2 rounded-md text-sm font-cinzel transition-colors duration-300 ${
+                  location.pathname === '/faq' 
+                    ? 'bg-[#4CAF50]/20 text-[#333333] font-bold' 
+                    : 'text-gray-700 hover:bg-[#4CAF50]/30 hover:text-gray-900'
+                }`}
+              >
+                FAQ
               </Link>
               <Link 
                 to="/about" 

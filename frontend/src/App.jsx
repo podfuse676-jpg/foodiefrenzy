@@ -11,6 +11,7 @@ import CheckoutPage from './pages/Checkout/Checkout';
 import AboutPage from './pages/AboutPage/AboutPage';
 import Menu from './pages/Menu/Menu';
 import ProductDetail from './pages/ProductDetail/ProductDetail';
+import FAQ from './pages/FAQ/FAQ';
 import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 import PhoneLogin from './components/PhoneLogin';
 import MyOrders from './pages/MyOredrs/MyOrders';
@@ -57,6 +58,7 @@ function App() {
       <Route path="/about" element={<AboutPage />} />
       <Route path="/menu" element={<Menu />} />
       <Route path="/item/:id" element={<ProductDetail />} />
+      <Route path="/faq" element={<FAQ />} />
 
       {/* Payment verification */}
       <Route path="/myorder/verify" element={<VerifyPaymentPage />} />
