@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import { useLoading } from './LoadingContext/LoadingContext';
@@ -48,37 +49,47 @@ function App() {
   }, [location, startLoading, completeLoading]);
 
   return (
-    <Routes>
-      {/* Public */}
-      <Route path="/" element={<Home />} />
-      <Route path="/signup" element={<SignUp />} />
-      <Route path="/login" element={<LoginWrapper />} />
-      <Route path="/phone-login" element={<PhoneLogin />} />
-      <Route path="/contact" element={<ContactPage />} />
-      <Route path="/about" element={<AboutPage />} />
-      <Route path="/menu" element={<Menu />} />
-      <Route path="/item/:id" element={<ProductDetail />} />
-      <Route path="/faq" element={<FAQ />} />
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={location.pathname}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Routes location={location} key={location.pathname}>
+          {/* Public */}
+          <Route path="/" element={<Home />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={<LoginWrapper />} />
+          <Route path="/phone-login" element={<PhoneLogin />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/menu" element={<Menu />} />
+          <Route path="/item/:id" element={<ProductDetail />} />
+          <Route path="/faq" element={<FAQ />} />
 
-      {/* Payment verification */}
-      <Route path="/myorder/verify" element={<VerifyPaymentPage />} />
+          {/* Payment verification */}
+          <Route path="/myorder/verify" element={<VerifyPaymentPage />} />
 
-      {/* Protected */}
-      <Route
-        path="/cart"
-        element={<PrivateRoute><Cart /></PrivateRoute>}
-      />
-      <Route
-        path="/checkout"
-        element={<PrivateRoute><CheckoutPage /></PrivateRoute>}
-      />
+          {/* Protected */}
+          <Route
+            path="/cart"
+            element={<PrivateRoute><Cart /></PrivateRoute>}
+          />
+          <Route
+            path="/checkout"
+            element={<PrivateRoute><CheckoutPage /></PrivateRoute>}
+          />
 
-      {/* The actual orders list */}
-      <Route
-        path="/myorder"
-        element={<PrivateRoute><MyOrders /></PrivateRoute>}
-      />
-    </Routes>
+          {/* The actual orders list */}
+          <Route
+            path="/myorder"
+            element={<PrivateRoute><MyOrders /></PrivateRoute>}
+          />
+        </Routes>
+      </motion.div>
+    </AnimatePresence>
   );
 }
 

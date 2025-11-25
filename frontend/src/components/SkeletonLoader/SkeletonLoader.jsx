@@ -1,56 +1,75 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
-const SkeletonLoader = ({ type = 'text', width = '100%', height = '1rem', count = 1 }) => {
-  const skeletons = Array.from({ length: count }, (_, index) => (
-    <div
-      key={index}
-      className="skeleton rounded"
-      style={{
-        width: type === 'circle' ? height : width,
-        height: height,
-        borderRadius: type === 'circle' ? '50%' : '0.5rem',
-        marginBottom: type !== 'circle' && index < count - 1 ? '0.5rem' : '0'
-      }}
-    />
-  ));
-
-  return <div>{skeletons}</div>;
-};
-
-// Product card skeleton
-export const ProductCardSkeleton = () => (
-  <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#8BC34A]/20 fade-in">
-    <div className="skeleton w-full h-48" />
-    <div className="p-4">
-      <div className="skeleton h-6 w-3/4 mb-2" />
-      <div className="skeleton h-4 w-full mb-3" />
-      <div className="flex justify-between items-center">
-        <div className="skeleton h-6 w-1/3" />
-        <div className="skeleton h-10 w-10 rounded-full" />
+// Product Card Skeleton Component
+export const ProductCardSkeleton = () => {
+  return (
+    <div className="bg-white rounded-2xl shadow-lg border-2 border-[#8BC34A]/20 overflow-hidden animate-pulse">
+      <div className="bg-gray-200 h-48 w-full"></div>
+      <div className="p-4">
+        <div className="h-4 bg-gray-200 rounded mb-2"></div>
+        <div className="h-4 bg-gray-200 rounded w-3/4 mb-3"></div>
+        <div className="flex justify-between items-center">
+          <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+          <div className="h-8 bg-gray-200 rounded-full w-8"></div>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
-// Menu category skeleton
-export const CategorySkeleton = () => (
-  <div className="skeleton px-4 py-2 rounded-full" style={{ width: '100px', height: '40px' }} />
-);
+// Category Tab Skeleton Component
+export const CategorySkeleton = () => {
+  return (
+    <div className="px-4 py-2 rounded-full bg-gray-200 animate-pulse"></div>
+  );
+};
 
-// Order item skeleton
-export const OrderItemSkeleton = () => (
-  <div className="bg-white rounded-2xl shadow-md p-4 border border-[#8BC34A]/20 fade-in">
-    <div className="flex justify-between items-start mb-3">
-      <div className="skeleton h-6 w-1/2" />
-      <div className="skeleton h-6 w-16 rounded-full" />
+// Main Skeleton Loader Component
+const SkeletonLoader = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] py-8 sm:py-16">
+      <div className="container mx-auto px-4">
+        <div className="max-w-4xl mx-auto">
+          {/* Header Skeleton */}
+          <div className="text-center mb-12">
+            <div className="flex justify-center mb-6">
+              <div className="p-4 bg-gray-200 rounded-full w-16 h-16 animate-pulse"></div>
+            </div>
+            <div className="h-12 bg-gray-200 rounded-lg mb-4 animate-pulse mx-auto max-w-md"></div>
+            <div className="h-6 bg-gray-200 rounded-lg animate-pulse mx-auto max-w-lg"></div>
+          </div>
+
+          {/* FAQ Items Skeleton */}
+          <div className="space-y-4">
+            {[...Array(5)].map((_, index) => (
+              <motion.div 
+                key={index}
+                className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ 
+                  duration: 0.3, 
+                  delay: 0.1 * index
+                }}
+              >
+                <div className="p-6">
+                  <div className="h-6 bg-gray-200 rounded-lg animate-pulse"></div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Contact CTA Skeleton */}
+          <div className="mt-12 bg-gray-200 rounded-2xl p-8 animate-pulse">
+            <div className="h-8 bg-gray-300 rounded-lg mb-4 max-w-md mx-auto"></div>
+            <div className="h-6 bg-gray-300 rounded-lg mb-6 max-w-lg mx-auto"></div>
+            <div className="h-12 bg-gray-300 rounded-full max-w-xs mx-auto"></div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div className="skeleton h-4 w-3/4 mb-2" />
-    <div className="skeleton h-4 w-1/4 mb-4" />
-    <div className="flex justify-between">
-      <div className="skeleton h-10 w-24 rounded-full" />
-      <div className="skeleton h-10 w-24 rounded-full" />
-    </div>
-  </div>
-);
+  );
+};
 
 export default SkeletonLoader;

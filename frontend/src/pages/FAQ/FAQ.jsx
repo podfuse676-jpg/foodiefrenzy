@@ -1,13 +1,24 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import SEO from '../../components/SEO/SEO';
 import { OrganizationStructuredData } from '../../components/SEO/StructuredData';
 import { FAQSchema } from '../../components/SEO/FAQSchema';
 import Navbar from '../../components/Navbar/Navbar';
 import Footer from '../../components/Footer/Footer';
+import SkeletonLoader from '../../components/SkeletonLoader/SkeletonLoader';
 import { FiChevronDown, FiChevronUp, FiHelpCircle } from 'react-icons/fi';
 
 const FAQ = () => {
   const [openIndex, setOpenIndex] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Simulate loading delay
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -56,6 +67,25 @@ const FAQ = () => {
     }
   ];
 
+  if (loading) {
+    return (
+      <>
+        <SEO 
+          title="Frequently Asked Questions - Lakeshore Convenience"
+          description="Find answers to common questions about ordering, delivery, payments, and more at Lakeshore Convenience. Serving customers across Canada with fresh groceries and convenience items."
+          keywords="FAQ, frequently asked questions, grocery delivery, order help, Lakeshore Convenience, Canada"
+          ogTitle="Frequently Asked Questions - Lakeshore Convenience"
+          ogDescription="Find answers to common questions about ordering, delivery, payments, and more at Lakeshore Convenience."
+          ogUrl="https://lakeshoreconvenience.com/faq"
+          canonicalUrl="https://lakeshoreconvenience.com/faq"
+        />
+        <Navbar />
+        <SkeletonLoader />
+        <Footer />
+      </>
+    );
+  }
+
   return (
     <>
       <SEO 
@@ -75,26 +105,63 @@ const FAQ = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             {/* Header */}
-            <div className="text-center mb-12">
+            <motion.div 
+              className="text-center mb-12"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
               <div className="flex justify-center mb-6">
-                <div className="p-4 bg-[#8BC34A]/10 rounded-full">
+                <motion.div 
+                  className="p-4 bg-[#8BC34A]/10 rounded-full"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ 
+                    type: "spring", 
+                    stiffness: 260, 
+                    damping: 20,
+                    delay: 0.2
+                  }}
+                >
                   <FiHelpCircle className="text-[#8BC34A] text-4xl" />
-                </div>
+                </motion.div>
               </div>
-              <h1 className="text-4xl sm:text-5xl font-dancingscript text-gray-800 mb-4">
+              <motion.h1 
+                className="text-4xl sm:text-5xl font-dancingscript text-gray-800 mb-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+              >
                 Frequently Asked Questions
-              </h1>
-              <p className="text-gray-600 text-lg max-w-2xl mx-auto font-cinzel">
+              </motion.h1>
+              <motion.p 
+                className="text-gray-600 text-lg max-w-2xl mx-auto font-cinzel"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+              >
                 Find answers to common questions about our services, delivery, and more.
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
 
             {/* FAQ Items */}
             <div className="space-y-4">
               {faqData.map((faq, index) => (
-                <div 
+                <motion.div 
                   key={index} 
                   className="bg-white rounded-xl shadow-md border border-[#8BC34A]/20 overflow-hidden transition-all duration-300 hover:shadow-lg"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    duration: 0.3, 
+                    delay: 0.1 * index,
+                    type: "spring",
+                    stiffness: 100
+                  }}
+                  whileHover={{ 
+                    y: -5,
+                    transition: { duration: 0.2 } 
+                  }}
                 >
                   <button
                     className="w-full flex justify-between items-center p-6 text-left focus:outline-none"
@@ -105,39 +172,70 @@ const FAQ = () => {
                     </h3>
                     <div className="ml-4 flex-shrink-0">
                       {openIndex === index ? (
-                        <FiChevronUp className="text-[#8BC34A] text-xl" />
+                        <motion.div
+                          initial={{ rotate: 0 }}
+                          animate={{ rotate: 180 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <FiChevronUp className="text-[#8BC34A] text-xl" />
+                        </motion.div>
                       ) : (
-                        <FiChevronDown className="text-[#8BC34A] text-xl" />
+                        <motion.div
+                          initial={{ rotate: 180 }}
+                          animate={{ rotate: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <FiChevronDown className="text-[#8BC34A] text-xl" />
+                        </motion.div>
                       )}
                     </div>
                   </button>
                   
                   {openIndex === index && (
-                    <div className="px-6 pb-6 pt-2 border-t border-gray-100">
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                      className="px-6 pb-6 pt-2 border-t border-gray-100"
+                    >
                       <p className="text-gray-600 font-cinzel">
                         {faq.answer}
                       </p>
-                    </div>
+                    </motion.div>
                   )}
-                </div>
+                </motion.div>
               ))}
             </div>
 
             {/* Contact CTA */}
-            <div className="mt-12 bg-gradient-to-r from-[#8BC34A] to-[#7CB342] rounded-2xl p-8 text-center">
+            <motion.div 
+              className="mt-12 bg-gradient-to-r from-[#8BC34A] to-[#7CB342] rounded-2xl p-8 text-center"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2, duration: 0.5 }}
+              whileHover={{ 
+                scale: 1.02,
+                transition: { duration: 0.2 } 
+              }}
+            >
               <h3 className="text-2xl font-dancingscript text-white mb-3">
                 Still Have Questions?
               </h3>
               <p className="text-white/90 mb-6 font-cinzel">
                 Our customer support team is here to help you with any additional questions.
               </p>
-              <a 
+              <motion.a 
                 href="/contact" 
                 className="inline-block bg-white text-[#8BC34A] px-6 py-3 rounded-full font-cinzel font-bold hover:bg-gray-100 transition-colors duration-300 shadow-lg"
+                whileHover={{ 
+                  scale: 1.05,
+                  boxShadow: "0 10px 25px rgba(0,0,0,0.2)"
+                }}
+                whileTap={{ scale: 0.95 }}
               >
                 Contact Us
-              </a>
-            </div>
+              </motion.a>
+            </motion.div>
           </div>
         </div>
       </div>
