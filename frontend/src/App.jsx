@@ -17,7 +17,6 @@ import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 import PhoneLogin from './components/PhoneLogin';
 import MyOrders from './pages/MyOredrs/MyOrders';
 import VerifyPaymentPage from './pages/VerifyPaymentPage/VerifyPaymentPage';
-import Login from './components/Login/Login';
 import EmailLogin from './pages/EmailLogin/EmailLogin';
 
 // Configure NProgress

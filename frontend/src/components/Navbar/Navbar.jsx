@@ -15,7 +15,6 @@ import {
 import { FaShoppingBasket, FaLeaf, FaCarrot, FaAppleAlt, FaUserFriends } from 'react-icons/fa';
 // Fixed the import path for SVG in Vite
 import LakeshoreLogo from '../../assets/lakeshore-logo.png';
-import Login from '../Login/Login';
 import { useCart } from '../../CartContext/CartContext';
 
 const Navbar = () => {
@@ -25,7 +24,6 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
 
   // Check authentication status on component mount and when location changes
   useEffect(() => {
@@ -36,9 +34,6 @@ const Navbar = () => {
     };
 
     checkAuthStatus();
-    
-    // Also check when location changes
-    setShowLoginModal(location.pathname === '/login');
     
     // Add event listener for storage changes (in case another tab updates auth)
     window.addEventListener('storage', checkAuthStatus);
@@ -59,13 +54,9 @@ const Navbar = () => {
     ] : [])
   ];
 
-  const handleLoginSuccess = () => {
-    // Update authentication state
-    setIsAuthenticated(true);
-    // Close modal
-    setShowLoginModal(false);
-    // Navigate to home
-    navigate('/');
+  const handleLoginClick = () => {
+    // Navigate to the new email login page
+    navigate('/login');
   };
 
   const handleLogout = () => {
