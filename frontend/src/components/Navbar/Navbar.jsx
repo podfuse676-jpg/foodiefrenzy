@@ -89,7 +89,13 @@ const Navbar = () => {
                   transition: { duration: 0.2 } 
                 }}
                 whileTap={{ scale: 0.95 }}
+                className="flex items-center"
               >
+                <img 
+                  src={LakeshoreLogo} 
+                  alt="Lakeshore Convenience Logo" 
+                  className="h-10 w-10 sm:h-12 sm:w-12 mr-2 sm:mr-3 object-contain"
+                />
                 <Link 
                   to="/" 
                   className="font-dancingscript text-2xl sm:text-3xl text-[#4CAF50] hover:text-[#388E3C] transition-colors duration-300"
