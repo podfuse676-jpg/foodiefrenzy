@@ -25,15 +25,9 @@ const ListItems = () => {
       try {
         setLoading(true);
         
-        // Use our improved API client with fallback
-        const { data, error } = await apiCallWithFallback(
-          () => apiClient.get('/api/items'),
-          [] // Fallback to empty array if API fails
-        );
-        
-        if (error) {
-          console.warn('Using fallback data due to API error:', error);
-        }
+        // Remove fallback data to ensure we always show real backend data
+        const response = await apiClient.get('/api/items');
+        const data = response.data;
         
         console.log('Raw API response:', data);
         
@@ -55,6 +49,7 @@ const ListItems = () => {
         setItems(itemsArray);
       } catch (err) {
         console.error('Error fetching items:', err);
+        alert('Error fetching items: ' + (err.message || 'Unknown error'));
       } finally {
         setLoading(false);
       }

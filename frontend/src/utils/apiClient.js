@@ -57,22 +57,14 @@ apiClient.interceptors.response.use(
   }
 );
 
-// Wrapper function for API calls with fallback
-export const apiCallWithFallback = async (apiFunction, fallbackData = null) => {
+// Wrapper function for API calls - removed fallback mechanism
+export const apiCallWithFallback = async (apiFunction) => {
   try {
     const response = await apiFunction();
     return { data: response.data, error: null };
   } catch (error) {
     console.error('API call failed:', error.message);
-    
-    // If fallback data is provided, return it
-    if (fallbackData !== null) {
-      console.log('Using fallback data');
-      return { data: fallbackData, error: error.message };
-    }
-    
-    // Otherwise, re-throw the error
-    throw error;
+    throw error; // Always re-throw the error instead of using fallback data
   }
 };
 

@@ -60,13 +60,14 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
   return (
     // Updated to light fresh colors with improved mobile responsiveness
     <div className="relative bg-white rounded-2xl overflow-hidden border-2 border-[#8BC34A]/30 backdrop-blur-sm flex flex-col items-center gap-3 transition-all duration-300 hover:border-[#8BC34A] hover:shadow-xl hover:shadow-[#8BC34A]/10 transform hover:-translate-y-1 p-4 group card-hover">
-      {/* Image Container - improved for mobile */}
+      {/* Image Container - improved for mobile with lazy loading */}
       <div className="w-full h-32 flex-shrink-0 relative overflow-hidden rounded-lg transition-transform duration-300 group-hover:scale-105">
         {imageUrl ? (
           <img
             src={imageUrl}
             alt={item.name}
             className="w-full h-full object-contain"
+            loading="lazy" // Add lazy loading
             onError={(e) => {
               // Fallback to a default image if the image fails to load
               e.target.src = 'https://source.unsplash.com/200x200/?grocery';

@@ -8,6 +8,7 @@ import fs from 'fs';
 import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import compression from 'compression'; // Add compression
 
 // Load environment variables
 dotenv.config();
@@ -94,6 +95,15 @@ import reviewRoutes from './routes/reviewRoute.js';
 const app = express();
 // Use PORT from environment variable (Render will set this) or default to 4000
 const PORT = process.env.PORT || 4000;
+
+// Add compression middleware for better performance
+app.use(compression());
+
+// Add caching headers for static assets
+app.use(express.static('public', {
+  maxAge: '1y',
+  etag: false
+}));
 
 // Connect to database
 connectDB();
@@ -654,6 +664,121 @@ app.post('/reset-admin-password', async (req, res) => {
   }
 });
 
+// Add robots.txt endpoint
+app.get('/robots.txt', (req, res) => {
+  const baseUrl = process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL || 'https://lakeshoreconvenience.com';
+  
+  const robotsTxt = `User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /cart
+Disallow: /checkout
+Disallow: /myorder
+Disallow: /login
+Disallow: /signup
+Disallow: /phone-login
+
+Sitemap: ${baseUrl}/sitemap.xml
+
+User-agent: AdsBot-Google
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+User-agent: Anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Omgilibot
+Disallow: /
+
+User-agent: Omgili
+Disallow: /
+`;
+
+  res.header('Content-Type', 'text/plain');
+  res.status(200).send(robotsTxt);
+});
+
+// Add sitemap.xml generation endpoint
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    // Import the Item model
+    const Item = (await import('./modals/item.js')).default;
+    
+    // Get all items from the database
+    const items = await Item.find({}, 'name category _id updatedAt');
+    
+    // Get the base URL from environment or default
+    const baseUrl = process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL || 'https://lakeshoreconvenience.com';
+    
+    // Generate sitemap XML
+    const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${baseUrl}/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/menu</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/about</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/contact</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  ${items.map(item => `
+  <url>
+    <loc>${baseUrl}/item/${item._id}</loc>
+    <lastmod>${item.updatedAt ? new Date(item.updatedAt).toISOString() : new Date().toISOString()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`).join('')}
+</urlset>`;
+
+    res.header('Content-Type', 'application/xml');
+    res.status(200).send(sitemapXml);
+  } catch (error) {
+    console.error('Sitemap generation error:', error);
+    res.status(500).send('Error generating sitemap');
+  }
+});
+
 // Handle graceful shutdown
 process.on('SIGTERM', () => {
   console.log('SIGTERM received, shutting down gracefully');
@@ -677,6 +802,27 @@ process.on('unhandledRejection', (err) => {
   console.error('Error name:', err.name);
   console.error('Error message:', err.message);
   console.error('Error stack:', err.stack);
+});
+
+// Add caching for API responses
+app.use('/api/items', (req, res, next) => {
+  // Cache items API responses for 5 minutes
+  res.set('Cache-Control', 'public, max-age=300');
+  next();
+});
+
+// Add caching for sitemap
+app.use('/sitemap.xml', (req, res, next) => {
+  // Cache sitemap for 1 hour
+  res.set('Cache-Control', 'public, max-age=3600');
+  next();
+});
+
+// Add caching for robots.txt
+app.use('/robots.txt', (req, res, next) => {
+  // Cache robots.txt for 1 day
+  res.set('Cache-Control', 'public, max-age=86400');
+  next();
 });
 
 // Start server - Listen on all interfaces for Render deployment

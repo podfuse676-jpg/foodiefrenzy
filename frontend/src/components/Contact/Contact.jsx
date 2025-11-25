@@ -53,19 +53,19 @@ const Contact = () => {
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   return (
-    // Updated to light fresh colors
-    <div className="min-h-screen bg-gradient-to-r from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] animate-gradient-x py-12 sm:py-16 md:py-20 px-4 sm:px-6 lg:px-8 font-[Poppins] relative overflow-hidden">
-      <Toaster position="top-center" reverseOrder={false} toastOptions={{ duration: 4000 }} />
-      {/* Additional decorative elements */}
-      <div className="absolute top-20 left-10 w-24 h-24 bg-[#8BC34A]/20 rounded-full animate-float"></div>
-      <div className="absolute bottom-40 right-20 w-16 h-16 bg-[#FFC107]/20 rounded-full animate-float-delayed"></div>
-      <div className="max-w-7xl mx-auto relative z-10">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-center mb-8 animate-fade-in-down">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8BC34A] to-[#FFC107]">
-            Connect With Us
-          </span>
-        </h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] py-16 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-800">
+            Contact <span className="text-[#8BC34A]">Us</span>
+          </h1>
+          <p className="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
+            We're here to help with all your grocery needs across Canada
+          </p>
+          <div className="w-24 h-1 bg-[#8BC34A] mx-auto mt-6 rounded-full"></div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Contact Information Section */}
           <div className="space-y-6">
             <div className="relative bg-white backdrop-blur-lg rounded-2xl p-6 shadow-2xl transform transition-all duration-300 hover:scale-[1.02] animate-card-float border-l-4 border-[#8BC34A] hover:border-[#FFC107] group">
@@ -74,7 +74,7 @@ const Contact = () => {
                 <div className="p-3 bg-gradient-to-br from-[#8BC34A]/30 to-[#7CB342]/30 rounded-xl">
                   <FiMapPin className="text-[#8BC34A] text-2xl animate-pulse" />
                 </div>
-                <h3 className="ml-4 text-gray-800 text-xl font-semibold">Our Headquarter</h3>
+                <h3 className="ml-4 text-gray-800 text-xl font-semibold">Head Office</h3>
               </div>
               <div className="pl-12 relative z-10">
                 <p className="text-gray-800 font-light text-lg">130-5003 Lakeshore Drive, Sylvan Lake, Alberta, T4S 1R3, Canada</p>
@@ -109,7 +109,18 @@ const Contact = () => {
                 </p>
               </div>
             </div>
+            
+            {/* Nationwide Service Note */}
+            <div className="bg-[#8BC34A]/10 border border-[#8BC34A]/30 rounded-2xl p-6">
+              <h3 className="text-xl font-bold text-gray-800 mb-3 text-center">Nationwide Service</h3>
+              <p className="text-gray-700 text-center">
+                We proudly serve customers across all provinces and territories in Canada. 
+                Whether you're in British Columbia, Ontario, Quebec, or any other region, 
+                we're committed to bringing fresh groceries and convenience items directly to your doorstep.
+              </p>
+            </div>
           </div>
+          
           {/* Contact Form Section */}
           <div className="relative bg-white backdrop-blur-lg rounded-2xl p-8 shadow-2xl animate-slide-in-right border-2 border-[#8BC34A]/30 hover:border-[#8BC34A]/50 transition-border duration-300">
             <div className="absolute -top-4 -right-4 w-12 h-12 bg-[#8BC34A]/30 rounded-full animate-ping-slow"></div>

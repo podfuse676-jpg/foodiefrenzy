@@ -34,26 +34,18 @@ const OurMenu = () => {
         startLoading('Loading grocery items...');
         setError(null);
         
-        // Use our improved API client with fallback
-        const { data, error } = await apiCallWithFallback(
-          () => apiClient.get('/api/items'),
-          [] // Fallback to empty array if API fails
-        );
+        // Remove fallback data to ensure we always show real backend data
+        const response = await apiClient.get('/api/items');
+        const items = response.data;
         
-        if (error) {
-          console.warn('Using fallback data due to API error:', error);
-        }
-        
-        // Organize items by category
-        const organizedData = {};
-        
-        // Organize items by category
-        const items = Array.isArray(data) ? data : (data.items || []);
         console.log('Items fetched from API:', items.length);
         
         if (items.length === 0) {
           console.log('No items found in API response');
         }
+        
+        // Organize items by category
+        const organizedData = {};
         
         items.forEach(item => {
           const cat = item.category || 'Uncategorized';

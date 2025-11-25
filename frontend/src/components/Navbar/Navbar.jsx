@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   FiHome,
   FiBook,
@@ -84,47 +84,67 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-gradient-to-r from-[#8BC34A] to-[#7CB342] text-white shadow-lg sticky top-0 z-40 transition-all duration-300">
+      <nav className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14 sm:h-16">
-            {/* Logo - improved for mobile */}
+          <div className="flex justify-between h-16 sm:h-20 items-center">
+            {/* Logo */}
             <div className="flex-shrink-0 flex items-center">
-              <div className="bg-white p-1 rounded-full transition-transform duration-300 hover:scale-105 btn-subtle-hover">
-                <img 
-                  className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-contain" 
-                  src={LakeshoreLogo} 
-                  alt="Lakeshore Convenience" 
-                />
-              </div>
-              <span className="ml-2 sm:ml-3 text-base sm:text-xl font-bold font-serif text-white hidden sm:block">Lakeshore Convenience</span>
+              <Link 
+                to="/" 
+                className="font-dancingscript text-2xl sm:text-3xl text-[#4CAF50] hover:text-[#388E3C] transition-colors duration-300"
+              >
+                Lakeshore Convenience
+              </Link>
             </div>
 
-            {/* Desktop Navigation - improved for mobile */}
-            <div className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-1">
-                {navLinks.map((link) => (
-                  <NavLink
-                    key={link.name}
-                    to={link.href}
-                    className={({ isActive }) =>
-                      `px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-xs sm:text-sm font-medium flex items-center transition-colors btn-subtle-hover ${
-                        isActive
-                          ? 'bg-white text-[#8BC34A]'
-                          : 'text-white hover:bg-white/20'
-                      }`
-                    }
-                  >
-                    <span className="mr-1 sm:mr-2 text-sm sm:text-base icon-smooth">{link.icon}</span>
-                    <span className="hidden lg:inline">{link.name}</span>
-                  </NavLink>
-                ))}
-              </div>
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex md:items-center md:space-x-1 lg:space-x-2 xl:space-x-4">
+              <Link 
+                to="/" 
+                className={`px-3 py-2 rounded-md text-sm font-cinzel transition-colors duration-300 ${
+                  location.pathname === '/' 
+                    ? 'bg-[#4CAF50]/20 text-[#333333] font-bold' 
+                    : 'text-gray-700 hover:bg-[#4CAF50]/30 hover:text-gray-900'
+                }`}
+              >
+                Home
+              </Link>
+              <Link 
+                to="/menu" 
+                className={`px-3 py-2 rounded-md text-sm font-cinzel transition-colors duration-300 ${
+                  location.pathname === '/menu' || location.pathname.startsWith('/item/')
+                    ? 'bg-[#4CAF50]/20 text-[#333333] font-bold' 
+                    : 'text-gray-700 hover:bg-[#4CAF50]/30 hover:text-gray-900'
+                }`}
+              >
+                Menu
+              </Link>
+              <Link 
+                to="/about" 
+                className={`px-3 py-2 rounded-md text-sm font-cinzel transition-colors duration-300 ${
+                  location.pathname === '/about' 
+                    ? 'bg-[#4CAF50]/20 text-[#333333] font-bold' 
+                    : 'text-gray-700 hover:bg-[#4CAF50]/30 hover:text-gray-900'
+                }`}
+              >
+                About
+              </Link>
+              <Link 
+                to="/contact" 
+                className={`px-3 py-2 rounded-md text-sm font-cinzel transition-colors duration-300 ${
+                  location.pathname === '/contact' 
+                    ? 'bg-[#4CAF50]/20 text-[#333333] font-bold' 
+                    : 'text-gray-700 hover:bg-[#4CAF50]/30 hover:text-gray-900'
+                }`}
+              >
+                Contact
+              </Link>
             </div>
 
-            {/* Cart and Auth Buttons - improved for mobile */}
+            {/* Cart and Auth Buttons */}
             <div className="flex items-center">
               {/* Cart */}
-              <NavLink 
+              <Link 
                 to="/cart" 
                 className="relative p-1.5 sm:p-2 rounded-full hover:bg-white/20 transition-colors btn-subtle-hover"
               >
@@ -134,9 +154,9 @@ const Navbar = () => {
                     {totalItems}
                   </span>
                 )}
-              </NavLink>
+              </Link>
 
-              {/* Auth Buttons - improved for mobile */}
+              {/* Auth Buttons */}
               {isAuthenticated ? (
                 <button
                   onClick={handleLogout}
@@ -174,26 +194,24 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Navigation - improved for mobile */}
+        {/* Mobile Navigation */}
         {isOpen && (
           <div className="md:hidden animate-fade-in-down">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-[#8BC34A]/90 backdrop-blur-sm">
               {navLinks.map((link) => (
-                <NavLink
+                <Link
                   key={link.name}
                   to={link.href}
-                  className={({ isActive }) =>
-                    `block px-3 py-2 rounded-md text-sm font-medium flex items-center btn-subtle-hover ${
-                      isActive
-                        ? 'bg-white text-[#8BC34A]'
-                        : 'text-white hover:bg-white/20'
-                    }`
-                  }
+                  className={`block px-3 py-2 rounded-md text-sm font-medium flex items-center btn-subtle-hover ${
+                    location.pathname === link.href
+                      ? 'bg-white text-[#8BC34A]'
+                      : 'text-white hover:bg-white/20'
+                  }`}
                   onClick={() => setIsOpen(false)}
                 >
                   <span className="mr-2 icon-smooth">{link.icon}</span>
                   {link.name}
-                </NavLink>
+                </Link>
               ))}
             </div>
           </div>
