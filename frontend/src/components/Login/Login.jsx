@@ -6,7 +6,6 @@ import apiConfig from '../../utils/apiConfig';
 import {
   FaEnvelope,
   FaLock,
-  FaArrowRight,
   FaUserPlus,
   FaEye,
   FaEyeSlash,
@@ -14,7 +13,7 @@ import {
   FaPhone,
   FaExclamationTriangle
 } from 'react-icons/fa';
-import { inputBase, iconClass } from '../../assets/dummydata';
+import { toast } from 'react-hot-toast';
 
 const url = apiConfig.baseURL;
 
@@ -25,8 +24,8 @@ const Login = ({ onLoginSuccess, onClose }) => {
     rememberMe: false,
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [toast, setToast] = useState({ visible: false, message: '', isError: false });
   const [loading, setLoading] = useState(false);
+  const [loginStatus, setLoginStatus] = useState(''); // For visual feedback
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,6 +51,7 @@ const Login = ({ onLoginSuccess, onClose }) => {
   const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
+    setLoginStatus('logging-in');
     
     try {
       const res = await axios.post(`${url}/api/users/login`, {
@@ -77,11 +77,12 @@ const Login = ({ onLoginSuccess, onClose }) => {
         // Clear the cart to ensure no items from previous session
         localStorage.removeItem('cart');
   
-        setToast({ visible: true, message: 'Login successful!', isError: false });
+        setLoginStatus('success');
+        toast.success('Login successful!');
+        
         setTimeout(() => {
-          setToast({ visible: false, message: '', isError: false });
           onLoginSuccess && onLoginSuccess(res.data.token);
-        }, 1500);
+        }, 1000);
   
       } else {
         console.warn('⚠️ Unexpected response:', res.data);
@@ -94,6 +95,7 @@ const Login = ({ onLoginSuccess, onClose }) => {
         console.error('❌ server responded with:', err.response.status, err.response.data);
       }
       
+      setLoginStatus('error');
       let msg = 'Login failed. Please check your credentials and try again.';
       
       // Provide more specific error messages based on the error type
@@ -109,52 +111,46 @@ const Login = ({ onLoginSuccess, onClose }) => {
         msg = err.message;
       }
       
-      setToast({ visible: true, message: msg, isError: true });
-      setTimeout(() => setToast({ visible: false, message: '', isError: false }), 4000);
+      toast.error(msg);
     } finally {
       setLoading(false);
+      setTimeout(() => setLoginStatus(''), 3000);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] p-4 w-full overflow-x-hidden">
-      {/* Toast Notification */}
-      <div
-        className={`fixed top-4 right-4 z-50 transition-all duration-300 ${toast.visible ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0'
-          }`}
-      >
-        <div
-          className={`px-4 py-3 rounded-md shadow-lg flex items-center gap-2 text-sm ${toast.isError ? 'bg-red-500 text-white' : 'bg-[#8BC34A] text-white'
-            }`}
-        >
-          {toast.isError ? <FaExclamationTriangle className="flex-shrink-0" /> : <FaCheckCircle className="flex-shrink-0" />}
-          <span>{toast.message}</span>
+    // Updated to match PhoneLogin styling
+    <div className="min-h-screen bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white backdrop-blur-sm rounded-2xl shadow-2xl border-2 border-[#8BC34A]/30 p-8">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-[#8BC34A] to-[#FFC107] bg-clip-text text-transparent mb-2">
+            Email Login
+          </h2>
+          <p className="text-gray-800/80">
+            Enter your email and password to sign in
+          </p>
         </div>
-      </div>
-
-      <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border-4 border-[#8BC34A]/30">
-        <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-[#8BC34A] to-[#FFC107] bg-clip-text text-transparent mb-6">
-          Sign In
-        </h1>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Email Field */}
           <div>
             <label className="block text-gray-800 text-sm font-bold mb-2" htmlFor="email">
-              Email
+              Email Address
             </label>
             <div className="relative">
-              <FaEnvelope className="absolute top-1/2 transform -translate-y-1/2 left-3 text-[#8BC34A]" />
               <input
                 type="email"
                 id="email"
                 name="email"
-                placeholder="Enter your email"
+                placeholder="your@email.com"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 rounded-lg bg-white border-2 border-[#8BC34A]/30 text-gray-800 placeholder-[#8BC34A] focus:outline-none focus:border-[#8BC34A] focus:ring-2 focus:ring-[#8BC34A]/20 transition-all duration-200"
+                className="w-full bg-white border-2 border-[#8BC34A]/30 rounded-xl py-3 px-4 text-gray-800 placeholder-[#8BC34A]/50 focus:outline-none focus:border-[#8BC34A] transition-colors"
                 required
               />
+              <div className="absolute inset-y-0 right-0 flex items-center pr-4">
+                <FaEnvelope className="text-[#8BC34A]" />
+              </div>
             </div>
           </div>
 
@@ -164,47 +160,84 @@ const Login = ({ onLoginSuccess, onClose }) => {
               Password
             </label>
             <div className="relative">
-              <FaLock className="absolute top-1/2 transform -translate-y-1/2 left-3 text-[#8BC34A]" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 name="password"
-                placeholder="Enter your password"
+                placeholder="••••••••"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full pl-10 pr-12 py-3 rounded-lg bg-white border-2 border-[#8BC34A]/30 text-gray-800 placeholder-[#8BC34A] focus:outline-none focus:border-[#8BC34A] focus:ring-2 focus:ring-[#8BC34A]/20 transition-all duration-200"
+                className="w-full bg-white border-2 border-[#8BC34A]/30 rounded-xl py-3 px-4 text-gray-800 placeholder-[#8BC34A]/50 focus:outline-none focus:border-[#8BC34A] transition-colors"
                 required
               />
-              <button
-                type="button"
-                onClick={toggleShowPassword}
-                className="absolute inset-y-0 right-4 flex items-center text-[#8BC34A] hover:text-[#FFC107] transition-colors"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-4">
+                <button
+                  type="button"
+                  onClick={toggleShowPassword}
+                  className="text-[#8BC34A] hover:text-[#FFC107] transition-colors"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Remember Me */}
           <div className="flex items-center">
-            <label className="flex items-center">
+            <label className="flex items-center cursor-pointer">
               <input
                 type="checkbox"
                 name="rememberMe"
                 checked={formData.rememberMe}
                 onChange={handleChange}
-                className="form-checkbox h-5 w-5 text-[#8BC34A] bg-white border-[#8BC34A] rounded focus:ring-[#8BC34A]"
+                className="form-checkbox h-5 w-5 text-[#8BC34A] bg-white border-[#8BC34A] rounded focus:ring-[#8BC34A] cursor-pointer"
               />
               <span className="ml-2 text-gray-800">Remember me</span>
             </label>
           </div>
+          
+          {/* Visual feedback for login status */}
+          {loginStatus && (
+            <div className={`p-3 rounded-lg text-center ${
+              loginStatus === 'logging-in' ? 'bg-blue-100/30 text-blue-800' :
+              loginStatus === 'success' ? 'bg-green-100/30 text-green-800' :
+              loginStatus === 'error' ? 'bg-red-100/30 text-red-800' :
+              'bg-gray-100/30 text-gray-800'
+            }`}>
+              {loginStatus === 'logging-in' && (
+                <div className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span>Signing in...</span>
+                </div>
+              )}
+              {loginStatus === 'success' && (
+                <div className="flex items-center justify-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Login successful! Redirecting...</span>
+                </div>
+              )}
+              {loginStatus === 'error' && (
+                <div className="flex items-center justify-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                  <span>Login failed. Please try again.</span>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-[#8BC34A] to-[#7CB342] text-white font-bold rounded-lg hover:from-[#7CB342] hover:to-[#8BC34A] transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50"
+            className="w-full bg-gradient-to-r from-[#8BC34A] to-[#7CB342] hover:from-[#7CB342] hover:to-[#8BC34A] text-white font-bold py-3 px-4 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <span className="flex items-center justify-center">
@@ -214,47 +247,35 @@ const Login = ({ onLoginSuccess, onClose }) => {
                 </svg>
                 Signing In...
               </span>
-            ) : (
-              <>
-                Sign In <FaArrowRight className="ml-2" />
-              </>
-            )}
+            ) : 'Sign In'}
           </button>
         </form>
 
         {/* Sign Up Link and Phone Login */}
-        <div className="mt-6 space-y-4">
-          <div className="text-center">
-            <Link
+        <div className="mt-8 pt-6 border-t border-[#8BC34A]/30 text-center">
+          <p className="text-sm text-gray-800/70 mb-4">
+            Don't have an account?{' '}
+            <Link 
               to="/signup"
               onClick={onClose}
-              className="inline-flex items-center text-[#8BC34A] hover:text-[#FFC107] transition-all duration-300 font-semibold"
+              className="text-[#8BC34A] hover:text-[#FFC107] font-semibold transition-colors"
             >
-              <FaUserPlus className="mr-2" />
-              <span>Create New Account</span>
+              Create Account
             </Link>
-          </div>
+          </p>
           
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300/30"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-800/70">Or continue with</span>
-            </div>
-          </div>
-          
-          <div className="text-center">
-            <button
+          <p className="text-sm text-gray-800/70">
+            Want to login with phone instead?{' '}
+            <button 
               onClick={() => {
                 onClose && onClose();
                 navigate('/phone-login');
               }}
-              className="inline-flex items-center text-[#8BC34A] hover:text-[#FFC107] transition-all duration-300 font-semibold"
+              className="text-[#8BC34A] hover:text-[#FFC107] font-semibold transition-colors"
             >
-              <FaPhone className="mr-2" /> Login with Phone Number
+              Login with Phone
             </button>
-          </div>
+          </p>
         </div>
       </div>
     </div>
