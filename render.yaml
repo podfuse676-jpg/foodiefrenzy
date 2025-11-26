@@ -27,5 +27,7 @@ services:
         value: https://lakeshoreconvenience.com
       - key: ADMIN_URL
         value: https://admin.lakeshoreconvenience.com
+      - key: RENDER_EXTERNAL_URL
+        value: https://lakeshoreconveniencee-backend.onrender.com
     healthCheckPath: /health
     autoDeploy: true
