@@ -19,7 +19,10 @@ const UserOrdersPage = () => {
     const fetchOrders = async () => {
       try {
         // Check for authentication token using consistent key
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+        console.log('Token found:', token ? 'Yes' : 'No');
+        console.log('User data:', user);
+        
         if (!token || token === 'undefined' || token === 'null' || token === '') {
           setError('You must be logged in to view orders');
           setLoading(false);
@@ -36,6 +39,8 @@ const UserOrdersPage = () => {
             Authorization: `Bearer ${token}`
           }
         });
+
+        console.log('Orders response:', response.data);
 
         const formattedOrders = response.data.map(order => ({
           ...order,
@@ -63,6 +68,7 @@ const UserOrdersPage = () => {
         fetchItemRatings(formattedOrders, token);
       } catch (err) {
         console.error('Error fetching orders:', err);
+        console.error('Error response:', err.response);
         if (err.response?.status === 401) {
           setError('You must be logged in to view orders. Redirecting to login page...');
           // Clear invalid tokens
@@ -407,7 +413,7 @@ const UserOrdersPage = () => {
 
           {orders.length === 0 && (
             <div className="text-center py-12 text-gray-800/60 text-xl">
-              No orders found
+              No orders found. Once you place an order, it will appear here.
             </div>
           )}
         </div>
