@@ -181,6 +181,19 @@ const OurMenu = () => {
           </span>
         </h2>
         
+        {/* Fixed content for indexing purposes */}
+        <div className="max-w-4xl mx-auto mb-8 text-center">
+          <p className="text-lg sm:text-xl md:text-2xl font-cinzel text-[#333333]/90 mb-4">
+            Explore Our Menu Items
+          </p>
+          <p className="text-base sm:text-lg text-[#333333]/80 font-playfair max-w-3xl mx-auto">
+            Discover a wide variety of fresh groceries, quality products, and convenience items. 
+            From farm-fresh fruits and vegetables to specialty beverages and snacks, we have everything 
+            you need for your weekly shopping. All items are carefully selected and delivered fresh 
+            to your door across Canada.
+          </p>
+        </div>
+        
         {/* Search Bar - improved for mobile */}
         <div className="max-w-2xl mx-auto mb-8 sm:mb-12">
           <div className="relative">
@@ -273,6 +286,32 @@ const OurMenu = () => {
               )}
             </div>
           )}
+        </div>
+      </div>
+      
+      {/* Additional fixed content for indexing */}
+      <div className="max-w-4xl mx-auto mt-12 p-6 bg-white/50 rounded-2xl backdrop-blur-sm border border-[#4CAF50]/20">
+        <h3 className="text-2xl font-dancingscript text-[#4CAF50] text-center mb-4">Quality Grocery Delivery Across Canada</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h4 className="text-xl font-cinzel text-[#333333] mb-2">Fresh Produce & Groceries</h4>
+            <p className="text-[#333333]/80 font-playfair">
+              Our menu features farm-fresh fruits, organic vegetables, quality dairy products, and essential groceries. 
+              We source directly from local suppliers to ensure the highest quality and freshness of all our items.
+            </p>
+          </div>
+          <div>
+            <h4 className="text-xl font-cinzel text-[#333333] mb-2">Convenience & Specialty Items</h4>
+            <p className="text-[#333333]/80 font-playfair">
+              Beyond basic groceries, we offer specialty beverages, exotic snacks, household essentials, and unique 
+              convenience items. Everything you need for daily life, delivered fast to your door nationwide.
+            </p>
+          </div>
+        </div>
+        <div className="mt-6 text-center">
+          <p className="text-[#333333]/70 font-cinzel italic">
+            Order online and get your groceries delivered fresh across Canada
+          </p>
         </div>
       </div>
       
