@@ -139,7 +139,8 @@ const corsOptions = {
       'https://foodiefrenzy-nine.vercel.app',
       'https://admin-7y4pypy16-podfuse676-6967s-projects.vercel.app',
       'https://www.lakeshoreconvenience.com', // Add custom domain
-      'https://lakeshoreconvenience.com' // Add custom domain without www
+      'https://lakeshoreconvenience.com', // Add custom domain without www
+      'https://admin.lakeshoreconvenience.com' // Add custom admin domain
     ];
     
     console.log('=== CORS REQUEST ===');
