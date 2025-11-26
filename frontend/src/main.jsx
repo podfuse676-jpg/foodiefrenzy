@@ -1,28 +1,23 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
+import { HelmetProvider } from 'react-helmet-async'
 import './index.css'
+import App from './App.jsx'
+import { BrowserRouter } from 'react-router-dom'
+import { CartProvider } from './CartContext/CartContext'
+import { LoadingProvider } from './LoadingContext/LoadingContext'
 
-// Simple test to see if the app is mounting
 const container = document.getElementById('root');
 const root = createRoot(container);
 
-// Test if the root element exists
-if (container) {
-  console.log('Root element found');
-  
-  // Simple test component
-  const TestApp = () => {
-    return (
-      <div>
-        <h1>Lakeshore Convenience Test</h1>
-        <p>If you can see this, the app is mounting correctly.</p>
-      </div>
-    );
-  };
-
-  root.render(<TestApp />);
-  
-  console.log('App rendered');
-} else {
-  console.error('Root element not found');
-}
+root.render(
+  <HelmetProvider>
+    <BrowserRouter>
+      <LoadingProvider>
+        <CartProvider>
+          <App />
+        </CartProvider>
+      </LoadingProvider>
+    </BrowserRouter>
+  </HelmetProvider>
+)

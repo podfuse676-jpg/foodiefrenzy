@@ -15,72 +15,41 @@ import MyOrders from './pages/MyOredrs/MyOrders';
 import VerifyPaymentPage from './pages/VerifyPaymentPage/VerifyPaymentPage';
 import EmailLogin from './pages/EmailLogin/EmailLogin';
 
-// Simple error boundary component
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error("App error:", error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div style={{ padding: '20px', textAlign: 'center' }}>
-          <h1>Something went wrong.</h1>
-          <p>We're working on fixing the issue. Please try refreshing the page.</p>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
-
 function App() {
   const location = useLocation();
 
   return (
-    <ErrorBoundary>
-      <Routes location={location} key={location.pathname}>
-        {/* Public */}
-        <Route path="/" element={<Home />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/login" element={<EmailLogin />} />
-        <Route path="/phone-login" element={<PhoneLogin />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/menu" element={<Menu />} />
-        <Route path="/item/:id" element={<ProductDetail />} />
-        <Route path="/faq" element={<FAQ />} />
+    <Routes location={location} key={location.pathname}>
+      {/* Public */}
+      <Route path="/" element={<Home />} />
+      <Route path="/signup" element={<SignUp />} />
+      <Route path="/login" element={<EmailLogin />} />
+      <Route path="/phone-login" element={<PhoneLogin />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/menu" element={<Menu />} />
+      <Route path="/item/:id" element={<ProductDetail />} />
+      <Route path="/faq" element={<FAQ />} />
 
-        {/* Payment verification */}
-        <Route path="/myorder/verify" element={<VerifyPaymentPage />} />
+      {/* Payment verification */}
+      <Route path="/myorder/verify" element={<VerifyPaymentPage />} />
 
-        {/* Protected */}
-        <Route
-          path="/cart"
-          element={<PrivateRoute><Cart /></PrivateRoute>}
-        />
-        <Route
-          path="/checkout"
-          element={<PrivateRoute><CheckoutPage /></PrivateRoute>}
-        />
+      {/* Protected */}
+      <Route
+        path="/cart"
+        element={<PrivateRoute><Cart /></PrivateRoute>}
+      />
+      <Route
+        path="/checkout"
+        element={<PrivateRoute><CheckoutPage /></PrivateRoute>}
+      />
 
-        {/* The actual orders list */}
-        <Route
-          path="/myorder"
-          element={<PrivateRoute><MyOrders /></PrivateRoute>}
-        />
-      </Routes>
-    </ErrorBoundary>
+      {/* The actual orders list */}
+      <Route
+        path="/myorder"
+        element={<PrivateRoute><MyOrders /></PrivateRoute>}
+      />
+    </Routes>
   );
 }
 
