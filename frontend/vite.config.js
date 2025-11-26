@@ -16,15 +16,6 @@ export default defineConfig({
   },
   // Production optimizations
   build: {
-    // Reduce bundle size
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          utils: ['axios', 'jwt-decode']
-        }
-      }
-    },
     // Enable gzip compression
     brotliSize: true,
     chunkSizeWarningLimit: 1000
