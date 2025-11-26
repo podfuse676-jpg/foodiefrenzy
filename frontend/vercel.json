@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "public": true,
   "builds": [
     {
       "src": "package.json",
@@ -12,14 +11,6 @@
   ],
   "routes": [
     { "handle": "filesystem" },
-    { 
-      "src": "/assets/(.*)", 
-      "dest": "/assets/$1", 
-      "headers": { 
-        "cache-control": "public, max-age=31536000, immutable",
-        "content-type": "application/javascript"
-      } 
-    },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
