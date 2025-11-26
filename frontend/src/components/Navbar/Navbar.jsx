@@ -192,6 +192,26 @@ const Navbar = () => {
                   Contact
                 </Link>
               </motion.div>
+              {/* Add My Orders link for authenticated users */}
+              {isAuthenticated && (
+                <motion.div
+                  whileHover={{ 
+                    scale: 1.05,
+                    transition: { duration: 0.2 } 
+                  }}
+                >
+                  <Link 
+                    to="/myorder" 
+                    className={`px-3 py-2 rounded-md text-sm font-cinzel transition-colors duration-300 ${
+                      location.pathname === '/myorder' 
+                        ? 'bg-[#4CAF50]/20 text-[#333333] font-bold' 
+                        : 'text-gray-700 hover:bg-[#4CAF50]/30 hover:text-gray-900'
+                    }`}
+                  >
+                    My Orders
+                  </Link>
+                </motion.div>
+              )}
             </div>
 
             {/* Cart and Auth Buttons */}
