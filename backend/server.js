@@ -745,7 +745,9 @@ app.post('/reset-admin-password', async (req, res) => {
 // Add robots.txt endpoint
 app.get('/robots.txt', (req, res) => {
   const baseUrl = process.env.FRONTEND_URL || process.env.VITE_FRONTEND_URL || 'https://lakeshoreconvenience.com';
-  const backendUrl = process.env.RENDER_EXTERNAL_URL || `https://lakeshoreconveniencee-backend.onrender.com`;
+  const backendUrl = process.env.RENDER_EXTERNAL_URL || 
+                    (process.env.RENDER_EXTERNAL_HOSTNAME ? `https://${process.env.RENDER_EXTERNAL_HOSTNAME}` : 
+                     'https://lakeshoreconveniencee-backend.onrender.com');
   
   const robotsTxt = `User-agent: *
 Allow: /
