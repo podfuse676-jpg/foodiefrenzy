@@ -7,15 +7,15 @@ import { BrowserRouter } from 'react-router-dom'
 import { CartProvider } from './CartContext/CartContext'
 import { LoadingProvider } from './LoadingContext/LoadingContext'
 
-// Comprehensive service worker cleanup
-const cleanupServiceWorkers = async () => {
+// Completely disable service workers and clear all caches
+(async () => {
   if ('serviceWorker' in navigator) {
     try {
-      // Unregister all service workers
+      // Get all registrations and unregister them
       const registrations = await navigator.serviceWorker.getRegistrations();
       for (let registration of registrations) {
         await registration.unregister();
-        console.log('Unregistered service worker:', registration.scope);
+        console.log('Unregistered service worker');
       }
       
       // Clear all caches
@@ -27,16 +27,15 @@ const cleanupServiceWorkers = async () => {
         }
       }
       
-      // Reload the page to ensure fresh content
-      window.location.reload();
+      // Clear browser storage that might be causing issues
+      localStorage.clear();
+      sessionStorage.clear();
+      
     } catch (error) {
-      console.error('Error cleaning up service workers:', error);
+      console.error('Error during cleanup:', error);
     }
   }
-};
-
-// Run cleanup immediately
-cleanupServiceWorkers();
+})();
 
 const container = document.getElementById('root');
 const root = createRoot(container);
