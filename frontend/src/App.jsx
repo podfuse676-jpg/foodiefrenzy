@@ -29,79 +29,12 @@ NProgress.configure({
 
 function App() {
   const location = useLocation();
-  const { startLoading, completeLoading } = useLoading();
-
-  // Handle route changes with loading indicator
-  useEffect(() => {
-    // Start progress bar on route change
-    startLoading();
-    
-    // Simulate a small delay to show the progress bar
-    const timer = setTimeout(() => {
-      completeLoading();
-    }, 300);
-
-    // Cleanup timer
-    return () => {
-      clearTimeout(timer);
-      NProgress.done();
-    };
-  }, [location, startLoading, completeLoading]);
-
-  // Add a simple error boundary
-  useEffect(() => {
-    const handleError = (error) => {
-      console.error('Unhandled error in app:', error);
-    };
-
-    window.addEventListener('error', handleError);
-    return () => {
-      window.removeEventListener('error', handleError);
-    };
-  }, []);
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={location.pathname}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.3 }}
-      >
-        <Routes location={location} key={location.pathname}>
-          {/* Public */}
-          <Route path="/" element={<Home />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/login" element={<EmailLogin />} />
-          <Route path="/phone-login" element={<PhoneLogin />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/menu" element={<Menu />} />
-          <Route path="/item/:id" element={<ProductDetail />} />
-          <Route path="/faq" element={<FAQ />} />
-
-          {/* Payment verification */}
-          <Route path="/myorder/verify" element={<VerifyPaymentPage />} />
-
-          {/* Protected */}
-          <Route
-            path="/cart"
-            element={<PrivateRoute><Cart /></PrivateRoute>}
-          />
-          <Route
-            path="/checkout"
-            element={<PrivateRoute><CheckoutPage /></PrivateRoute>}
-          />
-
-          {/* The actual orders list */}
-          <Route
-            path="/myorder"
-            element={<PrivateRoute><MyOrders /></PrivateRoute>}
-          />
-        </Routes>
-      </motion.div>
-    </AnimatePresence>
+    <div>
+      <h1>Lakeshore Convenience</h1>
+      <p>Welcome to our grocery store!</p>
+    </div>
   );
 }
 
