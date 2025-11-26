@@ -24,8 +24,8 @@ services:
       - key: STRIPE_SECRET_KEY
         value: sk_test_51Rr20x1e1XYDeZ9dUx1XaKUnyH61PMLi6mpP1SGzfUgllugXSJ9NOoKOXK9Zj7mEJJ80NAEBhBfwUPZuCg1ngWd500S6REKOVk
       - key: FRONTEND_URL
-        value: https://frontend-me6ivkq5o-podfuse676-6967s-projects.vercel.app
+        value: https://lakeshoreconvenience.com
       - key: ADMIN_URL
-        value: https://admin-7y4pypy16-podfuse676-6967s-projects.vercel.app
+        value: https://admin.lakeshoreconvenience.com
     healthCheckPath: /health
     autoDeploy: true
