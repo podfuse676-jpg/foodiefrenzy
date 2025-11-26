@@ -28,4 +28,14 @@ const cartItemSchema = mongoose.Schema(
     { timestamps: true }
 );
 
+// Add indexes for better query performance
+// Index on user for faster cart queries
+cartItemSchema.index({ user: 1 });
+
+// Index on item for faster item-based queries
+cartItemSchema.index({ item: 1 });
+
+// Compound index on user and item for faster lookup of specific cart items
+cartItemSchema.index({ user: 1, item: 1 });
+
 export const CartItem = mongoose.model('CartItem', cartItemSchema);

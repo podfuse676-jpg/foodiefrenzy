@@ -11,6 +11,16 @@ const userSchema = new mongoose.Schema({
     role: { type: String, enum: ['user', 'admin'], default: 'user' } // Add role field
 })
 
+// Add indexes for better query performance
+// Index on email for faster login lookups
+userSchema.index({ email: 1 });
+
+// Index on phoneNumber for faster phone login lookups
+userSchema.index({ phoneNumber: 1 });
+
+// Index on phone verification fields for faster verification queries
+userSchema.index({ phoneVerificationCode: 1, phoneVerificationExpires: 1 });
+
 const userModel = mongoose.models.user || mongoose.model("user", userSchema);
 
 export default userModel;

@@ -145,4 +145,15 @@ itemSchema.pre('findOneAndUpdate', function(next) {
 // Create a compound unique index on name and category
 itemSchema.index({ name: 1, category: 1 }, { unique: true });
 
+// Add indexes for better query performance
+// Index on category for faster category-based queries
+itemSchema.index({ category: 1 });
+
+// Index on hidden field for faster filtering of hidden items
+itemSchema.index({ hidden: 1 });
+
+// Index on timestamps for sorting by creation/update time
+itemSchema.index({ createdAt: -1 });
+itemSchema.index({ updatedAt: -1 });
+
 export default mongoose.model('Item', itemSchema);

@@ -8,7 +8,8 @@ import fs from 'fs';
 import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
-import compression from 'compression'; // Add compression
+import compression from 'compression';
+import rateLimit from 'express-rate-limit'; // Add rate limiting
 
 // Load environment variables
 dotenv.config();
@@ -96,8 +97,76 @@ const app = express();
 // Use PORT from environment variable (Render will set this) or default to 4000
 const PORT = process.env.PORT || 4000;
 
+// Add security headers
+app.use((req, res, next) => {
+  // Prevent XSS attacks
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  // Prevent MIME type sniffing
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  // Prevent clickjacking
+  res.setHeader('X-Frame-Options', 'DENY');
+  // Enable DNS prefetching control
+  res.setHeader('X-DNS-Prefetch-Control', 'off');
+  next();
+});
+
 // Add compression middleware for better performance
-app.use(compression());
+app.use(compression({
+  level: 6, // Medium compression level
+  threshold: 1024, // Only compress responses larger than 1KB
+  filter: (req, res) => {
+    // Don't compress streaming responses
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    // Use compression filter function
+    return compression.filter(req, res);
+  }
+}));
+
+// Add rate limiting middleware for protection against abuse
+// General rate limiter for all requests
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: {
+    error: 'Too many requests from this IP, please try again later.'
+  },
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+// Specific rate limiter for login attempts to prevent brute force attacks
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit each IP to 5 login requests per windowMs
+  message: {
+    error: 'Too many login attempts, please try again later.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Specific rate limiter for API endpoints to handle high traffic
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 500, // Higher limit for API endpoints
+  message: {
+    error: 'API rate limit exceeded, please try again later.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply rate limiting to all requests
+app.use(generalLimiter);
+
+// Apply stricter rate limiting to auth endpoints
+app.use('/api/auth', loginLimiter);
+app.use('/api/users/login', loginLimiter);
+
+// Apply higher rate limiting to API endpoints
+app.use('/api/', apiLimiter);
 
 // Add caching headers for static assets
 app.use(express.static('public', {

@@ -41,9 +41,20 @@ export const connectDB = async () => {
         
         await mongoose.connect(uri, {
             // Explicitly specify the database name
-            dbName: dbName
+            dbName: dbName,
+            // Connection pool settings for high traffic
+            maxPoolSize: 50, // Maximum number of connections in the connection pool
+            minPoolSize: 10, // Minimum number of connections in the connection pool
+            maxIdleTimeMS: 30000, // Close connections after 30 seconds of inactivity
+            serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds if server selection fails
+            socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+            heartbeatFrequencyMS: 10000, // Send heartbeat every 10 seconds
+            // Retry settings
+            retryWrites: true,
+            retryReads: true
         });
         console.log('DB CONNECTED to database:', mongoose.connection.name);
+        console.log('MongoDB connection pool size:', mongoose.connection.readyState);
     } catch (err) {
         console.error('DB CONNECTION ERROR:', err.message || err);
         console.error('This may be due to IP whitelist restrictions in MongoDB Atlas.');
