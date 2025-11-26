@@ -97,19 +97,6 @@ const app = express();
 // Use PORT from environment variable (Render will set this) or default to 4000
 const PORT = process.env.PORT || 4000;
 
-// Add security headers
-app.use((req, res, next) => {
-  // Prevent XSS attacks
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  // Prevent MIME type sniffing
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  // Prevent clickjacking
-  res.setHeader('X-Frame-Options', 'DENY');
-  // Enable DNS prefetching control
-  res.setHeader('X-DNS-Prefetch-Control', 'off');
-  next();
-});
-
 // Add compression middleware for better performance
 app.use(compression({
   level: 6, // Medium compression level
@@ -123,6 +110,68 @@ app.use(compression({
     return compression.filter(req, res);
   }
 }));
+
+// Add security headers
+app.use((req, res, next) => {
+  // Prevent XSS attacks
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  // Prevent MIME type sniffing
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  // Prevent clickjacking
+  res.setHeader('X-Frame-Options', 'DENY');
+  // Enable DNS prefetching control
+  res.setHeader('X-DNS-Prefetch-Control', 'off');
+  next();
+});
+
+// Configure CORS with a dynamic origin function to allow all Vercel subdomains
+const corsOptions = {
+  origin: function (origin, callback) {
+    // List of allowed origins
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      process.env.FRONTEND_URL || 'http://localhost:5173',
+      process.env.ADMIN_URL || 'http://localhost:5174',
+      'https://foodiefrenzy-frontend.vercel.app',
+      'https://foodiefrenzy-admin.vercel.app',
+      'https://foodiefrenzy-5hdf.vercel.app', // Add the specific admin deployment URL
+      'https://foodiefrenzy-nine.vercel.app',
+      'https://admin-7y4pypy16-podfuse676-6967s-projects.vercel.app',
+      'https://www.lakeshoreconvenience.com', // Add custom domain
+      'https://lakeshoreconvenience.com' // Add custom domain without www
+    ];
+    
+    console.log('=== CORS REQUEST ===');
+    console.log('Origin:', origin);
+    console.log('Allowed origins:', allowedOrigins);
+    
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
+      console.log('No origin, allowing request');
+      return callback(null, true);
+    }
+    
+    // Check if the origin is in our allowed list
+    if (allowedOrigins.includes(origin)) {
+      console.log('Origin is in allowed list, allowing request');
+      return callback(null, true);
+    }
+    
+    // Check if it's a Vercel subdomain
+    if (origin && origin.endsWith('.vercel.app')) {
+      console.log('Origin is a Vercel subdomain, allowing request');
+      return callback(null, true);
+    }
+    
+    // Reject the request
+    console.log('Origin not allowed, rejecting request');
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 
 // Add rate limiting middleware for protection against abuse
 // General rate limiter for all requests
@@ -177,54 +226,6 @@ app.use(express.static('public', {
 // Connect to database
 connectDB();
 
-// Configure CORS with a dynamic origin function to allow all Vercel subdomains
-const corsOptions = {
-  origin: function (origin, callback) {
-    // List of allowed origins
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'http://localhost:5174',
-      process.env.FRONTEND_URL || 'http://localhost:5173',
-      process.env.ADMIN_URL || 'http://localhost:5174',
-      'https://foodiefrenzy-frontend.vercel.app',
-      'https://foodiefrenzy-admin.vercel.app',
-      'https://foodiefrenzy-5hdf.vercel.app', // Add the specific admin deployment URL
-      'https://foodiefrenzy-nine.vercel.app',
-      'https://admin-7y4pypy16-podfuse676-6967s-projects.vercel.app',
-      'https://www.lakeshoreconvenience.com', // Add custom domain
-      'https://lakeshoreconvenience.com' // Add custom domain without www
-    ];
-    
-    console.log('=== CORS REQUEST ===');
-    console.log('Origin:', origin);
-    console.log('Allowed origins:', allowedOrigins);
-    
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) {
-      console.log('No origin, allowing request');
-      return callback(null, true);
-    }
-    
-    // Check if the origin is in our allowed list
-    if (allowedOrigins.includes(origin)) {
-      console.log('Origin is in allowed list, allowing request');
-      return callback(null, true);
-    }
-    
-    // Check if it's a Vercel subdomain
-    if (origin && origin.endsWith('.vercel.app')) {
-      console.log('Origin is a Vercel subdomain, allowing request');
-      return callback(null, true);
-    }
-    
-    // Reject the request
-    console.log('Origin not allowed, rejecting request');
-    callback(new Error('Not allowed by CORS'));
-  },
-  credentials: true
-};
-
-app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
