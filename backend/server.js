@@ -449,7 +449,12 @@ app.get('/api/test-item-id/:id', (req, res) => {
 
 // Basic route for testing
 app.get('/', (req, res) => {
-  res.json({ message: 'Server is running!', port: PORT });
+  res.json({ 
+    message: 'Server is running!', 
+    port: PORT,
+    version: '1.0.0', // Added version for deployment tracking
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Simple test endpoint to check environment variables
