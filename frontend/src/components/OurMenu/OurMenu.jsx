@@ -181,7 +181,7 @@ const OurMenu = () => {
           </span>
         </h2>
         
-        {/* Fixed content for indexing purposes */}
+        {/* Fixed content for indexing purposes - Updated for better SEO */}
         <div className="max-w-4xl mx-auto mb-8 text-center">
           <p className="text-lg sm:text-xl md:text-2xl font-cinzel text-[#333333]/90 mb-4">
             Explore Our Menu Items
