@@ -7,6 +7,11 @@ import { BrowserRouter } from 'react-router-dom'
 import { CartProvider } from './CartContext/CartContext'
 import { LoadingProvider } from './LoadingContext/LoadingContext'
 
+// Simple error handler
+window.addEventListener('error', (e) => {
+  console.error('Global error caught:', e.error);
+});
+
 // Register service worker for caching and performance
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -20,7 +25,10 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-createRoot(document.getElementById('root')).render(
+const container = document.getElementById('root');
+const root = createRoot(container);
+
+root.render(
   <HelmetProvider>
     <BrowserRouter future={{
         v7_startTransition: true,

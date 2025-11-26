@@ -1,6 +1,4 @@
 import React, { createContext, useContext, useState } from 'react';
-import NProgress from 'nprogress';
-import 'nprogress/nprogress.css';
 
 // Create the context
 const LoadingContext = createContext();
@@ -14,23 +12,13 @@ export const LoadingProvider = ({ children }) => {
   const startLoading = (message = '') => {
     setLoading(true);
     setLoadingMessage(message);
-    NProgress.start();
   };
 
   // Complete loading
   const completeLoading = () => {
     setLoading(false);
     setLoadingMessage('');
-    NProgress.done();
   };
-
-  // Configure NProgress
-  NProgress.configure({ 
-    minimum: 0.1,
-    easing: 'ease',
-    speed: 500,
-    showSpinner: false,
-  });
 
   return (
     <LoadingContext.Provider value={{ 

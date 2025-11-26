@@ -48,6 +48,18 @@ function App() {
     };
   }, [location, startLoading, completeLoading]);
 
+  // Add a simple error boundary
+  useEffect(() => {
+    const handleError = (error) => {
+      console.error('Unhandled error in app:', error);
+    };
+
+    window.addEventListener('error', handleError);
+    return () => {
+      window.removeEventListener('error', handleError);
+    };
+  }, []);
+
   return (
     <AnimatePresence mode="wait">
       <motion.div
