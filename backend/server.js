@@ -89,6 +89,7 @@ import User from './modals/userModel.js';
 import itemRoutes from './routes/itemRoute.js';
 import cartRoutes from './routes/cartRoute.js';
 import orderRoutes from './routes/orderRoute.js';
+import newOrderRoutes from './routes/newOrderRoutes.js';
 import userRoutes from './routes/userRoute.js';
 import phoneAuthRoutes from './routes/phoneAuthRoute.js';
 import reviewRoutes from './routes/reviewRoute.js';
@@ -319,6 +320,7 @@ app.post('/api/test-upload', upload.single('image'), (req, res) => {
 app.use('/api/items', itemRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/orders', newOrderRoutes); // Add new order routes
 app.use('/api/users', userRoutes);
 app.use('/api/auth', phoneAuthRoutes);
 app.use('/api/reviews', reviewRoutes);

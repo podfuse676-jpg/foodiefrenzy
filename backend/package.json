@@ -25,7 +25,9 @@
     "test-cloudinary-env": "node testCloudinaryEnv.js",
     "test-cloudinary-config": "node testCloudinaryConfig.js",
     "test-item-id": "node testItemId.js",
-    "test-start": "node test-server-start.js"
+    "test-start": "node test-server-start.js",
+    "test-new-order-model": "node testNewOrderModel.js",
+    "test-new-order-routes": "node testNewOrderRoutes.js"
   },
   "author": "",
   "license": "ISC",
