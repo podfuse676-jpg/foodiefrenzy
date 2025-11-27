@@ -8,7 +8,9 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
   // To add your own photos to menu items, simply add them below in this format:
   // 'Item Name': 'Direct Image URL'
   // Example:
-  // 'Coffee': 'https://example.com/your-coffee-photo.jpg'
+  // 'Cappuccino': 'https://example.com/cappuccino.jpg',
+  // 'Green Tea': 'https://example.com/green-tea.jpg',
+  // 'Sandwich': 'https://example.com/sandwich.jpg'
   const customImageMap = {
     // Add your menu item photos here:
     // 'Cappuccino': 'https://example.com/cappuccino.jpg',
@@ -25,7 +27,10 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
     
     // Check if item has a specific image URL
     if (item.imageUrl || item.image) {
-      return item.imageUrl || item.image;
+      // Ensure we're using the full URL for Cloudinary images
+      const imageUrl = item.imageUrl || item.image;
+      console.log('Using image URL:', imageUrl); // Debug log
+      return imageUrl;
     }
     
     // Generate image based on item name
