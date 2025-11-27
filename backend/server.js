@@ -273,13 +273,20 @@ app.use(express.static('public', {
 
 // Track server readiness
 let serverReady = false;
+let serverStartupError = null;
+
+// Log startup process
+console.log('=== SERVER STARTUP PROCESS ===');
+console.log('Starting server initialization...');
 
 // Connect to database
+console.log('Attempting to connect to database...');
 connectDB().then(() => {
   console.log('Database connected successfully');
   serverReady = true;
 }).catch((error) => {
   console.error('Failed to connect to database:', error);
+  serverStartupError = error;
   // Even if database connection fails, we'll still start the server
   // The health check will show the database status
   serverReady = true;
@@ -291,11 +298,19 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Add a middleware to check if server is ready
 app.use((req, res, next) => {
-  if (!serverReady && req.path !== '/health') {
-    return res.status(503).json({ 
-      status: 'Service Unavailable', 
-      message: 'Server is still initializing' 
-    });
+  if (!serverReady) {
+    if (serverStartupError) {
+      return res.status(503).json({ 
+        status: 'Service Unavailable', 
+        message: 'Server failed to initialize',
+        error: serverStartupError.message
+      });
+    } else {
+      return res.status(503).json({ 
+        status: 'Service Unavailable', 
+        message: 'Server is still initializing' 
+      });
+    }
   }
   next();
 });
@@ -609,7 +624,8 @@ app.get('/health', (req, res) => {
     uptime: process.uptime(),
     // Add database connection status if available
     database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
-    serverReady: serverReady
+    serverReady: serverReady,
+    serverStartupError: serverStartupError ? serverStartupError.message : null
   };
   
   console.log('Health check requested:', healthStatus);
@@ -1004,6 +1020,7 @@ app.use('/robots.txt', (req, res, next) => {
 });
 
 // Start server - Listen on all interfaces for Render/Railway deployment
+console.log(`Attempting to start server on port ${PORT}...`);
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`=== SERVER STARTED SUCCESSFULLY ===`);
   console.log(`Server Started on http://0.0.0.0:${PORT}`);
@@ -1016,6 +1033,7 @@ server.on('error', (error) => {
   console.error('=== SERVER STARTUP ERROR ===');
   console.error('Failed to start server:', error);
   console.error('===========================');
+  serverStartupError = error;
 });
 
 server.on('listening', () => {
