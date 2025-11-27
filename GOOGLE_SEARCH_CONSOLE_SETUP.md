@@ -16,7 +16,7 @@ To ensure that lakeshoreconvenience.com appears properly in Google search result
 
 1. In Google Search Console, navigate to your property
 2. Click "Sitemaps" in the left sidebar
-3. Enter the sitemap URL: `https://lakeshoreconveniencee-backend.onrender.com/sitemap.xml`
+3. Enter the sitemap URL: `https://lakeshoreconveniencee-backend-production.up.railway.app/sitemap.xml`
 4. Click "Submit"
 
 ## 3. Test Robots.txt
@@ -80,7 +80,7 @@ If your site is not appearing in search results after setup:
 
 ### Sitemap Errors
 
-1. Ensure the sitemap URL is correct: `https://lakeshoreconveniencee-backend.onrender.com/sitemap.xml`
+1. Ensure the sitemap URL is correct: `https://lakeshoreconveniencee-backend-production.up.railway.app/sitemap.xml`
 2. Check that all URLs in the sitemap are accessible
 3. Verify the sitemap is in proper XML format
 

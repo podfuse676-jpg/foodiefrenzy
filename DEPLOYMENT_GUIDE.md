@@ -62,9 +62,9 @@ To enable payment processing, you need to configure your Stripe secret key:
 
 ### Step 5: Verify Deployment
 
-1. Once deployed, visit your service URL (should be something like `https://lakeshoreconveniencee-backend.onrender.com`)
-2. Test the health endpoint: `https://lakeshoreconveniencee-backend.onrender.com/health`
-3. Test the items endpoint: `https://lakeshoreconveniencee-backend.onrender.com/api/items`
+1. Once deployed, visit your service URL (should be something like `https://lakeshoreconveniencee-backend-production.up.railway.app`)
+2. Test the health endpoint: `https://lakeshoreconveniencee-backend-production.up.railway.app/health`
+3. Test the items endpoint: `https://lakeshoreconveniencee-backend-production.up.railway.app/api/items`
 
 ## Deploying to Railway (Option 2 - Recommended)
 

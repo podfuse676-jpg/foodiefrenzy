@@ -219,7 +219,7 @@ TWILIO_PHONE_NUMBER= (leave empty if not using SMS)
 #### Frontend & Admin (.env)
 
 ```env
-VITE_API_URL=https://your-backend-url.onrender.com
+VITE_API_URL=https://lakeshoreconveniencee-backend-production.up.railway.app
 ```
 
 ### Deployment Options

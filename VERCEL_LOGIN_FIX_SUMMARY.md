@@ -58,13 +58,13 @@ export default apiConfig;
 **Frontend Environment File** (`frontend/.env`):
 
 ```
-REACT_APP_API_URL=https://lakeshoreconveniencee-backend.onrender.com
+REACT_APP_API_URL=https://lakeshoreconveniencee-backend-production.up.railway.app
 ```
 
 **Admin Environment File** (`admin/.env`):
 
 ```
-REACT_APP_API_URL=https://lakeshoreconveniencee-backend.onrender.com
+REACT_APP_API_URL=https://lakeshoreconveniencee-backend-production.up.railway.app
 ```
 
 **Backend Environment File** (`backend/.env`):

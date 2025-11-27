@@ -12,6 +12,7 @@ import FAQ from './pages/FAQ/FAQ';
 import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 import PhoneLogin from './components/PhoneLogin';
 import MyOrders from './pages/MyOredrs/MyOrders';
+import OrderDetailPage from './pages/OrderDetail/OrderDetail';
 import VerifyPaymentPage from './pages/VerifyPaymentPage/VerifyPaymentPage';
 import EmailLogin from './pages/EmailLogin/EmailLogin';
 
@@ -48,6 +49,12 @@ function App() {
       <Route
         path="/myorder"
         element={<PrivateRoute><MyOrders /></PrivateRoute>}
+      />
+      
+      {/* Order detail page */}
+      <Route
+        path="/myorder/:id"
+        element={<PrivateRoute><OrderDetailPage /></PrivateRoute>}
       />
     </Routes>
   );

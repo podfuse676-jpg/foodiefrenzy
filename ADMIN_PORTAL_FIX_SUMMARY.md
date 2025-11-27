@@ -67,7 +67,7 @@ Make sure your admin panel on Vercel has the correct environment variables:
 3. Click "Settings"
 4. Click "Environment Variables"
 5. Make sure you have:
-   - `REACT_APP_API_URL` = `https://lakeshoreconveniencee-backend.onrender.com`
+   - `REACT_APP_API_URL` = `https://lakeshoreconveniencee-backend-production.up.railway.app`
 6. If you made any changes, redeploy your admin panel
 
 ### 3. Test the Admin Portal
@@ -95,10 +95,10 @@ You can run these commands to verify that everything is working correctly:
 
 ```bash
 # Check if backend is running
-curl -I https://lakeshoreconveniencee-backend.onrender.com/health
+curl -I https://lakeshoreconveniencee-backend-production.up.railway.app/health
 
 # Test items endpoint (should return items or empty array)
-curl https://lakeshoreconveniencee-backend.onrender.com/api/items
+curl https://lakeshoreconveniencee-backend-production.up.railway.app/api/items
 
 # Check if admin portal is accessible
 curl -I https://foodiefrenzy-5hdf.vercel.app/

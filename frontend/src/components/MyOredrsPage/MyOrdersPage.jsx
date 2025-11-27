@@ -33,8 +33,8 @@ const UserOrdersPage = () => {
           return;
         }
         
-        // Remove the email parameter since the backend filters by authenticated user ID
-        const response = await axios.get(`${url}/api/orders`, {
+        // Use the new endpoint for fetching user's orders
+        const response = await axios.get(`${url}/api/orders/my`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -287,6 +287,11 @@ const UserOrdersPage = () => {
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td colSpan="9" className="p-2 text-center text-sm text-gray-500 bg-gray-50">
+                    Click on any order row to view details
+                  </td>
+                </tr>
                 {orders.map((order) => {
                   const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
                   const totalPrice = order.total ?? order.items.reduce(
@@ -300,9 +305,10 @@ const UserOrdersPage = () => {
                   return (
                     <tr
                       key={order._id}
-                      className="border-b border-[#8BC34A]/20 hover:bg-gray-100/30 transition-colors group"
+                      className="border-b border-[#8BC34A]/20 hover:bg-gray-100/30 transition-colors group cursor-pointer"
+                      onClick={() => navigate(`/myorder/${order._id}`)}
                     >
-                      <td className="p-4 text-gray-800 font-mono text-sm">#{order._id?.slice(-8)}</td>
+                      <td className="p-4 text-gray-800 font-mono text-sm hover:text-[#8BC34A]">#{order._id?.slice(-8)}</td>
 
                       <td className="p-4">
                         <div className="flex items-center gap-2">

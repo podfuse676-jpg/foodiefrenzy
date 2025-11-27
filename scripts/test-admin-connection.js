@@ -6,7 +6,7 @@
 const axios = require('axios');
 
 async function testAdminConnection() {
-  const backendUrl = 'https://lakeshoreconveniencee-backend.onrender.com';
+  const backendUrl = 'https://lakeshoreconveniencee-backend-production.up.railway.app';
   const adminUrl = 'https://foodiefrenzy-5hdf.vercel.app';
   
   console.log('Testing connection between admin portal and backend...\n');

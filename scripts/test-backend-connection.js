@@ -4,7 +4,7 @@ async function testBackendConnection() {
   // Test both local and Render backends
   const backends = [
     { name: 'Local Backend', url: 'http://localhost:4000' },
-    { name: 'Render Backend', url: 'https://lakeshoreconveniencee-backend.onrender.com' }
+    { name: 'Render Backend', url: 'https://lakeshoreconveniencee-backend-production.up.railway.app' }
   ];
 
   for (const backend of backends) {

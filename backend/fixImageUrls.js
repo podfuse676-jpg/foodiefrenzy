@@ -30,9 +30,9 @@ const fixImageUrls = async () => {
     
     // Fix each item's image URL
     for (const item of items) {
-      if (item.imageUrl && item.imageUrl.includes('http://lakeshoreconveniencee-backend.onrender.comhttps://')) {
+      if (item.imageUrl && item.imageUrl.includes('http://lakeshoreconveniencee-backend-production.up.railway.apphttps://')) {
         // Fix double URL issue
-        const fixedUrl = item.imageUrl.replace('http://lakeshoreconveniencee-backend.onrender.comhttps://', 'https://');
+        const fixedUrl = item.imageUrl.replace('http://lakeshoreconveniencee-backend-production.up.railway.apphttps://', 'https://');
         console.log(`Fixing URL for "${item.name}":`);
         console.log(`  Old: ${item.imageUrl}`);
         console.log(`  New: ${fixedUrl}`);

@@ -17,7 +17,7 @@ This guide will help you identify and fix login issues with your Foodie Frenzy a
    - Import your GitHub repository
    - Set Framework Preset to "Vite"
    - Set Root Directory to "frontend"
-   - Add Environment Variable: `REACT_APP_API_URL=https://lakeshoreconveniencee-backend.onrender.com`
+   - Add Environment Variable: `REACT_APP_API_URL=https://lakeshoreconveniencee-backend-production.up.railway.app`
    - Click "Deploy"
 
 2. **Admin Panel on Vercel**:
@@ -27,7 +27,7 @@ This guide will help you identify and fix login issues with your Foodie Frenzy a
    - Import your GitHub repository
    - Set Framework Preset to "Vite"
    - Set Root Directory to "admin"
-   - Add Environment Variable: `REACT_APP_API_URL=https://lakeshoreconveniencee-backend.onrender.com`
+   - Add Environment Variable: `REACT_APP_API_URL=https://lakeshoreconveniencee-backend-production.up.railway.app`
    - Click "Deploy"
 
 3. **Backend on Render** (if not already deployed):
@@ -96,19 +96,19 @@ This guide will help you identify and fix login issues with your Foodie Frenzy a
 1. Check that your frontend `.env` file contains:
 
    ```
-   REACT_APP_API_URL=https://lakeshoreconveniencee-backend.onrender.com
+   REACT_APP_API_URL=https://lakeshoreconveniencee-backend-production.up.railway.app
    ```
 
 2. Check that your admin panel `.env` file contains:
 
    ```
-   REACT_APP_API_URL=https://lakeshoreconveniencee-backend.onrender.com
+   REACT_APP_API_URL=https://lakeshoreconveniencee-backend-production.up.railway.app
    ```
 
 3. In Vercel, make sure these environment variables are set in the project settings:
    - Go to your Vercel project
    - Click "Settings" → "Environment Variables"
-   - Add `REACT_APP_API_URL` with the value `https://lakeshoreconveniencee-backend.onrender.com`
+   - Add `REACT_APP_API_URL` with the value `https://lakeshoreconveniencee-backend-production.up.railway.app`
 
 ### 4. Hardcoded URLs Still Present
 
@@ -177,7 +177,7 @@ This guide will help you identify and fix login issues with your Foodie Frenzy a
 1. Verify that your backend is running:
 
    ```bash
-   curl -I https://lakeshoreconveniencee-backend.onrender.com/health
+   curl -I https://lakeshoreconveniencee-backend-production.up.railway.app/health
    ```
 
    You should get a 200 response.
@@ -192,7 +192,7 @@ This guide will help you identify and fix login issues with your Foodie Frenzy a
 
 1. Test the login endpoint directly:
    ```bash
-   curl -X POST https://lakeshoreconveniencee-backend.onrender.com/api/users/login \
+   curl -X POST https://lakeshoreconveniencee-backend-production.up.railway.app/api/users/login \
      -H "Content-Type: application/json" \
      -d '{"email": "test@example.com", "password": "password123"}'
    ```

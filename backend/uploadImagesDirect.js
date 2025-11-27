@@ -4,7 +4,7 @@ import path from 'path';
 import https from 'https';
 import FormData from 'form-data';
 
-const BACKEND_URL = 'https://lakeshoreconveniencee-backend.onrender.com';
+const BACKEND_URL = 'https://lakeshoreconveniencee-backend-production.up.railway.app';
 
 // Function to upload a single image
 function uploadImage(imagePath, itemId) {

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BACKEND_URL = 'https://lakeshoreconveniencee-backend.onrender.com';
+const BACKEND_URL = 'https://lakeshoreconveniencee-backend-production.up.railway.app';
 
 async function testProductionItems() {
   try {

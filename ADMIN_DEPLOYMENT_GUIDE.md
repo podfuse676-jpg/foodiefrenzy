@@ -13,7 +13,7 @@ This guide will help you deploy the Lakeshore Convenience admin panel to Vercel.
 Your admin panel already has the correct environment configuration:
 
 ```
-VITE_API_URL=https://lakeshoreconveniencee-backend.onrender.com
+VITE_API_URL=https://lakeshoreconveniencee-backend-production.up.railway.app
 ```
 
 This is set in the `.env` file and will allow the admin panel to communicate with your backend.
@@ -34,7 +34,7 @@ This is set in the `.env` file and will allow the admin panel to communicate wit
 
 5. Add Environment Variables:
 
-   - `VITE_API_URL`: `https://lakeshoreconveniencee-backend.onrender.com`
+   - `VITE_API_URL`: `https://lakeshoreconveniencee-backend-production.up.railway.app`
 
 6. Click "Deploy"
 

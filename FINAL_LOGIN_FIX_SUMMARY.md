@@ -63,13 +63,13 @@ Created proper environment files for all services:
 #### Frontend (.env):
 
 ```
-REACT_APP_API_URL=https://lakeshoreconveniencee-backend.onrender.com
+REACT_APP_API_URL=https://lakeshoreconveniencee-backend-production.up.railway.app
 ```
 
 #### Admin (.env):
 
 ```
-REACT_APP_API_URL=https://lakeshoreconveniencee-backend.onrender.com
+REACT_APP_API_URL=https://lakeshoreconveniencee-backend-production.up.railway.app
 ```
 
 #### Backend (.env):
@@ -147,7 +147,7 @@ All changes have been committed and pushed to the repository:
 3. Import your GitHub repository
 4. Set Framework Preset to "Vite"
 5. Set Root Directory to "frontend"
-6. Add Environment Variable: `REACT_APP_API_URL=https://lakeshoreconveniencee-backend.onrender.com`
+6. Add Environment Variable: `REACT_APP_API_URL=https://lakeshoreconveniencee-backend-production.up.railway.app`
 7. Click "Deploy"
 
 #### Admin Panel on Vercel:
@@ -157,7 +157,7 @@ All changes have been committed and pushed to the repository:
 3. Import your GitHub repository
 4. Set Framework Preset to "Vite"
 5. Set Root Directory to "admin"
-6. Add Environment Variable: `REACT_APP_API_URL=https://lakeshoreconveniencee-backend.onrender.com`
+6. Add Environment Variable: `REACT_APP_API_URL=https://lakeshoreconveniencee-backend-production.up.railway.app`
 7. Click "Deploy"
 
 #### Backend on Render (if not already deployed):
@@ -192,10 +192,10 @@ You can run these commands to verify that everything is working correctly:
 
 ```bash
 # Check if backend is running
-curl -I https://lakeshoreconveniencee-backend.onrender.com/health
+curl -I https://lakeshoreconveniencee-backend-production.up.railway.app/health
 
 # Test login endpoint (should return "User Doesn't Exist" which means it's working)
-curl -X POST https://lakeshoreconveniencee-backend.onrender.com/api/users/login \
+curl -X POST https://lakeshoreconveniencee-backend-production.up.railway.app/api/users/login \
   -H "Content-Type: application/json" \
   -d '{"email": "test@example.com", "password": "password123"}'
 

@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
 
-const BACKEND_URL = 'https://lakeshoreconveniencee-backend.onrender.com';
+const BACKEND_URL = 'https://lakeshoreconveniencee-backend-production.up.railway.app';
 
 async function uploadMissingImages() {
   try {

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 async function testVercelConnection() {
-  const backendUrl = 'https://lakeshoreconveniencee-backend.onrender.com';
+  const backendUrl = 'https://lakeshoreconveniencee-backend-production.up.railway.app';
   const frontendUrl = 'https://foodiefrenzy-nine.vercel.app';
   const adminUrl = 'https://foodiefrenzy-5hdf.vercel.app';
   

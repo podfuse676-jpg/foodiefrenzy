@@ -4,7 +4,7 @@ const testLogin = async () => {
   try {
     console.log('Testing login with axios...');
     
-    const response = await axios.post('https://lakeshoreconveniencee-backend.onrender.com/api/users/login', {
+    const response = await axios.post('https://lakeshoreconveniencee-backend-production.up.railway.app/api/users/login', {
       email: 'admin@foodiefrenzy.com',
       password: 'AdminPassword123!'
     }, {

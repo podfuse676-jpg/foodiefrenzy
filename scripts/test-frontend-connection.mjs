@@ -6,11 +6,11 @@ async function testConnection() {
     console.log('Testing connection to backend...');
     
     // Test the health endpoint
-    const healthResponse = await axios.get('https://lakeshoreconveniencee-backend.onrender.com/health');
+    const healthResponse = await axios.get('https://lakeshoreconveniencee-backend-production.up.railway.app/health');
     console.log('Health check:', healthResponse.status, healthResponse.data);
     
     // Test the items endpoint
-    const itemsResponse = await axios.get('https://lakeshoreconveniencee-backend.onrender.com/api/items');
+    const itemsResponse = await axios.get('https://lakeshoreconveniencee-backend-production.up.railway.app/api/items');
     console.log('Items endpoint:', itemsResponse.status, `Found ${itemsResponse.data.length} items`);
     
     // Show first item if available

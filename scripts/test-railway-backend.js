@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-async function testRenderBackend() {
-  const backendUrl = 'https://lakeshoreconveniencee-backend.onrender.com';
+async function testRailwayBackend() {
+  const backendUrl = 'https://lakeshoreconveniencee-backend-production.up.railway.app';
   
-  console.log('Testing connection to Render backend...\n');
+  console.log('Testing connection to Railway backend...\n');
   
   try {
     // Test 1: Check if backend is accessible
@@ -33,7 +33,7 @@ async function testRenderBackend() {
       });
     }
     
-    console.log('\nAll tests completed successfully! Your Render backend is working correctly.');
+    console.log('\nAll tests completed successfully! Your Railway backend is working correctly.');
     
   } catch (error) {
     console.error('Error during testing:');
@@ -51,4 +51,4 @@ async function testRenderBackend() {
 }
 
 // Run the test
-testRenderBackend();
+testRailwayBackend();
