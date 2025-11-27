@@ -1,6 +1,6 @@
 // enhanced-minimal-server.js
 // Enhanced minimal server for Railway deployment with essential routes
-// Version: 1.0.1 - Added redeploy trigger
+// Version: 1.0.2 - Improved CORS configuration
 
 import express from 'express';
 import mongoose from 'mongoose';
@@ -21,8 +21,64 @@ console.log(`MONGODB_URI: ${process.env.MONGODB_URI ? 'SET' : 'NOT SET'}`);
 
 const app = express();
 
+// Configure CORS with proper origin handling
+const corsOptions = {
+  origin: function (origin, callback) {
+    // List of allowed origins
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      process.env.FRONTEND_URL || 'http://localhost:5173',
+      process.env.ADMIN_URL || 'http://localhost:5174',
+      'https://foodiefrenzy-frontend.vercel.app',
+      'https://foodiefrenzy-admin.vercel.app',
+      'https://foodiefrenzy-5hdf.vercel.app',
+      'https://foodiefrenzy-nine.vercel.app',
+      'https://admin-7y4pypy16-podfuse676-6967s-projects.vercel.app',
+      'https://www.lakeshoreconvenience.com',
+      'https://lakeshoreconvenience.com',
+      'https://admin.lakeshoreconvenience.com',
+      'https://frontend-2s6p6a1f3-podfuse676-6967s-projects.vercel.app',
+      'https://admin-f7tgxswxu-podfuse676-6967s-projects.vercel.app'
+    ];
+    
+    console.log('=== CORS REQUEST ===');
+    console.log('Origin:', origin);
+    console.log('Allowed origins:', allowedOrigins);
+    
+    // Allow requests with no origin (like mobile apps or server-to-server requests)
+    if (!origin) {
+      console.log('No origin provided, allowing request');
+      return callback(null, true);
+    }
+    
+    // Check if the origin is in our allowed list
+    if (allowedOrigins.includes(origin)) {
+      console.log('Origin is in allowed list, allowing request');
+      return callback(null, true);
+    }
+    
+    // Check if it's a Vercel subdomain
+    if (origin && origin.endsWith('.vercel.app')) {
+      console.log('Origin is a Vercel subdomain, allowing request');
+      return callback(null, true);
+    }
+    
+    // Check if it's our custom domain
+    if (origin && (origin.includes('lakeshoreconvenience.com'))) {
+      console.log('Origin is our custom domain, allowing request');
+      return callback(null, true);
+    }
+    
+    // Reject the request
+    console.log('Origin not allowed, rejecting request');
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Ultra-simple health check - responds immediately with minimal response
