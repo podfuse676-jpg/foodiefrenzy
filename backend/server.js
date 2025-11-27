@@ -378,6 +378,23 @@ app.get('/api/debug-env', (req, res) => {
   });
 });
 
+// ADD THIS NEW ENDPOINT FOR CLEANING UP ORDERS
+// WARNING: This endpoint should be removed after use or protected with authentication
+app.delete('/api/orders/cleanup', async (req, res) => {
+  try {
+    // This should only be used in development or by authorized admins
+    // For production, this should be protected with proper authentication
+    console.log('Cleaning up all orders...');
+    const Order = (await import('./modals/order.js')).default;
+    const result = await Order.deleteMany({});
+    console.log(`Removed ${result.deletedCount} orders`);
+    res.json({ message: `Successfully removed ${result.deletedCount} orders`, deletedCount: result.deletedCount });
+  } catch (error) {
+    console.error('Error cleaning up orders:', error);
+    res.status(500).json({ message: 'Error cleaning up orders', error: error.message });
+  }
+});
+
 // Test endpoint to verify database connection and user lookup
 app.get('/api/test-db', async (req, res) => {
   try {
