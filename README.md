@@ -193,7 +193,7 @@ Food items support modifier groups for customization (e.g., extras, spices, add-
 The application is designed for deployment on:
 
 - **Frontend/Admin**: Vercel or Netlify
-- **Backend**: Render
+- **Backend**: Render or Railway (recommended)
 - **Database**: MongoDB Atlas
 
 ### Environment Variables for Deployment
@@ -222,11 +222,22 @@ TWILIO_PHONE_NUMBER= (leave empty if not using SMS)
 VITE_API_URL=https://your-backend-url.onrender.com
 ```
 
+### Deployment Options
+
+#### Option 1: Render (Traditional)
+
+For Render deployment instructions, see [Deployment Guide](DEPLOYMENT_GUIDE.md).
+
+#### Option 2: Railway (Recommended)
+
+Railway provides better performance and eliminates the sleeping issues common with Render's free tier. For Railway deployment instructions, see [Railway Deployment Guide](RAILWAY_DEPLOYMENT_GUIDE.md).
+
 ### Deployment Instructions
 
 For detailed deployment instructions, see:
 
 - [Deployment Guide](DEPLOYMENT_GUIDE.md)
+- [Railway Deployment Guide](RAILWAY_DEPLOYMENT_GUIDE.md)
 - [Admin Panel Deployment Guide](ADMIN_DEPLOYMENT_GUIDE.md)
 - [Vercel Login Fix Summary](VERCEL_LOGIN_FIX_SUMMARY.md)
 - [Troubleshooting Login Issues](TROUBLESHOOTING_LOGIN_ISSUES.md)

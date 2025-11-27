@@ -2,12 +2,12 @@
 
 ## Prerequisites
 
-1. A Render account (https://render.com/)
-2. A GitHub account with the repository connected to Render
+1. A Render account (https://render.com/) OR a Railway account (https://railway.app/)
+2. A GitHub account with the repository connected to Render/Railway
 3. Your Cloudinary account credentials
 4. Your Stripe account credentials (for payment processing)
 
-## Deploying to Render
+## Deploying to Render (Option 1 - Traditional)
 
 ### Step 1: Connect Your Repository to Render
 
@@ -66,6 +66,10 @@ To enable payment processing, you need to configure your Stripe secret key:
 2. Test the health endpoint: `https://lakeshoreconveniencee-backend.onrender.com/health`
 3. Test the items endpoint: `https://lakeshoreconveniencee-backend.onrender.com/api/items`
 
+## Deploying to Railway (Option 2 - Recommended)
+
+For a better experience without sleep issues, we recommend using Railway instead of Render. Follow the detailed [Railway Deployment Guide](RAILWAY_DEPLOYMENT_GUIDE.md) for step-by-step instructions.
+
 ## Updating Environment Variables in Render Dashboard
 
 If you need to update any environment variables after deployment:
@@ -85,34 +89,3 @@ If you need to update any environment variables after deployment:
 3. **Database connection issues**: Verify your MongoDB URI is correct
 4. **Cloudinary issues**: Verify your Cloudinary credentials are correct
 5. **Stripe issues**: Verify your Stripe secret key is correct and properly formatted
-
-### Testing Your Deployed Application
-
-You can test various endpoints to ensure everything is working:
-
-1. Health check: `GET /health`
-2. Environment variables: `GET /api/debug-env`
-3. Database connection: `GET /api/test-db`
-4. Items list: `GET /api/items`
-
-## Important Notes
-
-1. **File Persistence**: With the free tier, files stored locally will be lost when the service restarts. This is why we implemented Cloudinary integration for image storage.
-
-2. **CORS Configuration**: The application is configured to allow requests from Vercel deployments, which is important for your frontend and admin panel.
-
-3. **Image URLs**: All images are now served from Cloudinary URLs, ensuring they persist across service restarts.
-
-4. **Health Check**: The `/health` endpoint is configured for Render to monitor your service health.
-
-## Post-Deployment Steps
-
-1. Test all API endpoints
-2. Verify images are loading correctly from Cloudinary
-3. Test image uploads through the admin panel
-4. Verify CORS is working correctly with your frontend applications
-5. Test Stripe integration by placing a test order
-
-```
-
-```

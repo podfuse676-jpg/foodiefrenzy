@@ -10,7 +10,8 @@
     "frontend:build": "cd frontend && npm run build",
     "admin:build": "cd admin && npm run build",
     "start": "node server.js",
-    "dev": "concurrently \"npm run frontend:dev\" \"npm run admin:dev\" \"npm run backend:dev\""
+    "dev": "concurrently \"npm run frontend:dev\" \"npm run admin:dev\" \"npm run backend:dev\"",
+    "migrate:railway": "node scripts/migrate-to-railway.js"
   },
   "keywords": [],
   "author": "",

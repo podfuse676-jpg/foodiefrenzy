@@ -94,8 +94,9 @@ import phoneAuthRoutes from './routes/phoneAuthRoute.js';
 import reviewRoutes from './routes/reviewRoute.js';
 
 const app = express();
-// Use PORT from environment variable (Render will set this) or default to 4000
-const PORT = process.env.PORT || 4000;
+// Use PORT from environment variable (Render/Railway will set this) or default to 4000
+// Railway uses $PORT while Render uses PORT
+const PORT = process.env.PORT || process.env.$PORT || 4000;
 
 // Add compression middleware for better performance
 app.use(compression({
