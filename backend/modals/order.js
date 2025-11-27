@@ -13,50 +13,54 @@ const orderItemSchema = new mongoose.Schema({
   quantity: { type: Number, required: true, min: 1 }
 }, { _id: true });
 
-const shippingAddressSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  phone: { type: String, required: true },
-  line1: { type: String, required: true },
-  line2: { type: String },
-  city: { type: String, required: true },
-  pincode: { type: String, required: true }
-}, { _id: false });
-
 const orderSchema = new mongoose.Schema({
   // User Information
-  userId: {
+  user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
     index: true
   },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  phone: { type: String, required: true },
+  email: { type: String, required: true },
+  
+  // Address Information
+  address: { type: String, required: true },
+  city: { type: String, required: true },
+  zipCode: { type: String, required: true },
   
   // Order Items
   items: [orderItemSchema],
   
-  // Order Calculations
-  totalAmount: { type: Number, required: true, min: 0 },
+  // Payment Information
+  paymentMethod: { type: String, required: true },
+  subtotal: { type: Number, required: true },
+  tax: { type: Number, required: true },
+  total: { type: Number, required: true },
+  shipping: { type: Number, default: 0 },
+  codFee: { type: Number, default: 0 },
+  
+  // Stripe Information (for card payments)
+  paymentIntentId: { type: String },
+  sessionId: { type: String },
   
   // Order Status
-  status: {
-    type: String,
-    enum: ['PLACED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'],
-    default: 'PLACED',
-    index: true
+  paymentStatus: { 
+    type: String, 
+    enum: ['pending', 'succeeded', 'failed', 'cancelled'],
+    default: 'pending'
   },
   
-  // Shipping Address
-  shippingAddress: {
-    type: shippingAddressSchema,
-    required: true
-  }
-  
+  // Timestamps
+  createdAt: { type: Date, default: Date.now }
 }, { 
   timestamps: true 
 });
 
-// Add indexes on userId and createdAt
-orderSchema.index({ userId: 1 });
+// Add indexes
+orderSchema.index({ user: 1 });
 orderSchema.index({ createdAt: -1 });
 
 const Order = mongoose.model('Order', orderSchema);
