@@ -5,13 +5,31 @@ import Order from '../modals/order.js';
 // Requires JWT auth (req.user.id).
 // Return all orders for that user, sorted by createdAt DESC, with:
 // _id, createdAt, totalAmount, status, shippingAddress.name, and items.
-export const getMyOrders = async (req, res) => {
+export const getMyOrders = async (req, res) {
     try {
-        const orders = await Order.find({ userId: req.user.id })
+        const orders = await Order.find({ user: req.user.id })
             .sort({ createdAt: -1 })
-            .select('_id createdAt totalAmount status shippingAddress.name items');
+            .select('_id createdAt total status items firstName lastName address city zipCode');
 
-        res.json(orders);
+        // Format orders to match expected structure
+        const formattedOrders = orders.map(order => ({
+            _id: order._id,
+            createdAt: order.createdAt,
+            total: order.total,
+            status: order.paymentStatus,
+            shippingAddress: {
+                name: `${order.firstName} ${order.lastName}`
+            },
+            items: order.items.map(item => ({
+                productId: item.productId,
+                name: item.name,
+                image: item.image,
+                price: item.price,
+                quantity: item.quantity
+            }))
+        }));
+
+        res.json(formattedOrders);
     } catch (error) {
         console.error('getMyOrders error:', error);
         res.status(500).json({ message: 'Server Error', error: error.message });
@@ -22,7 +40,7 @@ export const getMyOrders = async (req, res) => {
 // Requires JWT auth.
 // Only allow access if the order's userId matches req.user.id.
 // Return full order details.
-export const getOrderById = async (req, res) => {
+export const getOrderById = async (req, res) {
     try {
         const order = await Order.findById(req.params.id);
         
@@ -31,7 +49,7 @@ export const getOrderById = async (req, res) => {
         }
         
         // Check if the order belongs to the authenticated user
-        if (order.userId.toString() !== req.user.id) {
+        if (order.user.toString() !== req.user.id) {
             return res.status(403).json({ message: 'Access denied' });
         }
         
