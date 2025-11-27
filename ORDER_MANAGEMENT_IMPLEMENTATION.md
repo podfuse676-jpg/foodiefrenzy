@@ -5,6 +5,7 @@ This document describes the implementation of the order management functionality
 ## Task 1: Order Model
 
 ### Requirements
+
 - userId (ObjectId ref User, required)
 - items: [{ productId, name, image, price, quantity }]
 - totalAmount
@@ -14,6 +15,7 @@ This document describes the implementation of the order management functionality
 - Add indexes on userId and createdAt
 
 ### Implementation
+
 The order model has been implemented in [backend/modals/order.js](backend/modals/order.js):
 
 1. **userId**: ObjectId reference to User model, required, indexed
@@ -38,10 +40,11 @@ The order model has been implemented in [backend/modals/order.js](backend/modals
 ## Task 2: Order Routes
 
 ### Requirements
+
 - GET /api/orders/my
   - Requires JWT auth (req.user.id)
   - Return all orders for that user, sorted by createdAt DESC
-  - Return: _id, createdAt, totalAmount, status, shippingAddress.name, and items
+  - Return: \_id, createdAt, totalAmount, status, shippingAddress.name, and items
 - GET /api/orders/:id
   - Requires JWT auth
   - Only allow access if the order's userId matches req.user.id
@@ -50,12 +53,14 @@ The order model has been implemented in [backend/modals/order.js](backend/modals
 ### Implementation
 
 #### Controller
+
 The controller has been implemented in [backend/controllers/newOrderController.js](backend/controllers/newOrderController.js):
 
-1. **getMyOrders**: 
+1. **getMyOrders**:
+
    - Fetches all orders for the authenticated user
    - Sorts by createdAt DESC
-   - Selects only the required fields: _id, createdAt, totalAmount, status, shippingAddress.name, and items
+   - Selects only the required fields: \_id, createdAt, totalAmount, status, shippingAddress.name, and items
 
 2. **getOrderById**:
    - Fetches a specific order by ID
@@ -64,6 +69,7 @@ The controller has been implemented in [backend/controllers/newOrderController.j
    - Includes proper error handling for invalid IDs and missing orders
 
 #### Routes
+
 The routes have been implemented in [backend/routes/newOrderRoutes.js](backend/routes/newOrderRoutes.js):
 
 1. **GET /api/orders/my**: Maps to getMyOrders controller function
@@ -71,6 +77,7 @@ The routes have been implemented in [backend/routes/newOrderRoutes.js](backend/r
 3. Both routes use the authMiddleware to ensure JWT authentication
 
 #### Server Integration
+
 The new routes have been integrated into the server in [backend/server.js](backend/server.js):
 
 1. Imported the new routes module
@@ -79,7 +86,9 @@ The new routes have been integrated into the server in [backend/server.js](backe
 ## Testing
 
 ### Model Testing
+
 A test script has been created at [backend/testNewOrderModel.js](backend/testNewOrderModel.js) that:
+
 1. Connects to MongoDB
 2. Creates a test order with sample data
 3. Saves and retrieves the order
@@ -89,7 +98,9 @@ A test script has been created at [backend/testNewOrderModel.js](backend/testNew
 Run with: `npm run test-new-order-model`
 
 ### Route Testing
+
 A test server has been created at [backend/testNewOrderRoutes.js](backend/testNewOrderRoutes.js) that:
+
 1. Sets up a test Express server
 2. Implements the new routes with mock authentication
 3. Creates a test order
@@ -109,12 +120,14 @@ The implementation has been designed to work alongside the existing order functi
 ## Usage
 
 ### Getting User Orders
+
 ```bash
 GET /api/orders/my
 Authorization: Bearer <jwt_token>
 ```
 
 ### Getting Specific Order
+
 ```bash
 GET /api/orders/:id
 Authorization: Bearer <jwt_token>
