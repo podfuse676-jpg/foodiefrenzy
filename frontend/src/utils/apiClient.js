@@ -40,11 +40,12 @@ apiClient.interceptors.response.use(
     // Handle specific HTTP errors
     switch (error.response.status) {
       case 401:
-        // Unauthorized - clear auth data
+        // Unauthorized - clear auth data but don't automatically redirect
+        // Let components handle redirection as needed
         localStorage.removeItem('authToken');
         localStorage.removeItem('user');
-        window.location.href = '/login';
-        break;
+        // Don't automatically redirect to login - components can handle this as needed
+        return Promise.reject(new Error('Your session has expired. Please log in again.'));
       case 403:
         return Promise.reject(new Error('Access forbidden. You do not have permission to perform this action.'));
       case 404:

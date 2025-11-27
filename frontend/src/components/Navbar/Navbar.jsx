@@ -38,9 +38,14 @@ const Navbar = () => {
     // Add event listener for storage changes (in case another tab updates auth)
     window.addEventListener('storage', checkAuthStatus);
     
+    // Also check auth status periodically
+    // This helps catch cases where logout happens in another component
+    const interval = setInterval(checkAuthStatus, 1000);
+    
     // Cleanup
     return () => {
       window.removeEventListener('storage', checkAuthStatus);
+      clearInterval(interval);
     };
   }, [location.pathname]);
 

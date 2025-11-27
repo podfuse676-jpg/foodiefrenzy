@@ -87,9 +87,9 @@ export const CartProvider = ({ children }) => {
       .catch(err => { 
         if (err.response?.status === 403 || err.response?.status === 401) {
           console.warn('Access forbidden to cart API. User may need to re-authenticate.');
-          // Clear invalid tokens
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('loginData');
+          // Don't remove tokens here - let the API client handle it consistently
+          // Just initialize with empty cart
+          dispatch({ type: 'HYDRATE_CART', payload: [] });
         } else {
           console.error('Error hydrating cart:', err);
           // Initialize with empty cart on error
