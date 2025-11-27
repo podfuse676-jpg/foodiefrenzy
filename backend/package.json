@@ -10,6 +10,7 @@
     "debug-env": "node debug-env.js",
     "network-test": "node network-test.js",
     "test-health": "node test-health-check.js",
+    "verify-files": "node verify-files.js",
     "create-admin": "node createAdminUser.js",
     "list-users": "node listUsers.js",
     "test-password": "node testPassword.js",
