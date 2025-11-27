@@ -24,7 +24,8 @@
     "test-production-request": "node testProductionRequest.js",
     "test-cloudinary-env": "node testCloudinaryEnv.js",
     "test-cloudinary-config": "node testCloudinaryConfig.js",
-    "test-item-id": "node testItemId.js"
+    "test-item-id": "node testItemId.js",
+    "test-start": "node test-server-start.js"
   },
   "author": "",
   "license": "ISC",
