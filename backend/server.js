@@ -95,8 +95,16 @@ import reviewRoutes from './routes/reviewRoute.js';
 
 const app = express();
 // Use PORT from environment variable (Render/Railway will set this) or default to 4000
-// Railway uses $PORT while Render uses PORT
+// Railway typically uses PORT, but we'll check common variations
 const PORT = process.env.PORT || process.env.$PORT || 4000;
+
+// Log the port for debugging
+console.log(`=== SERVER CONFIGURATION ===`);
+console.log(`PORT: ${PORT}`);
+console.log(`Environment variables:`);
+console.log(`- PORT: ${process.env.PORT}`);
+console.log(`- $PORT: ${process.env.$PORT}`);
+console.log(`===========================`);
 
 // Add compression middleware for better performance
 app.use(compression({
@@ -512,8 +520,9 @@ app.get('/test-login', async (req, res) => {
   }
 });
 
-// Health check route for Render
+// Health check route for Render/Railway
 app.get('/health', (req, res) => {
+  console.log('Health check endpoint hit');
   res.status(200).json({ status: 'OK', port: PORT, timestamp: new Date().toISOString() });
 });
 
@@ -904,7 +913,23 @@ app.use('/robots.txt', (req, res, next) => {
   next();
 });
 
-// Start server - Listen on all interfaces for Render deployment
+// Start server - Listen on all interfaces for Render/Railway deployment
 const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`=== SERVER STARTED SUCCESSFULLY ===`);
   console.log(`Server Started on http://0.0.0.0:${PORT}`);
+  console.log(`Health check endpoint: http://0.0.0.0:${PORT}/health`);
+  console.log(`====================================`);
+});
+
+// Add error handling for the server
+server.on('error', (error) => {
+  console.error('=== SERVER STARTUP ERROR ===');
+  console.error('Failed to start server:', error);
+  console.error('===========================');
+});
+
+server.on('listening', () => {
+  console.log('=== SERVER LISTENING EVENT ===');
+  console.log('Server is now listening for connections');
+  console.log('==============================');
 });
