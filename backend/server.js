@@ -267,12 +267,34 @@ app.use(express.static('public', {
   etag: false
 }));
 
+// Track server readiness
+let serverReady = false;
+
 // Connect to database
-connectDB();
+connectDB().then(() => {
+  console.log('Database connected successfully');
+  serverReady = true;
+}).catch((error) => {
+  console.error('Failed to connect to database:', error);
+  // Even if database connection fails, we'll still start the server
+  // The health check will show the database status
+  serverReady = true;
+});
 
 app.use(cookieParser());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+// Add a middleware to check if server is ready
+app.use((req, res, next) => {
+  if (!serverReady && req.path !== '/health') {
+    return res.status(503).json({ 
+      status: 'Service Unavailable', 
+      message: 'Server is still initializing' 
+    });
+  }
+  next();
+});
 
 // Serve static files from uploads directory (for local fallback)
 // Note: With Cloudinary, images will be served directly from Cloudinary URLs
@@ -572,10 +594,22 @@ app.get('/test-login', async (req, res) => {
   }
 });
 
-// Health check route for Render/Railway
+// Add a simple health check endpoint that doesn't require database connection
+// This will help with deployment health checks
 app.get('/health', (req, res) => {
-  console.log('Health check endpoint hit');
-  res.status(200).json({ status: 'OK', port: PORT, timestamp: new Date().toISOString() });
+  // Check if the server is running
+  const healthStatus = {
+    status: 'OK',
+    port: PORT,
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    // Add database connection status if available
+    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    serverReady: serverReady
+  };
+  
+  console.log('Health check requested:', healthStatus);
+  res.status(200).json(healthStatus);
 });
 
 // Simple test endpoint to check if we can find the admin user
