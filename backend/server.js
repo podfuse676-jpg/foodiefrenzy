@@ -99,6 +99,11 @@ const app = express();
 // Railway typically uses PORT, but we'll check common variations
 const PORT = process.env.PORT || process.env.$PORT || process.env.RAILWAY_PORT || 4000;
 
+// Add early health check endpoint - this should be one of the first routes
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK' });
+});
+
 // Log the port for debugging
 console.log(`=== SERVER CONFIGURATION ===`);
 console.log(`PORT: ${PORT}`);
@@ -276,9 +281,34 @@ app.use(express.static('public', {
 let serverReady = false;
 let serverStartupError = null;
 
+// Add early error handling
+process.on('uncaughtException', (error) => {
+  console.error('=== UNCAUGHT EXCEPTION ===');
+  console.error('Error:', error);
+  console.error('Stack:', error.stack);
+  console.error('========================');
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('=== UNHANDLED REJECTION ===');
+  console.error('Reason:', reason);
+  console.error('Promise:', promise);
+  console.error('==========================');
+});
+
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully');
+  server.close(() => {
+    console.log('Process terminated');
+  });
+});
+
 // Log startup process
 console.log('=== SERVER STARTUP PROCESS ===');
 console.log('Starting server initialization...');
+console.log('Node version:', process.version);
+console.log('Current working directory:', process.cwd());
 
 // Connect to database
 console.log('Attempting to connect to database...');
@@ -617,18 +647,7 @@ app.get('/test-login', async (req, res) => {
 // Add a simple health check endpoint that doesn't require database connection
 // This will help with deployment health checks
 app.get('/health', (req, res) => {
-  // Simple health check that responds immediately
-  const healthStatus = {
-    status: 'OK',
-    timestamp: new Date().toISOString()
-  };
-  
-  // Log health check only if detailed logging is enabled
-  if (process.env.LOG_HEALTH_CHECKS === 'true') {
-    console.log('Health check requested:', healthStatus);
-  }
-  
-  res.status(200).json(healthStatus);
+  res.status(200).json({ status: 'OK' });
 });
 
 // Simple test endpoint to check if we can find the admin user
@@ -972,55 +991,19 @@ app.get('/sitemap.xml', async (req, res) => {
   }
 });
 
-// Handle graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully');
-  server.close(() => {
-    console.log('Process terminated');
-  });
-});
-
-// Global error handler
-process.on('uncaughtException', (err) => {
-  console.error('=== UNCAUGHT EXCEPTION ===');
-  console.error('Error:', err);
-  console.error('Error name:', err.name);
-  console.error('Error message:', err.message);
-  console.error('Error stack:', err.stack);
-});
-
-process.on('unhandledRejection', (err) => {
-  console.error('=== UNHANDLED REJECTION ===');
-  console.error('Error:', err);
-  console.error('Error name:', err.name);
-  console.error('Error message:', err.message);
-  console.error('Error stack:', err.stack);
-});
-
-// Add caching for API responses
-app.use('/api/items', (req, res, next) => {
-  // Cache items API responses for 5 minutes
-  res.set('Cache-Control', 'public, max-age=300');
-  next();
-});
-
-// Add caching for sitemap
-app.use('/sitemap.xml', (req, res, next) => {
-  // Cache sitemap for 1 hour
-  res.set('Cache-Control', 'public, max-age=3600');
-  next();
-});
-
-// Add caching for robots.txt
-app.use('/robots.txt', (req, res, next) => {
-  // Cache robots.txt for 1 day
-  res.set('Cache-Control', 'public, max-age=86400');
-  next();
-});
-
 // Start server - Listen on all interfaces for Render/Railway deployment
 console.log(`Attempting to start server on port ${PORT}...`);
+
+// Add a timeout to ensure the process exits if something goes wrong
+const startupTimeout = setTimeout(() => {
+  console.error('=== STARTUP TIMEOUT ===');
+  console.error('Server failed to start within 30 seconds');
+  console.error('======================');
+  process.exit(1);
+}, 30000);
+
 const server = app.listen(PORT, '0.0.0.0', () => {
+  clearTimeout(startupTimeout);
   console.log(`=== SERVER STARTED SUCCESSFULLY ===`);
   console.log(`Server Started on http://0.0.0.0:${PORT}`);
   console.log(`Health check endpoint: http://0.0.0.0:${PORT}/health`);
@@ -1029,13 +1012,16 @@ const server = app.listen(PORT, '0.0.0.0', () => {
 
 // Add error handling for the server
 server.on('error', (error) => {
+  clearTimeout(startupTimeout);
   console.error('=== SERVER STARTUP ERROR ===');
   console.error('Failed to start server:', error);
   console.error('===========================');
   serverStartupError = error;
+  process.exit(1); // Exit with error code
 });
 
 server.on('listening', () => {
+  clearTimeout(startupTimeout);
   console.log('=== SERVER LISTENING EVENT ===');
   console.log('Server is now listening for connections');
   console.log('==============================');
