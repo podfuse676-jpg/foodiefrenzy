@@ -5,7 +5,7 @@ import Order from '../modals/order.js';
 // Requires JWT auth (req.user.id).
 // Return all orders for that user, sorted by createdAt DESC, with:
 // _id, createdAt, totalAmount, status, shippingAddress.name, and items.
-export const getMyOrders = async (req, res) {
+export const getMyOrders = async (req, res) => {
     try {
         const orders = await Order.find({ user: req.user.id })
             .sort({ createdAt: -1 })
@@ -40,7 +40,7 @@ export const getMyOrders = async (req, res) {
 // Requires JWT auth.
 // Only allow access if the order's userId matches req.user.id.
 // Return full order details.
-export const getOrderById = async (req, res) {
+export const getOrderById = async (req, res) => {
     try {
         const order = await Order.findById(req.params.id);
         

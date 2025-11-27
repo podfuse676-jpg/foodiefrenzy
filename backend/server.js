@@ -208,7 +208,9 @@ const generalLimiter = rateLimit({
     }
     // Fallback to connection remote address
     return req.ip;
-  }
+  },
+  // Add skipSuccessfulRequests to reduce load on successful requests
+  skipSuccessfulRequests: false
 });
 
 // Specific rate limiter for login attempts to prevent brute force attacks
@@ -228,7 +230,8 @@ const loginLimiter = rateLimit({
     }
     // Fallback to connection remote address
     return req.ip;
-  }
+  },
+  skipSuccessfulRequests: true
 });
 
 // Specific rate limiter for API endpoints to handle high traffic
@@ -248,7 +251,8 @@ const apiLimiter = rateLimit({
     }
     // Fallback to connection remote address
     return req.ip;
-  }
+  },
+  skipSuccessfulRequests: false
 });
 
 // Apply rate limiting to all requests
