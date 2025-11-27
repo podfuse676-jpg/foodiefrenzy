@@ -7,10 +7,10 @@ import { BrowserRouter } from 'react-router-dom'
 import { CartProvider } from './CartContext/CartContext'
 import { LoadingProvider } from './LoadingContext/LoadingContext'
 
-// Aggressive service worker cleanup on app start
-const aggressiveCleanup = async () => {
+// Service worker cleanup - only run once per session
+const cleanupServiceWorkers = async () => {
   try {
-    // Clean up service workers
+    // Clean up service workers (run only once)
     if ('serviceWorker' in navigator) {
       const registrations = await navigator.serviceWorker.getRegistrations();
       for (let registration of registrations) {
@@ -19,7 +19,7 @@ const aggressiveCleanup = async () => {
       }
     }
     
-    // Clean up all caches
+    // Clean up all caches (run only once)
     if ('caches' in window) {
       const cacheNames = await caches.keys();
       for (let cacheName of cacheNames) {
@@ -28,23 +28,17 @@ const aggressiveCleanup = async () => {
       }
     }
     
-    // Clear all storage
-    localStorage.clear();
-    sessionStorage.clear();
-    
-    // Clear cookies
-    document.cookie.split(";").forEach((c) => {
-      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-    });
-    
-    console.log('Aggressive cleanup completed');
+    console.log('Service worker cleanup completed');
   } catch (error) {
-    console.error('Error during aggressive cleanup:', error);
+    console.error('Error during service worker cleanup:', error);
   }
 };
 
-// Run cleanup immediately
-aggressiveCleanup();
+// Run cleanup only once when the app loads for the first time
+if (!sessionStorage.getItem('cleanupCompleted')) {
+  cleanupServiceWorkers();
+  sessionStorage.setItem('cleanupCompleted', 'true');
+}
 
 const container = document.getElementById('root');
 const root = createRoot(container);
