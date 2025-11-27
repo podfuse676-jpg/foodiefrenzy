@@ -22,6 +22,7 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
   const getImageUrl = () => {
     // Check if there's a custom image for this specific item
     if (customImageMap[item.name]) {
+      console.log('Using custom image for:', item.name);
       return customImageMap[item.name];
     }
     
@@ -29,13 +30,15 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
     if (item.imageUrl || item.image) {
       // Ensure we're using the full URL for Cloudinary images
       const imageUrl = item.imageUrl || item.image;
-      console.log('Using image URL:', imageUrl); // Debug log
+      console.log('Using item image URL:', imageUrl);
       return imageUrl;
     }
     
     // Generate image based on item name
     const keywords = item.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(' ').join(',');
-    return `https://source.unsplash.com/200x200/?${keywords},grocery`;
+    const fallbackUrl = `https://source.unsplash.com/200x200/?${keywords},grocery`;
+    console.log('Using fallback image for:', item.name, 'URL:', fallbackUrl);
+    return fallbackUrl;
   };
   
   const imageUrl = getImageUrl();
@@ -74,8 +77,12 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
             className="w-full h-full object-contain"
             loading="lazy" // Add lazy loading
             onError={(e) => {
+              console.error('Image failed to load:', imageUrl, 'Item:', item.name);
               // Fallback to a default image if the image fails to load
               e.target.src = 'https://source.unsplash.com/200x200/?grocery';
+            }}
+            onLoad={(e) => {
+              console.log('Image loaded successfully:', imageUrl, 'Item:', item.name);
             }}
           />
         ) : (
