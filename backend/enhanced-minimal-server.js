@@ -122,8 +122,26 @@ app.get('/api/items', async (req, res) => {
   try {
     console.log('Fetching all items at:', new Date().toISOString());
     const items = await Item.find({});
-    console.log(`Found ${items.length} items`);
-    res.json(items);
+    
+    // For each item, ensure the imageUrl is correctly formatted
+    const itemsWithFullUrls = items.map(item => {
+      const itemObj = item.toObject();
+      
+      // For Cloudinary URLs, they should already be full URLs
+      // For local URLs, we need to prefix with host
+      if (itemObj.imageUrl && !itemObj.imageUrl.startsWith('http')) {
+        // This is a local URL, prefix with host
+        const host = `${req.protocol}://${req.get('host')}`;
+        // Convert relative URL to absolute
+        itemObj.imageUrl = host + itemObj.imageUrl;
+      }
+      // If it's already an HTTP URL (Cloudinary), leave it as is
+      
+      return itemObj;
+    });
+    
+    console.log(`Found ${itemsWithFullUrls.length} items`);
+    res.json(itemsWithFullUrls);
   } catch (error) {
     console.error('Error fetching items:', error);
     res.status(500).json({ message: 'Failed to fetch items', error: error.message });
@@ -140,7 +158,15 @@ app.get('/api/items/:id', async (req, res) => {
       return res.status(404).json({ message: 'Item not found' });
     }
     
-    res.json(item);
+    // Prefix image URL with host for relative paths (local storage)
+    // Cloudinary URLs should already be absolute
+    const itemObj = item.toObject();
+    if (itemObj.imageUrl && !itemObj.imageUrl.startsWith('http')) {
+      const host = `${req.protocol}://${req.get('host')}`;
+      itemObj.imageUrl = host + itemObj.imageUrl;
+    }
+    
+    res.json(itemObj);
   } catch (error) {
     console.error('Error fetching item:', error);
     res.status(500).json({ message: 'Failed to fetch item', error: error.message });
