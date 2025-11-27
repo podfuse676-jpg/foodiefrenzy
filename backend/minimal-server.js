@@ -4,10 +4,11 @@
 import express from 'express';
 
 // Get port from environment or default to 10000
-const PORT = process.env.PORT || process.env.RAILWAY_PORT || 10000;
+// Ensure it's a number
+const PORT = parseInt(process.env.PORT || process.env.RAILWAY_PORT || 10000, 10);
 
 console.log(`=== MINIMAL SERVER STARTING ===`);
-console.log(`PORT: ${PORT}`);
+console.log(`PORT: ${PORT} (type: ${typeof PORT})`);
 console.log(`NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
 
 const app = express();
