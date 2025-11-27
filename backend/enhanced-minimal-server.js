@@ -1,5 +1,6 @@
 // enhanced-minimal-server.js
 // Enhanced minimal server for Railway deployment with essential routes
+// Version: 1.0.1 - Added redeploy trigger
 
 import express from 'express';
 import mongoose from 'mongoose';
