@@ -157,9 +157,9 @@ const corsOptions = {
     console.log('Origin:', origin);
     console.log('Allowed origins:', allowedOrigins);
     
-    // Allow requests with no origin (like mobile apps or curl requests)
+    // Allow requests with no origin (like mobile apps, curl requests, or server-to-server requests)
     if (!origin) {
-      console.log('No origin, allowing request');
+      console.log('No origin provided, allowing request (common for server-to-server or mobile app requests)');
       return callback(null, true);
     }
     
@@ -172,6 +172,12 @@ const corsOptions = {
     // Check if it's a Vercel subdomain
     if (origin && origin.endsWith('.vercel.app')) {
       console.log('Origin is a Vercel subdomain, allowing request');
+      return callback(null, true);
+    }
+    
+    // Check if it's our custom domain
+    if (origin && (origin.includes('lakeshoreconvenience.com'))) {
+      console.log('Origin is our custom domain, allowing request');
       return callback(null, true);
     }
     
@@ -194,6 +200,15 @@ const generalLimiter = rateLimit({
   },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  // Fix for Railway deployment - handle X-Forwarded-For headers properly
+  keyGenerator: (req) => {
+    // Use X-Forwarded-For header if available (for proxy environments like Railway)
+    if (req.headers['x-forwarded-for']) {
+      return req.headers['x-forwarded-for'].split(',')[0].trim();
+    }
+    // Fallback to connection remote address
+    return req.connection.remoteAddress || req.ip;
+  }
 });
 
 // Specific rate limiter for login attempts to prevent brute force attacks
@@ -205,6 +220,15 @@ const loginLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  // Fix for Railway deployment - handle X-Forwarded-For headers properly
+  keyGenerator: (req) => {
+    // Use X-Forwarded-For header if available (for proxy environments like Railway)
+    if (req.headers['x-forwarded-for']) {
+      return req.headers['x-forwarded-for'].split(',')[0].trim();
+    }
+    // Fallback to connection remote address
+    return req.connection.remoteAddress || req.ip;
+  }
 });
 
 // Specific rate limiter for API endpoints to handle high traffic
@@ -216,6 +240,15 @@ const apiLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  // Fix for Railway deployment - handle X-Forwarded-For headers properly
+  keyGenerator: (req) => {
+    // Use X-Forwarded-For header if available (for proxy environments like Railway)
+    if (req.headers['x-forwarded-for']) {
+      return req.headers['x-forwarded-for'].split(',')[0].trim();
+    }
+    // Fallback to connection remote address
+    return req.connection.remoteAddress || req.ip;
+  }
 });
 
 // Apply rate limiting to all requests
