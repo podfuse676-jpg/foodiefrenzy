@@ -9,7 +9,10 @@ import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import compression from 'compression';
-import rateLimit from 'express-rate-limit'; // Add rate limiting
+import rateLimit from 'express-rate-limit';
+
+// Import health check early
+import healthCheck from './health.js';
 
 // Load environment variables
 dotenv.config();
@@ -100,9 +103,7 @@ const app = express();
 const PORT = process.env.PORT || process.env.$PORT || process.env.RAILWAY_PORT || 4000;
 
 // Add early health check endpoint - this should be one of the first routes
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK' });
-});
+app.get('/health', healthCheck);
 
 // Log the port for debugging
 console.log(`=== SERVER CONFIGURATION ===`);
