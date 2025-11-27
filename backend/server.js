@@ -97,7 +97,7 @@ import reviewRoutes from './routes/reviewRoute.js';
 const app = express();
 // Use PORT from environment variable (Render/Railway will set this) or default to 4000
 // Railway typically uses PORT, but we'll check common variations
-const PORT = process.env.PORT || process.env.$PORT || 4000;
+const PORT = process.env.PORT || process.env.$PORT || process.env.RAILWAY_PORT || 4000;
 
 // Log the port for debugging
 console.log(`=== SERVER CONFIGURATION ===`);
@@ -105,6 +105,7 @@ console.log(`PORT: ${PORT}`);
 console.log(`Environment variables:`);
 console.log(`- PORT: ${process.env.PORT}`);
 console.log(`- $PORT: ${process.env.$PORT}`);
+console.log(`- RAILWAY_PORT: ${process.env.RAILWAY_PORT}`);
 console.log(`===========================`);
 
 // Add compression middleware for better performance
@@ -616,19 +617,17 @@ app.get('/test-login', async (req, res) => {
 // Add a simple health check endpoint that doesn't require database connection
 // This will help with deployment health checks
 app.get('/health', (req, res) => {
-  // Check if the server is running
+  // Simple health check that responds immediately
   const healthStatus = {
     status: 'OK',
-    port: PORT,
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    // Add database connection status if available
-    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
-    serverReady: serverReady,
-    serverStartupError: serverStartupError ? serverStartupError.message : null
+    timestamp: new Date().toISOString()
   };
   
-  console.log('Health check requested:', healthStatus);
+  // Log health check only if detailed logging is enabled
+  if (process.env.LOG_HEALTH_CHECKS === 'true') {
+    console.log('Health check requested:', healthStatus);
+  }
+  
   res.status(200).json(healthStatus);
 });
 
