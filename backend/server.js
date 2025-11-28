@@ -157,7 +157,8 @@ const corsOptions = {
       'https://admin-7y4pypy16-podfuse676-6967s-projects.vercel.app',
       'https://www.lakeshoreconvenience.com', // Add custom domain
       'https://lakeshoreconvenience.com', // Add custom domain without www
-      'https://admin.lakeshoreconvenience.com' // Add custom admin domain
+      'https://admin.lakeshoreconvenience.com', // Add custom admin domain
+      'https://*.lakeshore-convenience.pages.dev' // Add Cloudflare Pages wildcard
     ];
     
     console.log('=== CORS REQUEST ===');
@@ -185,6 +186,12 @@ const corsOptions = {
     // Check if it's our custom domain
     if (origin && (origin.includes('lakeshoreconvenience.com'))) {
       console.log('Origin is our custom domain, allowing request');
+      return callback(null, true);
+    }
+    
+    // Check if it's a Cloudflare Pages subdomain
+    if (origin && origin.endsWith('.lakeshore-convenience.pages.dev')) {
+      console.log('Origin is a Cloudflare Pages subdomain, allowing request');
       return callback(null, true);
     }
     
