@@ -29,8 +29,11 @@ const Banner = () => {
           {/* Left Content */}
           <div className="flex-1 space-y-8 relative md:pr-8 text-center md:text-left">
             <h1 className="text-4xl sm:text-5xl md:text-4xl lg:text-6xl font-bold leading-tight font-serif drop-shadow-md">
-              Make your favourite snacks and essentials <br />
-              <span className="font-serif italic">
+              <span className="bg-gradient-to-r from-[#8BC34A] to-[#FFC107] bg-clip-text text-transparent">
+                Make your favourite snacks and essentials
+              </span>
+              <br />
+              <span className="font-serif italic bg-gradient-to-r from-[#FFC107] to-[#8BC34A] bg-clip-text text-transparent">
                 delivery just a click away
               </span>
             </h1>
