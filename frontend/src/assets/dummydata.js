@@ -25,7 +25,7 @@ import Image1 from "./Image1.png";
 import Image2 from "./Image2.png";
 import Image3 from "./Image3.png";
 import Image4 from "./Image4.png";
-// import Video from "./Video.mp4"; // Commented out to avoid large file issue
+import Video from "./Video.mp4"; // Restored video import
 
 // ABOUT PAGE
 export const features = [
@@ -172,7 +172,7 @@ export const contactFormFields = [
 export const bannerAssets = {
     bannerImage: BannerImage,
     orbitImages: [Image1, Image2, Image3, Image4],
-    // video: Video, // Commented out to avoid large file issue
+    video: Video,
 };
 
 export const heroData = {
@@ -183,7 +183,7 @@ export const heroData = {
   ctaText: "Explore Our Menu",
   ctaLink: "/menu",
   image: BannerImage,
-  // video: Video, // Commented out to avoid large file issue
+  video: Video,
   features: [
     {
       id: 1,

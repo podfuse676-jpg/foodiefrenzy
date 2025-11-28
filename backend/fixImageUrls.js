@@ -1,16 +1,30 @@
-// Script to fix double URL issue in item image URLs
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import Item from './modals/item.js';
+import mongoose from 'mongoose';
 
-// Load environment variables
 dotenv.config();
+
+// Item schema (simplified version)
+const itemSchema = new mongoose.Schema({
+  name: String,
+  imageUrl: String
+}, { collection: 'items' });
+
+const Item = mongoose.model('Item', itemSchema);
 
 // Connect to MongoDB
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI);
+    // Use the MONGODB_URI from environment variables
+    const mongoUri = process.env.MONGODB_URI;
+    if (!mongoUri) {
+      console.error('MONGODB_URI environment variable is not set');
+      process.exit(1);
+    }
+    
+    console.log('Connecting to MongoDB...');
+    const conn = await mongoose.connect(mongoUri);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
+    return conn;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     process.exit(1);
@@ -18,42 +32,73 @@ const connectDB = async () => {
 };
 
 const fixImageUrls = async () => {
+  await connectDB();
+  
   try {
-    await connectDB();
+    console.log('Starting image URL fixes...\n');
     
-    console.log('Fixing double URL issue in item image URLs...\n');
+    // Define the corrections needed
+    const corrections = [
+      {
+        itemName: 'Dashboard Polish',
+        correctUrl: 'https://res.cloudinary.com/dfjypp016/image/upload/v1761670243/foodiefrenzy_items/foodiefrenzy_items/Dashboard_Polish_1761670242267.webp'
+      },
+      {
+        itemName: 'Car Perfume',
+        correctUrl: 'https://res.cloudinary.com/dfjypp016/image/upload/v1761670308/foodiefrenzy_items/foodiefrenzy_items/Car_Perfume_1761670306659.webp'
+      }
+    ];
     
-    // Find all items with image URLs
-    const items = await Item.find({ imageUrl: { $ne: null, $ne: "" } });
+    let updatedCount = 0;
     
-    console.log(`Found ${items.length} items with image URLs`);
-    
-    // Fix each item's image URL
-    for (const item of items) {
-      if (item.imageUrl && item.imageUrl.includes('http://lakeshoreconveniencee-backend-production.up.railway.apphttps://')) {
-        // Fix double URL issue
-        const fixedUrl = item.imageUrl.replace('http://lakeshoreconveniencee-backend-production.up.railway.apphttps://', 'https://');
-        console.log(`Fixing URL for "${item.name}":`);
-        console.log(`  Old: ${item.imageUrl}`);
-        console.log(`  New: ${fixedUrl}`);
+    // Process each correction
+    for (const correction of corrections) {
+      try {
+        console.log(`Processing: ${correction.itemName}`);
         
-        item.imageUrl = fixedUrl;
-        await item.save();
-        console.log(`  ✓ Updated`);
-      } else if (item.imageUrl && item.imageUrl.startsWith('https://')) {
-        // Already correct
-        console.log(`"${item.name}" already has correct URL: ${item.imageUrl}`);
-      } else if (item.imageUrl && item.imageUrl.startsWith('/uploads/')) {
-        // Relative path, leave as is
-        console.log(`"${item.name}" has relative path: ${item.imageUrl}`);
+        // Find the item (case insensitive)
+        const item = await Item.findOne({ 
+          name: { $regex: new RegExp(`^${correction.itemName}$`, 'i') }
+        });
+        
+        if (!item) {
+          console.log(`  ⚠️  Item not found: ${correction.itemName}`);
+          continue;
+        }
+        
+        // Check if the item already has the correct URL
+        if (item.imageUrl === correction.correctUrl) {
+          console.log(`  ✓ Item already has correct URL: ${correction.itemName}`);
+          continue;
+        }
+        
+        // Show what will be changed
+        console.log(`  Current URL: ${item.imageUrl}`);
+        console.log(`  Correct URL: ${correction.correctUrl}`);
+        
+        // Update the item
+        const updatedItem = await Item.findByIdAndUpdate(
+          item._id,
+          { imageUrl: correction.correctUrl },
+          { new: true }
+        );
+        
+        console.log(`  ✓ Updated item: ${correction.itemName}\n`);
+        updatedCount++;
+        
+      } catch (error) {
+        console.log(`  ✗ Failed to update ${correction.itemName}: ${error.message}\n`);
       }
     }
     
-    console.log('\nImage URL fix process completed');
-    process.exit(0);
+    console.log(`=== SUMMARY ===`);
+    console.log(`Successfully updated ${updatedCount} items`);
+    
+    mongoose.connection.close();
+    
   } catch (error) {
     console.error('Error:', error);
-    process.exit(1);
+    mongoose.connection.close();
   }
 };
 

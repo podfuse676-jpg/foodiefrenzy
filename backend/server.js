@@ -144,8 +144,8 @@ app.use((req, res, next) => {
 // Configure CORS with a dynamic origin function to allow all Vercel subdomains
 const corsOptions = {
   origin: function (origin, callback) {
-    // List of allowed origins
-    const allowedOrigins = [
+    // List of allowed origins from environment variable
+    let allowedOrigins = [
       'http://localhost:5173',
       'http://localhost:5174',
       process.env.FRONTEND_URL || 'http://localhost:5173',
@@ -160,6 +160,12 @@ const corsOptions = {
       'https://admin.lakeshoreconvenience.com', // Add custom admin domain
       'https://*.lakeshore-convenience.pages.dev' // Add Cloudflare Pages wildcard
     ];
+    
+    // Add origins from CORS_ORIGIN environment variable if set
+    if (process.env.CORS_ORIGIN) {
+      const corsOrigins = process.env.CORS_ORIGIN.split(',').map(origin => origin.trim());
+      allowedOrigins = [...allowedOrigins, ...corsOrigins];
+    }
     
     console.log('=== CORS REQUEST ===');
     console.log('Origin:', origin);
@@ -189,10 +195,19 @@ const corsOptions = {
       return callback(null, true);
     }
     
-    // Check if it's a Cloudflare Pages subdomain
+    // Check if it's a Cloudflare Pages subdomain (explicit check)
     if (origin && origin.endsWith('.lakeshore-convenience.pages.dev')) {
       console.log('Origin is a Cloudflare Pages subdomain, allowing request');
       return callback(null, true);
+    }
+    
+    // Check if it matches any of the CORS_ORIGIN values
+    if (process.env.CORS_ORIGIN) {
+      const corsOrigins = process.env.CORS_ORIGIN.split(',').map(o => o.trim());
+      if (corsOrigins.includes(origin)) {
+        console.log('Origin matches CORS_ORIGIN, allowing request');
+        return callback(null, true);
+      }
     }
     
     // Reject the request
@@ -215,14 +230,14 @@ const generalLimiter = rateLimit({
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   // Fix for Railway deployment - handle X-Forwarded-For headers properly with IPv6 support
-  keyGenerator: (req) => {
+  keyGenerator: rateLimit.ipKeyGenerator((req) => {
     // Use X-Forwarded-For header if available (for proxy environments like Railway)
     if (req.headers['x-forwarded-for']) {
       return req.headers['x-forwarded-for'].split(',')[0].trim();
     }
     // Fallback to connection remote address
     return req.ip;
-  },
+  }),
   // Add skipSuccessfulRequests to reduce load on successful requests
   skipSuccessfulRequests: false
 });
@@ -237,14 +252,14 @@ const loginLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   // Fix for Railway deployment - handle X-Forwarded-For headers properly with IPv6 support
-  keyGenerator: (req) => {
+  keyGenerator: rateLimit.ipKeyGenerator((req) => {
     // Use X-Forwarded-For header if available (for proxy environments like Railway)
     if (req.headers['x-forwarded-for']) {
       return req.headers['x-forwarded-for'].split(',')[0].trim();
     }
     // Fallback to connection remote address
     return req.ip;
-  },
+  }),
   skipSuccessfulRequests: true
 });
 
@@ -258,14 +273,14 @@ const apiLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   // Fix for Railway deployment - handle X-Forwarded-For headers properly with IPv6 support
-  keyGenerator: (req) => {
+  keyGenerator: rateLimit.ipKeyGenerator((req) => {
     // Use X-Forwarded-For header if available (for proxy environments like Railway)
     if (req.headers['x-forwarded-for']) {
       return req.headers['x-forwarded-for'].split(',')[0].trim();
     }
     // Fallback to connection remote address
     return req.ip;
-  },
+  }),
   skipSuccessfulRequests: false
 });
 
@@ -1159,6 +1174,111 @@ app.post('/api/update-item-images', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to update item images',
+      error: error.message
+    });
+  }
+});
+
+// Add a route to fix item images with correct Cloudinary URLs
+app.post('/api/fix-item-images', async (req, res) => {
+  try {
+    console.log('=== FIX ITEM IMAGES REQUEST ===');
+    
+    // Import the Item model
+    const Item = (await import('./modals/item.js')).default;
+    
+    // Define the corrections needed
+    const corrections = [
+      {
+        itemName: 'Dashboard Polish',
+        correctUrl: 'https://res.cloudinary.com/dfjypp016/image/upload/v1761670243/foodiefrenzy_items/foodiefrenzy_items/Dashboard_Polish_1761670242267.webp'
+      },
+      {
+        itemName: 'Car Perfume',
+        correctUrl: 'https://res.cloudinary.com/dfjypp016/image/upload/v1761670308/foodiefrenzy_items/foodiefrenzy_items/Car_Perfume_1761670306659.webp'
+      }
+    ];
+    
+    let updatedCount = 0;
+    const results = [];
+    
+    // Process each correction
+    for (const correction of corrections) {
+      try {
+        console.log('Processing: ' + correction.itemName);
+        
+        // Find the item (case insensitive)
+        const item = await Item.findOne({ 
+          name: { $regex: new RegExp('^' + correction.itemName + '$', 'i') }
+        });
+        
+        if (!item) {
+          console.log('  ⚠️  Item not found: ' + correction.itemName);
+          results.push({
+            item: correction.itemName,
+            status: 'not_found',
+            message: 'Item not found in database'
+          });
+          continue;
+        }
+        
+        // Check if the item already has the correct URL
+        if (item.imageUrl === correction.correctUrl) {
+          console.log('  ✓ Item already has correct URL: ' + correction.itemName);
+          results.push({
+            item: correction.itemName,
+            status: 'already_correct',
+            message: 'Item already has correct URL',
+            url: item.imageUrl
+          });
+          continue;
+        }
+        
+        // Show what will be changed
+        console.log('  Current URL: ' + item.imageUrl);
+        console.log('  Correct URL: ' + correction.correctUrl);
+        
+        // Update the item
+        const updatedItem = await Item.findByIdAndUpdate(
+          item._id,
+          { imageUrl: correction.correctUrl },
+          { new: true }
+        );
+        
+        console.log('  ✓ Updated item: ' + correction.itemName);
+        results.push({
+          item: correction.itemName,
+          status: 'updated',
+          oldUrl: item.imageUrl,
+          newUrl: updatedItem.imageUrl
+        });
+        updatedCount++;
+        
+      } catch (error) {
+        console.log('  ✗ Failed to update ' + correction.itemName + ': ' + error.message);
+        results.push({
+          item: correction.itemName,
+          status: 'error',
+          message: error.message
+        });
+      }
+    }
+    
+    console.log('=== SUMMARY ===');
+    console.log('Successfully updated ' + updatedCount + ' items');
+    
+    res.json({
+      success: true,
+      message: 'Image URL fix process completed',
+      updatedCount: updatedCount,
+      results: results
+    });
+    
+  } catch (error) {
+    console.error('Fix error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fix item images',
       error: error.message
     });
   }
