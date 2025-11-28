@@ -29,15 +29,15 @@ const Banner = () => {
           {/* Left Content */}
           <div className="flex-1 space-y-8 relative md:pr-8 text-center md:text-left">
             <h1 className="text-4xl sm:text-5xl md:text-4xl lg:text-6xl font-bold leading-tight font-serif drop-shadow-md">
-              Fresh Groceries <br />
+              Your Favourite Snacks & Essentials <br />
               {/* Updated to fresh green and light cream colors */}
               <span className="text-[#8BC34A] bg-gradient-to-r from-[#8BC34A] to-[#FFC107] bg-clip-text">
-                Delivered to Your Door
+                Delivered in a Click
               </span>
             </h1>
 
             <p className="text-lg md:text-lg lg:text-xl font-playfair italic sm:text-xl text-gray-700 max-w-xl opacity-90 mx-auto md:mx-0">
-              Fresh produce and quality groceries delivered fast. Your weekly shopping made easy and convenient.
+              Lakeshore Convenience brings you exotic chips, premium beverages, imported candies, daily essentials, and unique convenience items—delivered fast across Canada. Shop exclusive snacks, fresh products, and must-have essentials all in one place.
             </p>
 
             <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto md:mx-0 group">
