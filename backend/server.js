@@ -1284,6 +1284,25 @@ app.post('/api/fix-item-images', async (req, res) => {
   }
 });
 
+// Add a simple test endpoint to verify CORS configuration
+app.get('/api/test-cors', (req, res) => {
+  res.json({ 
+    message: 'CORS is working correctly', 
+    origin: req.get('Origin'),
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Add a debug endpoint to check environment variables
+app.get('/api/debug/env', (req, res) => {
+  res.json({ 
+    cors_origin: process.env.CORS_ORIGIN,
+    frontend_url: process.env.FRONTEND_URL,
+    admin_url: process.env.ADMIN_URL,
+    node_env: process.env.NODE_ENV
+  });
+});
+
 // Start server - Listen on all interfaces for Render/Railway deployment
 console.log(`Attempting to start server on port ${PORT}...`);
 
