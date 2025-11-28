@@ -18,6 +18,17 @@ export default defineConfig({
   build: {
     // Enable gzip compression
     brotliSize: true,
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      external: [
+        'assets/Video-dLH4Wyfh.mp4',
+        './assets/Video-dLH4Wyfh.mp4'
+      ]
+    }
+  },
+  // Exclude large video file from build
+  assetsInclude: ['**/*.mp4'],
+  optimizeDeps: {
+    exclude: ['assets/Video-dLH4Wyfh.mp4']
   }
 })

@@ -2,10 +2,6 @@ name = "lakeshore-convenience"
 compatibility_date = "2025-11-28"
 pages_build_output_dir = "./dist"
 
-[build]
-command = "npm run build"
-watch_dir = "./src"
-
 [vars]
 VITE_API_URL = "https://lakeshoreconveniencee-backend-production.up.railway.app"
 VITE_FRONTEND_URL = "https://lakeshoreconvenience.com"
