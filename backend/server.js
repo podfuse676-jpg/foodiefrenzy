@@ -128,6 +128,24 @@ const app = express();
 // Railway typically uses PORT, but we'll check common variations
 const PORT = process.env.PORT || process.env.$PORT || process.env.RAILWAY_PORT || 4000;
 
+// Add a simple test endpoint at the very beginning
+app.get('/test-very-beginning', (req, res) => {
+  res.json({ 
+    message: 'Test endpoint at very beginning is working',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Add middleware to log all requests
+app.use((req, res, next) => {
+  console.log(`=== REQUEST RECEIVED ===`);
+  console.log(`Method: ${req.method}`);
+  console.log(`URL: ${req.url}`);
+  console.log(`Headers:`, req.headers);
+  console.log(`========================`);
+  next();
+});
+
 // Add early health check endpoint - this should be one of the first routes
 app.get('/health', healthCheck);
 
