@@ -15,5 +15,10 @@
   ],
   "github": {
     "enabled": true
+  },
+  "build": {
+    "env": {
+      "VITE_API_URL": "https://lakeshore-convenience.onrender.com"
+    }
   }
 }
