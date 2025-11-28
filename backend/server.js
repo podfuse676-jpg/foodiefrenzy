@@ -454,6 +454,17 @@ app.post('/api/test-upload', upload.single('image'), (req, res) => {
   });
 });
 
+// Add a simple test endpoint before route registration
+app.get('/test-before-routes', (req, res) => {
+  res.json({ 
+    message: 'Test endpoint before routes is working',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Log route registration
+console.log('=== REGISTERING ROUTES ===');
+
 // Routes
 app.use('/api/items', itemRoutes);
 app.use('/api/cart', cartRoutes);
@@ -462,6 +473,8 @@ app.use('/api/orders', newOrderRoutes); // Add new order routes
 app.use('/api/users', userRoutes);
 app.use('/api/auth', phoneAuthRoutes);
 app.use('/api/reviews', reviewRoutes);
+
+console.log('=== ROUTES REGISTERED ===');
 
 // Debug endpoint to check environment variables
 app.get('/api/debug-env', (req, res) => {
