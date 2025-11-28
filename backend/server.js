@@ -1410,6 +1410,10 @@ app.use((err, req, res, next) => {
 // Add 404 handler for unmatched routes
 app.use((req, res) => {
   console.log('404 - Route not found:', req.method, req.url);
+  // Check if this is an API route
+  if (req.url.startsWith('/api/')) {
+    console.log('API route not found, this might indicate a routing issue');
+  }
   res.status(404).json({
     message: 'Route not found',
     method: req.method,
