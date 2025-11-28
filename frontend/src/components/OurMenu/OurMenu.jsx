@@ -188,7 +188,7 @@ const OurMenu = () => {
           <div className="relative">
             <input
               type="text"
-              placeholder="Search grocery items..."
+              placeholder="Discover new products, snacks, and more..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full px-4 py-3 sm:px-6 sm:py-4 rounded-full bg-[#FAFAFA]/20 border-2 border-[#4CAF50]/30 text-[#333333] placeholder-[#333333]/50 focus:outline-none focus:border-[#4CAF50] focus:bg-[#FAFAFA]/30 transition-all font-cinzel text-sm sm:text-base"
