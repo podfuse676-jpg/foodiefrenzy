@@ -121,6 +121,7 @@ import newOrderRoutes from './routes/newOrderRoutes.js';
 import userRoutes from './routes/userRoute.js';
 import phoneAuthRoutes from './routes/phoneAuthRoute.js';
 import reviewRoutes from './routes/reviewRoute.js';
+import testRoutes from './routes/testRoute.js'; // Add test routes
 
 const app = express();
 // Use PORT from environment variable (Render/Railway will set this) or default to 4000
@@ -473,6 +474,7 @@ app.use('/api/orders', newOrderRoutes); // Add new order routes
 app.use('/api/users', userRoutes);
 app.use('/api/auth', phoneAuthRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/test', testRoutes); // Add test routes
 
 console.log('=== ROUTES REGISTERED ===');
 
