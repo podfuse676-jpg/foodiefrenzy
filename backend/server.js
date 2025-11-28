@@ -245,6 +245,17 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// Add caching headers for static assets
+app.use(express.static('public', {
+  maxAge: '1y',
+  etag: false
+}));
+
+// Add cookie parser and body parsers BEFORE rate limiting
+app.use(cookieParser());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
 // Add rate limiting middleware for protection against abuse
 // General rate limiter for all requests
 const generalLimiter = rateLimit({
@@ -320,12 +331,6 @@ app.use('/api/users/login', loginLimiter);
 // Apply higher rate limiting to API endpoints
 app.use('/api/', apiLimiter);
 
-// Add caching headers for static assets
-app.use(express.static('public', {
-  maxAge: '1y',
-  etag: false
-}));
-
 // Track server readiness
 let serverReady = false;
 let serverStartupError = null;
@@ -356,10 +361,6 @@ connectDB().then(() => {
   // The health check will show the database status
   serverReady = true;
 });
-
-app.use(cookieParser());
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Add a middleware to check if server is ready
 app.use((req, res, next) => {
