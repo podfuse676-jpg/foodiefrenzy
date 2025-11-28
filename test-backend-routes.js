@@ -1,7 +1,7 @@
 // Simple test to check if backend routes are working
 import axios from 'axios';
 
-const BACKEND_URL = 'https://lakeshoreconveniencee-backend-production.up.railway.app';
+const BACKEND_URL = 'https://lakeshore-convenience.onrender.com';
 
 async function testRoutes() {
   console.log('=== Testing Backend Routes ===');
