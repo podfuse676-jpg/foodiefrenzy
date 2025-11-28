@@ -415,13 +415,21 @@ app.use((req, res, next) => {
 console.log('=== REGISTERING ROUTES ===');
 
 // Routes
+console.log('Registering /api/items routes');
 app.use('/api/items', itemRoutes);
+console.log('Registering /api/cart routes');
 app.use('/api/cart', cartRoutes);
+console.log('Registering /api/orders routes');
 app.use('/api/orders', orderRoutes);
+console.log('Registering /api/orders (new) routes');
 app.use('/api/orders', newOrderRoutes); // Add new order routes
+console.log('Registering /api/users routes');
 app.use('/api/users', userRoutes);
+console.log('Registering /api/auth routes');
 app.use('/api/auth', phoneAuthRoutes);
+console.log('Registering /api/reviews routes');
 app.use('/api/reviews', reviewRoutes);
+console.log('Registering /api/test routes');
 app.use('/api/test', testRoutes); // Add test routes
 
 console.log('=== ROUTES REGISTERED ===');
