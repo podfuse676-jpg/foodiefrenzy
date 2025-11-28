@@ -37,7 +37,7 @@ const AboutHome = () => {
                   </span>
                 </h2>
                 <p className="text-lg sm:text-xl opacity-90 leading-relaxed max-w-4xl text-gray-700">
-                  "We bring you the freshest produce and quality groceries, delivered fast to your doorstep. Your one-stop shop for all your grocery needs."
+                  We bring you exotic chips, exotic candies, exotic drinks, and all your essential convenience products—delivered right to your doorstep.
                 </p>
               </div>
               
