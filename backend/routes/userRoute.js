@@ -3,6 +3,7 @@ import { loginUser, registerUser } from '../controllers/userController.js'
 import { authMiddleware, adminMiddleware } from '../middleware/auth.js'
 import userModel from '../modals/userModel.js'
 import bcrypt from 'bcryptjs'
+import Order from '../modals/order.js'
 
 const userRouter = express.Router()
 
@@ -98,9 +99,77 @@ userRouter.put("/change-password", authMiddleware, async (req, res) => {
 
 // Admin-only routes
 userRouter.use("/admin", authMiddleware, adminMiddleware)
+
+// Get all users (admin only)
 userRouter.get("/admin/users", async (req, res) => {
-    // This is just a placeholder for admin routes
-    res.json({ message: "Admin route accessed successfully" })
+    try {
+        const users = await userModel.find({}).select('-password').sort({ createdAt: -1 })
+        res.json({ 
+            success: true, 
+            users,
+            count: users.length
+        })
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error fetching users" })
+    }
+})
+
+// Get user details including orders (admin only)
+userRouter.get("/admin/users/:userId", async (req, res) => {
+    try {
+        const { userId } = req.params
+        
+        // Get user details
+        const user = await userModel.findById(userId).select('-password')
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" })
+        }
+        
+        // Get user's recent orders
+        const orders = await Order.find({ user: userId }).sort({ createdAt: -1 }).limit(20)
+        
+        res.json({ 
+            success: true, 
+            user,
+            orders,
+            ordersCount: orders.length
+        })
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error fetching user details" })
+    }
+})
+
+// Get all orders (admin only)
+userRouter.get("/admin/orders", async (req, res) => {
+    try {
+        const orders = await Order.find({}).populate('user', 'username email phoneNumber').sort({ createdAt: -1 }).limit(100)
+        res.json({ 
+            success: true, 
+            orders,
+            count: orders.length
+        })
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error fetching orders" })
+    }
+})
+
+// Get specific order details (admin only)
+userRouter.get("/admin/orders/:orderId", async (req, res) => {
+    try {
+        const { orderId } = req.params
+        
+        const order = await Order.findById(orderId).populate('user', 'username email phoneNumber')
+        if (!order) {
+            return res.status(404).json({ success: false, message: "Order not found" })
+        }
+        
+        res.json({ 
+            success: true, 
+            order
+        })
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error fetching order details" })
+    }
 })
 
 export default userRouter

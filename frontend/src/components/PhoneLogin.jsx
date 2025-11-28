@@ -1,26 +1,28 @@
+// frontend/src/components/PhoneLogin.jsx
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import apiConfig from '../utils/apiConfig';
+import {
+  FaPhone,
+  FaKey,
+  FaArrowLeft
+} from 'react-icons/fa';
+
+const url = apiConfig.baseURL;
 
 const PhoneLogin = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [codeSent, setCodeSent] = useState(false);
+  const [displayedCode, setDisplayedCode] = useState('');
   const [loading, setLoading] = useState(false);
-  const [displayedCode, setDisplayedCode] = useState(''); // Store OTP for display
-  const [verificationStatus, setVerificationStatus] = useState(''); // For visual feedback
+  const [verificationStatus, setVerificationStatus] = useState(''); // 'sending', 'sent', 'verifying', 'success', 'error'
   const navigate = useNavigate();
-  const url = apiConfig.baseURL;
 
   const handleSendCode = async (e) => {
     e.preventDefault();
-    if (!phoneNumber || phoneNumber.length < 10) {
-      toast.error('Please enter a valid phone number');
-      return;
-    }
-
     try {
       setLoading(true);
       setVerificationStatus('sending');
@@ -63,7 +65,6 @@ const PhoneLogin = () => {
       toast.error('Please enter a valid 6-digit verification code');
       return;
     }
-
     try {
       setLoading(true);
       setVerificationStatus('verifying');
@@ -74,6 +75,15 @@ const PhoneLogin = () => {
         phoneNumber: formattedPhone,
         verificationCode
       });
+      
+      // Check if user needs to set credentials
+      if (response.data.user.needsPasswordSetup) {
+        // Store user ID for credential setup
+        localStorage.setItem('tempUserId', response.data.user.id);
+        // Redirect to set credentials page
+        navigate('/set-credentials');
+        return;
+      }
       
       // Save token and login data to localStorage - use consistent key
       localStorage.setItem('authToken', response.data.token);
@@ -135,16 +145,16 @@ const PhoneLogin = () => {
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   required
                 />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-4">
+                  <FaPhone className="text-[#8BC34A]" />
+                </div>
               </div>
-              <p className="text-xs text-[#8BC34A]/70 mt-2">
-                Format: +1XXXXXXXXXX or XXXXXXXXXX (US)
-              </p>
             </div>
             
             <button
-              className="w-full bg-gradient-to-r from-[#8BC34A] to-[#7CB342] hover:from-[#7CB342] hover:to-[#8BC34A] text-white font-bold py-3 px-4 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               type="submit"
               disabled={loading}
+              className="w-full bg-gradient-to-r from-[#8BC34A] to-[#7CB342] text-white font-bold py-3 px-4 rounded-xl hover:from-[#7CB342] hover:to-[#689F38] transition-all transform hover:scale-[1.02] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <span className="flex items-center justify-center">
@@ -152,7 +162,7 @@ const PhoneLogin = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Sending...
+                  Sending Code...
                 </span>
               ) : 'Send Verification Code'}
             </button>
@@ -185,75 +195,17 @@ const PhoneLogin = () => {
                 id="verificationCode"
                 type="text"
                 placeholder="123456"
+                maxLength="6"
                 value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                maxLength={6}
+                onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
                 required
               />
             </div>
             
-            {/* Visual feedback for verification status */}
-            {verificationStatus && (
-              <div className={`p-3 rounded-lg text-center ${
-                verificationStatus === 'verifying' ? 'bg-blue-100/30 text-blue-800' :
-                verificationStatus === 'success' ? 'bg-green-100/30 text-green-800' :
-                verificationStatus === 'error' ? 'bg-red-100/30 text-red-800' :
-                'bg-gray-100/30 text-gray-800'
-              }`}>
-                {verificationStatus === 'verifying' && (
-                  <div className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span>Verifying code...</span>
-                  </div>
-                )}
-                {verificationStatus === 'success' && (
-                  <div className="flex items-center justify-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    <span>Login successful! Redirecting...</span>
-                  </div>
-                )}
-                {verificationStatus === 'error' && (
-                  <div className="flex items-center justify-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                    </svg>
-                    <span>Verification failed. Please try again.</span>
-                  </div>
-                )}
-              </div>
-            )}
-            
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                type="button"
-                className="flex-1 px-4 py-2 bg-[#8BC34A]/50 hover:bg-[#7CB342]/50 text-white rounded-xl border-2 border-[#8BC34A]/30 transition-colors"
-                onClick={() => {
-                  setCodeSent(false);
-                  setVerificationStatus('');
-                }}
-              >
-                Change Phone Number
-              </button>
-              
-              <button
-                type="button"
-                className="flex-1 px-4 py-2 bg-[#8BC34A]/50 hover:bg-[#7CB342]/50 text-white rounded-xl border-2 border-[#8BC34A]/30 transition-colors"
-                onClick={handleSendCode}
-                disabled={loading}
-              >
-                Resend Code
-              </button>
-            </div>
-            
             <button
-              className="w-full bg-gradient-to-r from-[#8BC34A] to-[#7CB342] hover:from-[#7CB342] hover:to-[#8BC34A] text-white font-bold py-3 px-4 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               type="submit"
               disabled={loading || verificationCode.length !== 6}
+              className="w-full bg-gradient-to-r from-[#8BC34A] to-[#7CB342] text-white font-bold py-3 px-4 rounded-xl hover:from-[#7CB342] hover:to-[#689F38] transition-all transform hover:scale-[1.02] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <span className="flex items-center justify-center">
@@ -263,14 +215,27 @@ const PhoneLogin = () => {
                   </svg>
                   Verifying...
                 </span>
-              ) : 'Verify & Login'}
+              ) : 'Verify Code'}
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => {
+                setCodeSent(false);
+                setVerificationCode('');
+                setDisplayedCode('');
+              }}
+              className="w-full text-[#8BC34A] font-bold py-3 px-4 rounded-xl border-2 border-[#8BC34A]/30 hover:bg-[#8BC34A]/10 transition-colors flex items-center justify-center"
+            >
+              <FaArrowLeft className="mr-2" />
+              Back to Phone Number
             </button>
           </form>
         )}
         
         <div className="mt-8 pt-6 border-t border-[#8BC34A]/30 text-center">
-          <p className="text-sm text-gray-800/70">
-            Want to login with email instead?{' '}
+          <p className="text-sm text-gray-800/70 mb-4">
+            Prefer to login with email instead?{' '}
             <Link 
               to="/login"
               className="text-[#8BC34A] hover:text-[#FFC107] font-semibold transition-colors"

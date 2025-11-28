@@ -1,5 +1,5 @@
 import express from 'express';
-import { sendVerificationCode, verifyPhoneCode, loginWithPhone } from '../controllers/phoneAuthController.js';
+import { sendVerificationCode, verifyPhoneCode, loginWithPhone, setUsernameAndPassword } from '../controllers/phoneAuthController.js';
 
 const router = express.Router();
 
@@ -11,5 +11,8 @@ router.post('/verify-code', verifyPhoneCode);
 
 // Login with phone number
 router.post('/login', loginWithPhone);
+
+// Set username and password for OTP users
+router.post('/set-credentials', setUsernameAndPassword);
 
 export default router;

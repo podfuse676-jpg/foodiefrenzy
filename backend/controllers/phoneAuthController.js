@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import twilio from 'twilio';
 import { CartItem } from '../modals/cartItem.js';
+import bcrypt from 'bcryptjs';
 
 dotenv.config();
 
@@ -78,7 +79,7 @@ export const sendVerificationCode = async (req, res) => {
       return res.status(400).json({ message: 'Phone number is required' });
     }
     
-    // Generate a verification code
+    // Generate a verification code and set expiration (10 minutes)
     const verificationCode = generateVerificationCode();
     const verificationExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
     
@@ -162,7 +163,8 @@ export const verifyPhoneCode = async (req, res) => {
         username: user.username,
         email: user.email,
         phoneNumber: user.phoneNumber,
-        isPhoneVerified: user.isPhoneVerified
+        isPhoneVerified: user.isPhoneVerified,
+        needsPasswordSetup: !user.password || user.password.length < 8
       }
     });
   } catch (error) {
@@ -207,5 +209,59 @@ export const loginWithPhone = async (req, res) => {
   } catch (error) {
     console.error('Error in phone login:', error);
     res.status(500).json({ message: 'Error in phone login' });
+  }
+};
+
+// Set username and password for OTP users
+export const setUsernameAndPassword = async (req, res) => {
+  try {
+    const { userId, username, password } = req.body;
+    
+    if (!userId || !username || !password) {
+      return res.status(400).json({ message: 'User ID, username, and password are required' });
+    }
+    
+    // Validate password strength
+    if (password.length < 8) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+    }
+    
+    // Check if username is already taken
+    const existingUser = await User.findOne({ username, _id: { $ne: userId } });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Username already taken' });
+    }
+    
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    
+    // Update user with username and password
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { 
+        username,
+        password: hashedPassword,
+        email: username.includes('@') ? username : `${username}@foodiefrenzy.com`
+      },
+      { new: true }
+    );
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    res.status(200).json({ 
+      message: 'Username and password set successfully',
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        phoneNumber: user.phoneNumber
+      }
+    });
+  } catch (error) {
+    console.error('Error setting username and password:', error);
+    res.status(500).json({ message: 'Error setting username and password' });
   }
 };

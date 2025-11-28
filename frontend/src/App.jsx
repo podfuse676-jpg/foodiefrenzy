@@ -17,6 +17,7 @@ import VerifyPaymentPage from './pages/VerifyPaymentPage/VerifyPaymentPage';
 import EmailLogin from './pages/EmailLogin/EmailLogin';
 import TestMenu from './TestMenu';
 import Profile from './pages/Profile/Profile';
+import SetCredentials from './components/SetCredentials/SetCredentials';
 
 function App() {
   const location = useLocation();
@@ -28,6 +29,7 @@ function App() {
       <Route path="/signup" element={<SignUp />} />
       <Route path="/login" element={<EmailLogin />} />
       <Route path="/phone-login" element={<PhoneLogin />} />
+      <Route path="/set-credentials" element={<SetCredentials />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/menu" element={<Menu />} />
