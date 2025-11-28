@@ -35,12 +35,25 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
       const imageUrl = item.imageUrl || item.image;
       console.log('Using item image URL:', imageUrl);
       
-      // If it's already a full URL (Cloudinary), return as is
+      // If it's a local path (starts with /uploads), construct full URL
+      if (imageUrl.startsWith('/uploads')) {
+        const baseUrl = import.meta.env.VITE_API_URL || 'https://lakeshore-convenience.onrender.com';
+        return `${baseUrl}${imageUrl}`;
+      }
+      
+      // If it's already a full URL (Cloudinary), check if we have a local version
       if (imageUrl.startsWith('http')) {
+        // Check if this item might have a local image
+        // This is a temporary fix to prefer local images over Cloudinary
+        const itemNameClean = item.name.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+        const possibleLocalPath = `/uploads/images/${item.name}.webp`;
+        const possibleLocalPathClean = `/uploads/images/${itemNameClean}.webp`;
+        
+        // We'll continue to use the provided URL for now, but the backend should update the database
         return imageUrl;
       }
       
-      // If it's a relative path, construct full URL
+      // For any other relative path, construct full URL
       const baseUrl = import.meta.env.VITE_API_URL || 'https://lakeshore-convenience.onrender.com';
       return `${baseUrl}${imageUrl}`;
     }
