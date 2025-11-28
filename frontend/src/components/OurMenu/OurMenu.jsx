@@ -8,6 +8,7 @@ import { useCart } from '../../CartContext/CartContext';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import { getItems } from '../../utils/api';
+import SEO from '../../components/SEO';
 
 const OurMenu = () => {
   const [menuData, setMenuData] = useState({});
@@ -159,34 +160,29 @@ const OurMenu = () => {
   }
   
   return (
-    <div 
-      ref={ref}
-      className={`bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] min-h-screen pt-24 sm:pt-32 pb-16 px-4 sm:px-6 lg:px-8 transition-opacity duration-500 ${inView ? 'opacity-100' : 'opacity-90'}`}
-    >
-      <div className="max-w-7xl mx-auto">
-        {/* Title - improved for mobile */}
-        <h2 className="text-center mb-6 sm:mb-8">
-          <span className="font-dancingscript block text-4xl sm:text-5xl md:text-6xl mb-2 bg-gradient-to-r from-[#4CAF50] via-[#F4D03F] to-[#4CAF50] bg-clip-text text-transparent">
-            Our Grocery Selection
-          </span>
-          <span className="block text-lg sm:text-xl md:text-2xl font-cinzel mt-3 sm:mt-4 text-[#333333]/80">
-            Fresh & Quality Products
-          </span>
-        </h2>
-        
-        {/* Fixed content for indexing purposes - Updated for better SEO - Force redeploy 1 */}
-        <div className="max-w-4xl mx-auto mb-8 text-center">
-          <p className="text-lg sm:text-xl md:text-2xl font-cinzel text-[#333333]/90 mb-4">
-            Explore Our Menu Items
-          </p>
-          <p className="text-base sm:text-lg text-[#333333]/80 font-playfair max-w-3xl mx-auto">
-            Discover a wide variety of fresh groceries, quality products, and convenience items. 
-            From farm-fresh fruits and vegetables to specialty beverages and snacks, we have everything 
-            you need for your weekly shopping. All items are carefully selected and delivered fresh 
-            to your door across Canada.
+    <>
+      <SEO 
+        title="Our Menu - Lakeshore Convenience" 
+        description="Browse our extensive selection of exotic chips, premium beverages, imported candies, and unique convenience items. Order online for fast delivery across Canada."
+        keywords="grocery menu, convenience store items, exotic snacks, imported foods, online ordering, Canada delivery"
+        ogTitle="Our Menu - Lakeshore Convenience"
+        ogDescription="Discover our exclusive collection of convenience items delivered fast across Canada"
+        ogImage={`${window.location.origin}/og-menu.jpg`}
+      />
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8 min-h-screen">
+        {/* Header Section */}
+        <div className="text-center mb-12 mt-6">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4 font-playfair">
+            Our Exclusive Convenience Collection
+          </h1>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Discover our carefully curated selection of exotic chips, premium beverages, 
+            imported candies, and unique convenience items from around the world.
           </p>
         </div>
-        
+
         {/* Search Bar - improved for mobile */}
         <div className="max-w-2xl mx-auto mb-8 sm:mb-12">
           <div className="relative">
@@ -319,7 +315,7 @@ const OurMenu = () => {
           }}
         />
       )}
-    </div>
+    </>
   );
 };
 
