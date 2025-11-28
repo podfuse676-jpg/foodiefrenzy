@@ -213,6 +213,95 @@ const loadInitialData = async (Item) => {
   }
 };
 
+// Function to update image URLs for all items to use local paths
+const updateItemImageUrls = async (Item) => {
+  try {
+    console.log('=== UPDATING ITEM IMAGE URLS ===');
+    
+    // Get list of all image files in uploads directory
+    const uploadsDir = path.join(process.cwd(), 'uploads', 'images');
+    if (!fs.existsSync(uploadsDir)) {
+      console.log('Uploads directory not found, skipping image URL update');
+      return;
+    }
+    
+    const imageFiles = fs.readdirSync(uploadsDir);
+    console.log(`Found ${imageFiles.length} image files in uploads directory`);
+    
+    // Create a map of filename to full path (without extension matching)
+    const imageMap = {};
+    imageFiles.forEach(file => {
+      const nameWithoutExt = path.parse(file).name;
+      imageMap[nameWithoutExt] = `/uploads/images/${file}`;
+    });
+    
+    // Get all items from database
+    const items = await Item.find({});
+    console.log(`Found ${items.length} items in database`);
+    
+    let updatedCount = 0;
+    
+    // Update each item
+    for (const item of items) {
+      // Check if item has a Cloudinary URL or no image URL
+      if (!item.imageUrl || item.imageUrl.includes('res.cloudinary.com')) {
+        console.log(`Processing item: ${item.name}`);
+        
+        // Try to find a matching local image
+        const itemNameClean = item.name.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+        const possibleNames = [
+          item.name,
+          itemNameClean,
+          itemNameClean.replace(/\s+/g, '-'),
+          itemNameClean.replace(/\s+/g, '_'),
+          itemNameClean.replace(/\s+/g, ''),
+          // Try without common suffixes
+          itemNameClean.replace(/\s+(Shot|Drink|Webp|Jpg|Png)$/i, ''),
+        ];
+        
+        let foundLocalImage = false;
+        
+        for (const name of possibleNames) {
+          // Look for exact match first
+          if (imageMap[name]) {
+            console.log(`  Found exact match: ${name}`);
+            item.imageUrl = imageMap[name];
+            await item.save();
+            updatedCount++;
+            foundLocalImage = true;
+            break;
+          }
+          
+          // Look for partial matches
+          const matchingKeys = Object.keys(imageMap).filter(key => 
+            key.toLowerCase().includes(name.toLowerCase()) || 
+            name.toLowerCase().includes(key.toLowerCase())
+          );
+          
+          if (matchingKeys.length > 0) {
+            console.log(`  Found partial match: ${matchingKeys[0]}`);
+            item.imageUrl = imageMap[matchingKeys[0]];
+            await item.save();
+            updatedCount++;
+            foundLocalImage = true;
+            break;
+          }
+        }
+        
+        if (!foundLocalImage) {
+          console.log(`  No matching local image found for: ${item.name}`);
+        }
+      }
+    }
+    
+    console.log(`Updated ${updatedCount} items with local image URLs`);
+    console.log('=== IMAGE URL UPDATE COMPLETE ===');
+    
+  } catch (error) {
+    console.error('Error updating image URLs:', error);
+  }
+};
+
 const app = express();
 // Use PORT from environment variable (Render will set this) or default to 10000 for Render
 // Render typically uses PORT
@@ -497,6 +586,11 @@ if (!process.env.MONGODB_URI) {
         console.log('Database is empty, loading initial data...');
         await loadInitialData(Item);
       }
+      
+      // Always update image URLs to use local paths
+      console.log('Updating item image URLs to use local paths...');
+      await updateItemImageUrls(Item);
+      
     } catch (error) {
       console.error('Error checking/loading initial data:', error);
     }
