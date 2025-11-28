@@ -8,7 +8,7 @@ import { useCart } from '../../CartContext/CartContext';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import { getItems } from '../../utils/api';
-import SEO from '../../components/SEO';
+import SEO from '../../components/SEO/SEO';
 
 const OurMenu = () => {
   const [menuData, setMenuData] = useState({});
