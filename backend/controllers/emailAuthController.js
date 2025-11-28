@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import User from '../modals/userModel.js';
 import OTP from '../modals/otpModel.js';
 import emailService from '../services/emailService.js';
+import alternativeEmailService from '../services/alternativeEmailService.js';
 
 // Generate a 6-digit OTP
 const generateOTP = () => {
@@ -51,12 +52,18 @@ export const sendEmailOTP = async (req, res) => {
     );
     console.log('✅ OTP saved to database:', otpRecord._id);
 
-    // Send OTP via email
-    console.log(`📤 Attempting to send OTP email to ${email}...`);
-    const emailResult = await emailService.sendOTP(email, otp);
+    // Try primary email service first
+    console.log(`📤 Attempting to send OTP email to ${email} using primary service...`);
+    let emailResult = await emailService.sendOTP(email, otp);
+    
+    // If primary service fails, try alternative service
+    if (!emailResult.success) {
+      console.log('⚠️ Primary email service failed, trying alternative service...');
+      emailResult = await alternativeEmailService.sendOTP(email, otp);
+    }
     
     if (!emailResult.success) {
-      console.log('❌ Failed to send OTP email:', emailResult.error);
+      console.log('❌ Both email services failed:', emailResult.error);
       return res.status(500).json({ 
         message: 'Failed to send OTP email',
         error: emailResult.error

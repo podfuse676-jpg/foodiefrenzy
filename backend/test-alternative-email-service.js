@@ -1,11 +1,11 @@
-// Test script to verify email service functionality
+// Test script to verify alternative email service functionality
 import dotenv from 'dotenv';
 dotenv.config();
 
-import emailService from './services/emailService.js';
+import alternativeEmailService from './services/alternativeEmailService.js';
 
-async function testEmailService() {
-  console.log('🧪 Testing Email Service...');
+async function testAlternativeEmailService() {
+  console.log('🧪 Testing Alternative Email Service...');
   
   // Check if environment variables are set
   console.log('Checking environment variables...');
@@ -19,23 +19,23 @@ async function testEmailService() {
   }
   
   // Wait a moment for the transporter to initialize
-  console.log('\n⏳ Waiting for email transporter to initialize...');
+  console.log('\n⏳ Waiting for alternative email transporter to initialize...');
   await new Promise(resolve => setTimeout(resolve, 5000));
   
   // Test sending an OTP
-  console.log('\n📧 Testing OTP email sending...');
+  console.log('\n📧 Testing OTP email sending with alternative service...');
   const testEmail = process.env.EMAIL_USER; // Send to the same email for testing
-  const testOTP = '123456';
+  const testOTP = '654321';
   
   try {
     console.log(`Sending OTP ${testOTP} to ${testEmail}...`);
-    const result = await emailService.sendOTP(testEmail, testOTP);
+    const result = await alternativeEmailService.sendOTP(testEmail, testOTP);
     
     if (result.success) {
-      console.log('✅ Email sent successfully!');
+      console.log('✅ Alternative email sent successfully!');
       console.log('Message ID:', result.messageId);
     } else {
-      console.log('❌ Failed to send email:', result.error);
+      console.log('❌ Failed to send alternative email:', result.error);
       
       // Provide specific guidance based on error
       if (result.error.includes('timeout')) {
@@ -48,11 +48,11 @@ async function testEmailService() {
       }
     }
   } catch (error) {
-    console.log('💥 Error during email test:', error.message);
+    console.log('💥 Error during alternative email test:', error.message);
   }
   
-  console.log('\n🏁 Email service test completed.');
+  console.log('\n🏁 Alternative email service test completed.');
 }
 
 // Run the test
-testEmailService();
+testAlternativeEmailService();

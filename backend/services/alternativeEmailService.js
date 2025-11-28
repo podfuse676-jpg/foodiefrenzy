@@ -1,65 +1,38 @@
+// Alternative email service using SMTP with different configuration options
 import nodemailer from 'nodemailer';
 
-class EmailService {
+class AlternativeEmailService {
   constructor() {
     // Check if environment variables are set
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.warn('⚠️  Email service not configured: EMAIL_USER and/or EMAIL_PASS not set');
+      console.warn('⚠️  Alternative email service not configured: EMAIL_USER and/or EMAIL_PASS not set');
       this.transporter = null;
       return;
     }
 
     try {
-      // Use more reliable Gmail SMTP configuration
+      // Alternative SMTP configuration that works better with some hosting providers
       this.transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
-        port: 587,
-        secure: false, // true for 465, false for other ports
+        port: 465,
+        secure: true, // Use TLS
         auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS
         },
         tls: {
-          rejectUnauthorized: false // Accept self-signed certificates (needed in some environments)
+          rejectUnauthorized: false,
+          ciphers: 'SSLv3'
         },
-        connectionTimeout: 30000, // 30 seconds
-        greetingTimeout: 30000,
-        socketTimeout: 30000
+        connectionTimeout: 60000, // 60 seconds
+        greetingTimeout: 60000,
+        socketTimeout: 60000
       });
       
       // Verify transporter configuration
       this.transporter.verify((error, success) => {
         if (error) {
-          console.error('❌ Email transporter configuration error:', error);
-          // Try alternative configuration if first one fails
-          this.setupAlternativeTransporter();
-        } else {
-          console.log('✅ Email transporter is ready to send emails');
-        }
-      });
-    } catch (error) {
-      console.error('❌ Failed to create email transporter:', error);
-      this.transporter = null;
-    }
-  }
-
-  setupAlternativeTransporter() {
-    try {
-      console.log('🔄 Trying alternative email transporter configuration...');
-      this.transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS
-        },
-        tls: {
-          rejectUnauthorized: false
-        }
-      });
-      
-      this.transporter.verify((error, success) => {
-        if (error) {
-          console.error('❌ Alternative email transporter also failed:', error);
+          console.error('❌ Alternative email transporter configuration error:', error);
           this.transporter = null;
         } else {
           console.log('✅ Alternative email transporter is ready to send emails');
@@ -74,7 +47,7 @@ class EmailService {
   async sendOTP(email, otp) {
     // Check if transporter is available
     if (!this.transporter) {
-      const errorMsg = 'Email service not configured properly. Check EMAIL_USER and EMAIL_PASS environment variables.';
+      const errorMsg = 'Alternative email service not configured properly.';
       console.error('❌', errorMsg);
       return { success: false, error: errorMsg };
     }
@@ -106,13 +79,12 @@ class EmailService {
         `
       };
 
-      console.log(`📧 Sending OTP to ${email}...`);
+      console.log(`📧 [Alternative] Sending OTP to ${email}...`);
       const info = await this.transporter.sendMail(mailOptions);
-      console.log('✅ OTP email sent successfully:', info.messageId);
+      console.log('✅ [Alternative] OTP email sent successfully:', info.messageId);
       return { success: true, messageId: info.messageId };
     } catch (error) {
-      console.error('❌ Error sending OTP email:', error);
-      // Provide more specific error information
+      console.error('❌ [Alternative] Error sending OTP email:', error);
       let errorMessage = error.message;
       if (error.code === 'EAUTH') {
         errorMessage = 'Authentication failed. Check your EMAIL_USER and EMAIL_PASS values.';
@@ -129,4 +101,4 @@ class EmailService {
   }
 }
 
-export default new EmailService();
+export default new AlternativeEmailService();
