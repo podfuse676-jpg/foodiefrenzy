@@ -102,10 +102,19 @@ const upload = multer({
 // Connect to MongoDB
 const connectDB = async () => {
   try {
+    // Log MongoDB URI for debugging (mask sensitive info)
+    if (process.env.MONGODB_URI) {
+      const maskedUri = process.env.MONGODB_URI.replace(/(mongodb\+srv:\/\/)([^:]+):([^@]+)(@.*)/, '$1****:****$4');
+      console.log(`Attempting to connect to MongoDB: ${maskedUri}`);
+    } else {
+      console.log('MONGODB_URI environment variable not set!');
+    }
+    
     const conn = await mongoose.connect(process.env.MONGODB_URI);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    console.error(`MongoDB Connection Error: ${error.message}`);
+    console.error('Please check your MONGODB_URI environment variable in Render');
     process.exit(1);
   }
 };
@@ -207,7 +216,14 @@ const loadInitialData = async (Item) => {
 const app = express();
 // Use PORT from environment variable (Render will set this) or default to 10000 for Render
 // Render typically uses PORT
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || process.env.$PORT || process.env.RENDER_PORT || 10000;
+
+// Log PORT detection for debugging
+console.log('PORT Detection:');
+console.log('- process.env.PORT:', process.env.PORT);
+console.log('- process.env.$PORT:', process.env.$PORT);
+console.log('- process.env.RENDER_PORT:', process.env.RENDER_PORT);
+console.log('- Final PORT value:', PORT);
 
 // Add a simple test endpoint at the very beginning
 app.get('/test-very-beginning', (req, res) => {
@@ -460,32 +476,39 @@ console.log('Current working directory:', process.cwd());
 
 // Connect to database
 console.log('Attempting to connect to database...');
-connectDB().then(async () => {
-  console.log('Database connected successfully');
-  serverReady = true;
-  databaseConnected = true;
-  
-  // Load initial data if collection is empty
-  try {
-    const Item = (await import('./modals/item.js')).default;
-    const itemCount = await Item.countDocuments();
-    console.log(`Found ${itemCount} items in database`);
-    
-    if (itemCount === 0) {
-      console.log('Database is empty, loading initial data...');
-      await loadInitialData(Item);
-    }
-  } catch (error) {
-    console.error('Error checking/loading initial data:', error);
-  }
-}).catch((error) => {
-  console.error('Failed to connect to database:', error);
-  serverStartupError = error;
-  // Even if database connection fails, we'll still start the server
-  // The health check will show the database status
+if (!process.env.MONGODB_URI) {
+  console.error('MONGODB_URI environment variable is not set!');
+  console.error('Server will start but database features will not work.');
   serverReady = true;
   databaseConnected = false;
-});
+} else {
+  connectDB().then(async () => {
+    console.log('Database connected successfully');
+    serverReady = true;
+    databaseConnected = true;
+    
+    // Load initial data if collection is empty
+    try {
+      const Item = (await import('./modals/item.js')).default;
+      const itemCount = await Item.countDocuments();
+      console.log(`Found ${itemCount} items in database`);
+      
+      if (itemCount === 0) {
+        console.log('Database is empty, loading initial data...');
+        await loadInitialData(Item);
+      }
+    } catch (error) {
+      console.error('Error checking/loading initial data:', error);
+    }
+  }).catch((error) => {
+    console.error('Failed to connect to database:', error);
+    serverStartupError = error;
+    // Even if database connection fails, we'll still start the server
+    // The health check will show the database status
+    serverReady = true;
+    databaseConnected = false;
+  });
+}
 
 // Add a middleware to check if server is ready
 app.use((req, res, next) => {
