@@ -15,7 +15,9 @@ export const getItems = async (req, res, next) => {
             // For local URLs, we need to prefix with host
             if (itemObj.imageUrl && !itemObj.imageUrl.startsWith('http')) {
                 // This is a local URL, prefix with host
-                const host = `${req.protocol}://${req.get('host')}`;
+                // Use HTTPS in production, HTTP in development
+                const protocol = process.env.NODE_ENV === 'production' ? 'https' : req.protocol;
+                const host = `${protocol}://${req.get('host')}`;
                 // Convert relative URL to absolute
                 itemObj.imageUrl = host + itemObj.imageUrl;
                 console.log(`Converted relative URL to absolute: ${itemObj.imageUrl}`);
@@ -46,7 +48,9 @@ export const getItemById = async (req, res, next) => {
         // Prefix image URL with host for relative paths (local storage)
         const itemObj = item.toObject();
         if (itemObj.imageUrl && !itemObj.imageUrl.startsWith('http')) {
-            const host = `${req.protocol}://${req.get('host')}`;
+            // Use HTTPS in production, HTTP in development
+            const protocol = process.env.NODE_ENV === 'production' ? 'https' : req.protocol;
+            const host = `${protocol}://${req.get('host')}`;
             itemObj.imageUrl = host + itemObj.imageUrl;
         }
         
@@ -108,7 +112,9 @@ export const createItem = async (req, res, next) => {
         // For local URLs, prefix with host
         const savedItemObj = savedItem.toObject();
         if (savedItemObj.imageUrl && !savedItemObj.imageUrl.startsWith('http')) {
-            const host = `${req.protocol}://${req.get('host')}`;
+            // Use HTTPS in production, HTTP in development
+            const protocol = process.env.NODE_ENV === 'production' ? 'https' : req.protocol;
+            const host = `${protocol}://${req.get('host')}`;
             savedItemObj.imageUrl = host + savedItemObj.imageUrl;
         }
         
