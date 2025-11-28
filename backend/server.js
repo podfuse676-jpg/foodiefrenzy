@@ -110,9 +110,6 @@ const connectDB = async () => {
   }
 };
 
-// Import models after database connection
-import User from './modals/userModel.js';
-
 // Import routes
 import itemRoutes from './routes/itemRoute.js';
 import cartRoutes from './routes/cartRoute.js';
@@ -122,6 +119,9 @@ import userRoutes from './routes/userRoute.js';
 import phoneAuthRoutes from './routes/phoneAuthRoute.js';
 import reviewRoutes from './routes/reviewRoute.js';
 import testRoutes from './routes/testRoute.js'; // Add test routes
+
+// Import models after database connection
+import User from './modals/userModel.js';
 
 const app = express();
 // Use PORT from environment variable (Render/Railway will set this) or default to 4000
@@ -294,14 +294,14 @@ const generalLimiter = rateLimit({
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   // Fix for Railway deployment - handle X-Forwarded-For headers properly with IPv6 support
-  keyGenerator: rateLimit.ipKeyGenerator((req) => {
+  keyGenerator: (req) => {
     // Use X-Forwarded-For header if available (for proxy environments like Railway)
     if (req.headers['x-forwarded-for']) {
       return req.headers['x-forwarded-for'].split(',')[0].trim();
     }
     // Fallback to connection remote address
     return req.ip;
-  }),
+  },
   // Add skipSuccessfulRequests to reduce load on successful requests
   skipSuccessfulRequests: false
 });
@@ -316,14 +316,14 @@ const loginLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   // Fix for Railway deployment - handle X-Forwarded-For headers properly with IPv6 support
-  keyGenerator: rateLimit.ipKeyGenerator((req) => {
+  keyGenerator: (req) => {
     // Use X-Forwarded-For header if available (for proxy environments like Railway)
     if (req.headers['x-forwarded-for']) {
       return req.headers['x-forwarded-for'].split(',')[0].trim();
     }
     // Fallback to connection remote address
     return req.ip;
-  }),
+  },
   skipSuccessfulRequests: true
 });
 
@@ -337,14 +337,14 @@ const apiLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   // Fix for Railway deployment - handle X-Forwarded-For headers properly with IPv6 support
-  keyGenerator: rateLimit.ipKeyGenerator((req) => {
+  keyGenerator: (req) => {
     // Use X-Forwarded-For header if available (for proxy environments like Railway)
     if (req.headers['x-forwarded-for']) {
       return req.headers['x-forwarded-for'].split(',')[0].trim();
     }
     // Fallback to connection remote address
     return req.ip;
-  }),
+  },
   skipSuccessfulRequests: false
 });
 
@@ -448,7 +448,8 @@ const checkDatabaseConnection = (req, res, next) => {
 };
 
 // Apply database connection check middleware AFTER routes are registered
-app.use(checkDatabaseConnection);
+// But before the 404 handler to ensure routes are properly handled
+app.use('/api', checkDatabaseConnection);
 
 // Serve static files from uploads directory (for local fallback)
 // Note: With Cloudinary, images will be served directly from Cloudinary URLs
@@ -646,6 +647,7 @@ app.get('/api/test-cloudinary', async (req, res) => {
     const cloudinary = (await import('./config/cloudinary.js')).default;
     
     // Get current configuration
+    
     const config = cloudinary.config();
     console.log('Current Cloudinary config:', config);
     
