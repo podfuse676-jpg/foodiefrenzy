@@ -147,7 +147,16 @@ app.use((req, res, next) => {
 });
 
 // Add early health check endpoint - this should be one of the first routes
-app.get('/health', healthCheck);
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK',
+    message: 'Server is running correctly',
+    timestamp: new Date().toISOString(),
+    database: databaseConnected ? 'connected' : 'disconnected',
+    serverReady: serverReady,
+    port: PORT
+  });
+});
 
 // Log the port for debugging
 console.log(`=== SERVER CONFIGURATION ===`);
@@ -352,6 +361,7 @@ app.use('/api/', apiLimiter);
 // Track server readiness
 let serverReady = false;
 let serverStartupError = null;
+let databaseConnected = false;
 
 // Handle graceful shutdown
 process.on('SIGTERM', () => {
@@ -372,12 +382,14 @@ console.log('Attempting to connect to database...');
 connectDB().then(() => {
   console.log('Database connected successfully');
   serverReady = true;
+  databaseConnected = true;
 }).catch((error) => {
   console.error('Failed to connect to database:', error);
   serverStartupError = error;
   // Even if database connection fails, we'll still start the server
   // The health check will show the database status
   serverReady = true;
+  databaseConnected = false;
 });
 
 // Add a middleware to check if server is ready
@@ -398,6 +410,28 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+// Add a middleware to check database connection for API routes
+const checkDatabaseConnection = (req, res, next) => {
+  // Skip database check for health and test endpoints
+  if (req.path === '/health' || req.path.startsWith('/test')) {
+    return next();
+  }
+  
+  // For API routes, check if database is connected
+  if (!databaseConnected && req.path.startsWith('/api')) {
+    return res.status(503).json({ 
+      status: 'Service Unavailable', 
+      message: 'Database connection unavailable',
+      details: 'The database is not connected. Please check the database configuration.'
+    });
+  }
+  
+  next();
+};
+
+// Apply database connection check middleware
+app.use(checkDatabaseConnection);
 
 // Serve static files from uploads directory (for local fallback)
 // Note: With Cloudinary, images will be served directly from Cloudinary URLs
@@ -719,11 +753,7 @@ app.get('/test-login', async (req, res) => {
   }
 });
 
-// Add a simple health check endpoint that doesn't require database connection
-// This will help with deployment health checks
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK' });
-});
+// Duplicate health endpoint removed to avoid conflicts
 
 // Simple test endpoint to check if we can find the admin user
 app.get('/test-admin-user', async (req, res) => {
