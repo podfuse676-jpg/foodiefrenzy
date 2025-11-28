@@ -1,10 +1,6 @@
 name = "lakeshore-convenience"
-main = "./dist"
 compatibility_date = "2025-11-28"
-
-[site]
-bucket = "./dist"
-entry-point = "."
+pages_build_output_dir = "./dist"
 
 [build]
 command = "npm run build"
