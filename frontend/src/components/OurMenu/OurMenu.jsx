@@ -283,7 +283,7 @@ const OurMenu = () => {
         <h3 className="text-2xl font-dancingscript text-[#4CAF50] text-center mb-4">Quality Grocery Delivery Across Canada</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h4 className="text-xl font-cinzel text-[#333333] mb-2">Fresh Produce & Groceries</h4>
+            <h4 className="text-xl font-cinzel text-[#333333] mb-2">Exotic Treats & Everyday Essentials</h4>
             <p className="text-[#333333]/80 font-playfair">
               Our menu features farm-fresh fruits, organic vegetables, quality dairy products, and essential groceries. 
               We source directly from local suppliers to ensure the highest quality and freshness of all our items.

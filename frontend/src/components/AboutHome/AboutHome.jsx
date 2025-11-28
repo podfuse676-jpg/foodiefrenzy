@@ -29,7 +29,7 @@ const AboutHome = () => {
               <div className="space-y-4">
                 <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">
                   <span className="text-4xl sm:text-5xl md:text-6xl bg-gradient-to-r from-[#8BC34A] to-[#FFC107] bg-clip-text text-transparent">
-                    Fresh & Quality Groceries
+                    Exotic Treats & Everyday Essentials
                   </span>
                   <br />
                   <span className="inline-block mt-3 text-2xl sm:text-3xl md:text-4xl font-medium text-gray-600 italic">
