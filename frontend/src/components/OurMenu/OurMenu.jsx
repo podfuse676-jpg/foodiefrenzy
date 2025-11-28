@@ -174,8 +174,10 @@ const OurMenu = () => {
       <div className="container mx-auto px-4 py-8 min-h-screen">
         {/* Header Section */}
         <div className="text-center mb-12 mt-6">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4 font-playfair">
-            Our Exclusive Convenience Collection
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 font-playfair">
+            <span className="bg-gradient-to-r from-[#4CAF50] to-[#388E3C] bg-clip-text text-transparent">
+              Our Exclusive Convenience Collection
+            </span>
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
             Discover our carefully curated selection of imported candies, refreshing drinks, 
