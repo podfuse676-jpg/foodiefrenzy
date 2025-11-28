@@ -482,6 +482,14 @@ app.get('/test-before-routes', (req, res) => {
   });
 });
 
+// Add a test endpoint after middleware
+app.get('/test-after-middleware', (req, res) => {
+  res.json({ 
+    message: 'Test endpoint after middleware is working',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Log route registration
 console.log('=== REGISTERING ROUTES ===');
 
