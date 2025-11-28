@@ -411,7 +411,24 @@ app.use((req, res, next) => {
   next();
 });
 
+// Log route registration
+console.log('=== REGISTERING ROUTES ===');
+
+// Routes
+app.use('/api/items', itemRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/orders', newOrderRoutes); // Add new order routes
+app.use('/api/users', userRoutes);
+app.use('/api/auth', phoneAuthRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/test', testRoutes); // Add test routes
+
+console.log('=== ROUTES REGISTERED ===');
+
 // Add a middleware to check database connection for API routes
+// This needs to be applied AFTER routes are registered so that route handlers
+// can process requests before this middleware checks the database connection
 const checkDatabaseConnection = (req, res, next) => {
   // Skip database check for health and test endpoints
   if (req.path === '/health' || req.path.startsWith('/test')) {
@@ -430,7 +447,7 @@ const checkDatabaseConnection = (req, res, next) => {
   next();
 };
 
-// Apply database connection check middleware
+// Apply database connection check middleware AFTER routes are registered
 app.use(checkDatabaseConnection);
 
 // Serve static files from uploads directory (for local fallback)
@@ -523,21 +540,6 @@ app.get('/test-after-middleware', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
-
-// Log route registration
-console.log('=== REGISTERING ROUTES ===');
-
-// Routes
-app.use('/api/items', itemRoutes);
-app.use('/api/cart', cartRoutes);
-app.use('/api/orders', orderRoutes);
-app.use('/api/orders', newOrderRoutes); // Add new order routes
-app.use('/api/users', userRoutes);
-app.use('/api/auth', phoneAuthRoutes);
-app.use('/api/reviews', reviewRoutes);
-app.use('/api/test', testRoutes); // Add test routes
-
-console.log('=== ROUTES REGISTERED ===');
 
 // Debug endpoint to check environment variables
 app.get('/api/debug-env', (req, res) => {
