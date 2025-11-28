@@ -20,7 +20,7 @@ import MasalaDosa from "./MasalaDosa.png";
 import PaneerTikka from "./PannerTikka.png";
 import PalakPaneer from "./PalakPaneer.png";
 
-import BannerImage from "./BannerImage.png";
+import BannerImage from "./boy.jpeg";
 import Image1 from "./Image1.png";
 import Image2 from "./Image2.png";
 import Image3 from "./Image3.png";
