@@ -3,7 +3,7 @@ services:
     name: foodiefrenzy-backend
     env: node
     plan: free
-    buildCommand: npm install
+    buildCommand: npm install && npm install nodemailer
     startCommand: node server.js
     envVars:
       - key: NODE_VERSION
@@ -25,4 +25,8 @@ services:
       - key: CLOUDINARY_API_KEY
         sync: false
       - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
         sync: false
