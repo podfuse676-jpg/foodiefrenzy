@@ -4,6 +4,7 @@ import User from '../modals/userModel.js';
 import OTP from '../modals/otpModel.js';
 import emailService from '../services/emailService.js';
 import alternativeEmailService from '../services/alternativeEmailService.js';
+import sendGridEmailService from '../services/sendGridEmailService.js';
 
 // Generate a 6-digit OTP
 const generateOTP = () => {
@@ -62,8 +63,14 @@ export const sendEmailOTP = async (req, res) => {
       emailResult = await alternativeEmailService.sendOTP(email, otp);
     }
     
+    // If alternative service fails, try SendGrid
     if (!emailResult.success) {
-      console.log('❌ Both email services failed:', emailResult.error);
+      console.log('⚠️ Alternative email service failed, trying SendGrid...');
+      emailResult = await sendGridEmailService.sendOTP(email, otp);
+    }
+    
+    if (!emailResult.success) {
+      console.log('❌ All email services failed:', emailResult.error);
       return res.status(500).json({ 
         message: 'Failed to send OTP email',
         error: emailResult.error

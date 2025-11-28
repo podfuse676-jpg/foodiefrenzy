@@ -37,7 +37,8 @@
     "test-new-order-routes": "node testNewOrderRoutes.js",
     "test-nodemailer": "node test-nodemailer.js",
     "test-email-service": "node test-email-service.js",
-    "test-alternative-email-service": "node test-alternative-email-service.js"
+    "test-alternative-email-service": "node test-alternative-email-service.js",
+    "test-sendgrid-email-service": "node test-sendgrid-email-service.js"
   },
   "author": "",
   "license": "ISC",

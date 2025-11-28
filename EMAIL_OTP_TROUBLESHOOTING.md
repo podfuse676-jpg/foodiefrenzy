@@ -96,6 +96,7 @@ You can test if the email service is working correctly:
    cd backend
    npm run test-email-service
    npm run test-alternative-email-service
+   npm run test-sendgrid-email-service
    ```
 
 #### Manual API Test
@@ -148,7 +149,41 @@ curl -X POST https://lakeshore-convenience.onrender.com/api/email-auth/send-emai
    - In Render environment variables, set `EMAIL_PASS` to the app password
    - Remove any spaces from the app password
 
-### 5. Debugging Checklist
+### 5. Setting Up SendGrid (RECOMMENDED SOLUTION)
+
+SendGrid is more reliable on hosting platforms like Render.
+
+#### Steps to Set Up SendGrid:
+
+1. **Sign up for SendGrid:**
+
+   - Go to https://sendgrid.com/
+   - Click "Start for Free"
+   - Complete registration
+
+2. **Get Your API Key:**
+
+   - Go to Settings → API Keys
+   - Click "Create API Key"
+   - Give it a name (e.g., "FoodieFrenzy")
+   - Select "Full Access"
+   - Copy the generated API key
+
+3. **Configure Render Environment Variables:**
+
+   - Go to your Render dashboard
+   - Select your backend service
+   - Go to "Environment"
+   - Add these variables:
+     - `SENDGRID_API_KEY` = [Your SendGrid API key]
+     - `FROM_EMAIL` = noreply@lakeshoreconvenience.com (or your verified sender)
+
+4. **Verify Your Sender Identity:**
+   - In SendGrid, go to Settings → Sender Authentication
+   - Add a Single Sender Verification for your FROM_EMAIL
+   - Confirm the verification email
+
+### 6. Debugging Checklist
 
 Before reporting issues, check:
 
@@ -160,17 +195,18 @@ Before reporting issues, check:
 - [ ] Recent logs don't show authentication errors
 - [ ] Test email script runs successfully locally
 - [ ] Both primary and alternative email services were tested
+- [ ] SendGrid API key is set (if using SendGrid)
 
-### 6. Common Error Messages and Fixes
+### 7. Common Error Messages and Fixes
 
-| Error Message                        | Likely Cause                  | Solution                                        |
-| ------------------------------------ | ----------------------------- | ----------------------------------------------- |
-| "Invalid login" or "Bad credentials" | Wrong password                | Use App Password instead of regular password    |
-| "Service not found"                  | Network issue                 | Check Render logs, contact support              |
-| "Connection timeout" (ETIMEDOUT)     | Firewall/Network restrictions | Use alternative email service or contact Render |
-| "Email service not configured"       | Missing env vars              | Set EMAIL_USER and EMAIL_PASS in Render         |
+| Error Message                        | Likely Cause                  | Solution                                     |
+| ------------------------------------ | ----------------------------- | -------------------------------------------- |
+| "Invalid login" or "Bad credentials" | Wrong password                | Use App Password instead of regular password |
+| "Service not found"                  | Network issue                 | Check Render logs, contact support           |
+| "Connection timeout" (ETIMEDOUT)     | Firewall/Network restrictions | Use SendGrid or contact Render               |
+| "Email service not configured"       | Missing env vars              | Set EMAIL_USER and EMAIL_PASS in Render      |
 
-### 7. Alternative Email Services
+### 8. Alternative Email Services
 
 If Gmail continues to have connection issues, consider these alternatives:
 
@@ -190,7 +226,7 @@ If Gmail continues to have connection issues, consider these alternatives:
 2. Get sandbox domain credentials
 3. Use SMTP settings provided
 
-### 8. Additional Debugging Steps
+### 9. Additional Debugging Steps
 
 #### Enable Detailed Logging
 
@@ -208,6 +244,7 @@ DEBUG=nodemailer:*
    EMAIL_USER=lakeshoreconvenience@gmail.com
    EMAIL_PASS=your_app_password
    JWT_SECRET=your_jwt_secret
+   SENDGRID_API_KEY=your_sendgrid_api_key (optional)
    ```
 
 2. Run the test scripts:
@@ -215,11 +252,12 @@ DEBUG=nodemailer:*
    cd backend
    npm run test-email-service
    npm run test-alternative-email-service
+   npm run test-sendgrid-email-service
    ```
 
 If this works locally but not on Render, the issue is likely with Render's network restrictions.
 
-### 9. Need More Help?
+### 10. Need More Help?
 
 If you're still having issues:
 
