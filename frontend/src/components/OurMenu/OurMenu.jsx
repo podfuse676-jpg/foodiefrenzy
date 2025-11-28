@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FiShoppingCart, FiSearch, FiX } from 'react-icons/fi';
 import MenuItem from './MenuItem';
@@ -19,7 +19,8 @@ const OurMenu = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const { cartItems: rawCart, addToCart, updateQuantity, removeFromCart } = useCart();
   const cartItems = rawCart.filter(ci => ci.item);
-  const url = 'https://api.example.com';
+  const ref = useRef();
+  const inView = true; // Simplified for now since we're not using intersection observer
   
   useEffect(() => {
     const fetchMenu = async () => {
@@ -322,5 +323,14 @@ const OurMenu = () => {
     </div>
   );
 };
+
+// Skeleton components (these were referenced but not defined)
+const CategorySkeleton = () => (
+  <div className="skeleton h-8 w-24 rounded-full" />
+);
+
+const ProductCardSkeleton = () => (
+  <div className="skeleton h-64 rounded-2xl" />
+);
 
 export default OurMenu;
