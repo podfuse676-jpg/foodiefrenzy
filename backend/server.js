@@ -17,6 +17,31 @@ import healthCheck from './health.js';
 // Load environment variables
 dotenv.config();
 
+// Add debugging at the top of the file
+console.log('=== SERVER STARTUP DEBUG INFO ===');
+console.log('Node version:', process.version);
+console.log('Current working directory:', process.cwd());
+console.log('Environment variables:');
+Object.keys(process.env).filter(key => key.includes('PORT') || key.includes('MONGO') || key.includes('CORS') || key.includes('FRONTEND') || key.includes('ADMIN') || key.includes('CLOUDINARY')).forEach(key => {
+  console.log(`  ${key}: ${process.env[key]}`);
+});
+console.log('================================');
+
+// Add error handling for uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('=== UNCAUGHT EXCEPTION ===');
+  console.error('Error:', err);
+  console.error('Stack:', err.stack);
+  console.error('========================');
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('=== UNHANDLED REJECTION ===');
+  console.error('Reason:', reason);
+  console.error('Promise:', promise);
+  console.error('==========================');
+});
+
 // Ensure uploads directory exists (for any local fallback)
 const uploadsDir = path.join(process.cwd(), 'uploads');
 const imagesDir = path.join(uploadsDir, 'images');
@@ -303,21 +328,6 @@ app.use(express.static('public', {
 // Track server readiness
 let serverReady = false;
 let serverStartupError = null;
-
-// Add early error handling
-process.on('uncaughtException', (error) => {
-  console.error('=== UNCAUGHT EXCEPTION ===');
-  console.error('Error:', error);
-  console.error('Stack:', error.stack);
-  console.error('========================');
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('=== UNHANDLED REJECTION ===');
-  console.error('Reason:', reason);
-  console.error('Promise:', promise);
-  console.error('==========================');
-});
 
 // Handle graceful shutdown
 process.on('SIGTERM', () => {
