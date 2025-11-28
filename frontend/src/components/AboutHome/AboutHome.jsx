@@ -33,7 +33,7 @@ const AboutHome = () => {
                   </span>
                   <br />
                   <span className="inline-block mt-3 text-2xl sm:text-3xl md:text-4xl font-medium text-gray-600 italic">
-                    Where Freshness Meets Convenience
+                    Where Flavour, Fun & Convenience Come Together
                   </span>
                 </h2>
                 <p className="text-lg sm:text-xl opacity-90 leading-relaxed max-w-4xl text-gray-700">
