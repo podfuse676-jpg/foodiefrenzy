@@ -16,6 +16,7 @@ import OrderDetailPage from './pages/OrderDetail/OrderDetail';
 import VerifyPaymentPage from './pages/VerifyPaymentPage/VerifyPaymentPage';
 import EmailLogin from './pages/EmailLogin/EmailLogin';
 import TestMenu from './TestMenu';
+import Profile from './pages/Profile/Profile';
 
 function App() {
   const location = useLocation();
@@ -57,6 +58,12 @@ function App() {
       <Route
         path="/myorder/:id"
         element={<PrivateRoute><OrderDetailPage /></PrivateRoute>}
+      />
+      
+      {/* Profile page */}
+      <Route
+        path="/profile"
+        element={<PrivateRoute><Profile /></PrivateRoute>}
       />
     </Routes>
   );

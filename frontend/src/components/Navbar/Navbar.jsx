@@ -55,7 +55,8 @@ const Navbar = () => {
     { name: 'FAQ', href: '/faq', icon: <FiHelpCircle /> },
     { name: 'Contact', href: '/contact', icon: <FiPhone /> },
     ...(isAuthenticated ? [
-      { name: 'My Orders', href: '/myorder', icon: <FiPackage /> }
+      { name: 'My Orders', href: '/myorder', icon: <FiPackage /> },
+      { name: 'Profile', href: '/profile', icon: <FiKey /> }
     ] : [])
   ];
 
@@ -197,25 +198,44 @@ const Navbar = () => {
                   Contact
                 </Link>
               </motion.div>
-              {/* Add My Orders link for authenticated users */}
+              {/* Add My Orders and Profile links for authenticated users */}
               {isAuthenticated && (
-                <motion.div
-                  whileHover={{ 
-                    scale: 1.05,
-                    transition: { duration: 0.2 } 
-                  }}
-                >
-                  <Link 
-                    to="/myorder" 
-                    className={`px-3 py-2 rounded-md text-sm font-cinzel transition-colors duration-300 ${
-                      location.pathname === '/myorder' 
-                        ? 'bg-[#4CAF50]/20 text-[#333333] font-bold' 
-                        : 'text-gray-700 hover:bg-[#4CAF50]/30 hover:text-gray-900'
-                    }`}
+                <>
+                  <motion.div
+                    whileHover={{ 
+                      scale: 1.05,
+                      transition: { duration: 0.2 } 
+                    }}
                   >
-                    My Orders
-                  </Link>
-                </motion.div>
+                    <Link 
+                      to="/myorder" 
+                      className={`px-3 py-2 rounded-md text-sm font-cinzel transition-colors duration-300 ${
+                        location.pathname === '/myorder' 
+                          ? 'bg-[#4CAF50]/20 text-[#333333] font-bold' 
+                          : 'text-gray-700 hover:bg-[#4CAF50]/30 hover:text-gray-900'
+                      }`}
+                    >
+                      My Orders
+                    </Link>
+                  </motion.div>
+                  <motion.div
+                    whileHover={{ 
+                      scale: 1.05,
+                      transition: { duration: 0.2 } 
+                    }}
+                  >
+                    <Link 
+                      to="/profile" 
+                      className={`px-3 py-2 rounded-md text-sm font-cinzel transition-colors duration-300 ${
+                        location.pathname === '/profile' 
+                          ? 'bg-[#4CAF50]/20 text-[#333333] font-bold' 
+                          : 'text-gray-700 hover:bg-[#4CAF50]/30 hover:text-gray-900'
+                      }`}
+                    >
+                      Profile
+                    </Link>
+                  </motion.div>
+                </>
               )}
             </div>
 
@@ -253,19 +273,34 @@ const Navbar = () => {
 
               {/* Auth Buttons */}
               {isAuthenticated ? (
-                <motion.button
-                  onClick={handleLogout}
-                  className="ml-2 sm:ml-4 px-2 py-1 sm:px-3 sm:py-2 rounded-md text-xs sm:text-sm font-medium bg-white text-[#8BC34A] hover:bg-gray-100 transition-colors flex items-center btn-press-feedback"
-                  whileHover={{ 
-                    scale: 1.05,
-                    backgroundColor: "#f3f4f6",
-                    transition: { duration: 0.2 } 
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <FiLogOut className="mr-1 sm:mr-2 text-sm sm:text-base icon-smooth" />
-                  <span className="hidden sm:inline">Logout</span>
-                </motion.button>
+                <div className="flex items-center space-x-2">
+                  <motion.button
+                    onClick={() => navigate('/profile')}
+                    className="ml-2 sm:ml-4 px-2 py-1 sm:px-3 sm:py-2 rounded-md text-xs sm:text-sm font-medium bg-white text-[#8BC34A] hover:bg-gray-100 transition-colors flex items-center btn-press-feedback"
+                    whileHover={{ 
+                      scale: 1.05,
+                      backgroundColor: "#f3f4f6",
+                      transition: { duration: 0.2 } 
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <FiKey className="mr-1 sm:mr-2 text-sm sm:text-base icon-smooth" />
+                    <span className="hidden sm:inline">Profile</span>
+                  </motion.button>
+                  <motion.button
+                    onClick={handleLogout}
+                    className="ml-2 sm:ml-4 px-2 py-1 sm:px-3 sm:py-2 rounded-md text-xs sm:text-sm font-medium bg-white text-[#8BC34A] hover:bg-gray-100 transition-colors flex items-center btn-press-feedback"
+                    whileHover={{ 
+                      scale: 1.05,
+                      backgroundColor: "#f3f4f6",
+                      transition: { duration: 0.2 } 
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <FiLogOut className="mr-1 sm:mr-2 text-sm sm:text-base icon-smooth" />
+                    <span className="hidden sm:inline">Logout</span>
+                  </motion.button>
+                </div>
               ) : (
                 <motion.button
                   onClick={handleLoginClick}
