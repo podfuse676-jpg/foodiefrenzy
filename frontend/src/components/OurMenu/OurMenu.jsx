@@ -163,10 +163,10 @@ const OurMenu = () => {
     <>
       <SEO 
         title="Our Menu - Lakeshore Convenience" 
-        description="Browse our extensive selection of exotic chips, premium beverages, imported candies, and unique convenience items. Order online for fast delivery across Canada."
+        description="Browse our extensive selection of imported candies, refreshing drinks, and everyday essentials. Order online for fast delivery across Canada."
         keywords="grocery menu, convenience store items, exotic snacks, imported foods, online ordering, Canada delivery"
         ogTitle="Our Menu - Lakeshore Convenience"
-        ogDescription="Discover our exclusive collection of convenience items delivered fast across Canada"
+        ogDescription="Browse our extensive selection of imported candies, refreshing drinks, and everyday essentials delivered fast across Canada"
         ogImage={`${window.location.origin}/og-menu.jpg`}
       />
 
@@ -178,8 +178,8 @@ const OurMenu = () => {
             Our Exclusive Convenience Collection
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Discover our carefully curated selection of exotic chips, premium beverages, 
-            imported candies, and unique convenience items from around the world.
+            Discover our carefully curated selection of imported candies, refreshing drinks, 
+            and everyday essentials from around the world.
           </p>
         </div>
 

@@ -36,7 +36,7 @@ const Banner = () => {
             </h1>
 
             <p className="text-lg md:text-lg lg:text-xl font-playfair italic sm:text-xl text-gray-700 max-w-xl opacity-90 mx-auto md:mx-0">
-              Lakeshore Convenience brings you exotic chips, premium beverages, imported candies, daily essentials, and unique convenience items—delivered fast across Canada. Shop exclusive snacks, fresh products, and must-have essentials all in one place.
+              Imported candies, refreshing drinks, and everyday essentials delivered quickly and conveniently.
             </p>
 
             <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto md:mx-0 group">
