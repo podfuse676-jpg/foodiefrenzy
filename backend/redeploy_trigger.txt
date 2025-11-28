@@ -1,3 +1,1 @@
-REDEPLOY_TRIGGER_Fri Nov 28 10:42:39 IST 2025
-Fri Nov 28 10:46:17 IST 2025
-REDEPLOY_FORCE_Fri Nov 28 10:47:34 IST 2025
+Trigger redeployment with updated CORS configuration
