@@ -3,5 +3,5 @@ compatibility_date = "2025-11-28"
 pages_build_output_dir = "./dist"
 
 [vars]
-VITE_API_URL = "https://lakeshoreconveniencee-backend-production.up.railway.app"
+VITE_API_URL = "https://lakeshore-convenience.onrender.com"
 VITE_FRONTEND_URL = "https://lakeshoreconvenience.com"

@@ -41,7 +41,7 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
       }
       
       // If it's a relative path, construct full URL
-      const baseUrl = import.meta.env.VITE_API_URL || 'https://lakeshoreconveniencee-backend-production.up.railway.app';
+      const baseUrl = import.meta.env.VITE_API_URL || 'https://lakeshore-convenience.onrender.com';
       return `${baseUrl}${imageUrl}`;
     }
     
@@ -199,20 +199,17 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
           <button
             onClick={(e) => {
               e.stopPropagation();
-              // If item has customization options, open detail view instead of adding directly to cart
-              if (hasCustomizationOptions && onOpenDetail) {
-                onOpenDetail();
-              } else {
-                handleAddToCart();
-              }
+              hasCustomizationOptions && onOpenDetail
+                ? onOpenDetail()
+                : handleAddToCart();
             }}
-            className={`bg-gradient-to-r from-[#8BC34A] to-[#7CB342] border-2 border-[#8BC34A] px-3 py-1 sm:px-4 sm:py-1 rounded-full font-cinzel text-xs uppercase transition duration-300 hover:from-[#7CB342] hover:to-[#8BC34A] flex items-center gap-1 active:scale-95 shadow-md hover:shadow-lg transform btn-subtle-hover ${
-              isAnimating ? 'scale-110' : ''
-            }`}
+            className={`bg-gradient-to-r from-[#8BC34A] to-[#7CB342] border-2 border-[#8BC34A] px-3 py-1 sm:px-4 sm:py-1 rounded-full font-cinzel text-xs uppercase transition duration-300 hover:from-[#7CB342] hover:to-[#8BC34A] flex items-center gap-1 active:scale-95 shadow-md hover:shadow-lg transform btn-subtle-hover ${isAnimating ? "scale-110" : ""}`}
             aria-label={`Add ${item.name} to cart`}
           >
             <FaPlus className="w-2 h-2 icon-smooth" />
-            <span className="truncate max-w-[60px] sm:max-w-none">{hasCustomizationOptions ? 'Customize' : 'Add'}</span>
+            <span className="truncate max-w-[60px] sm:max-w-none">
+              {hasCustomizationOptions ? "Customize" : "Add"}
+            </span>
           </button>
         )}
       </div>

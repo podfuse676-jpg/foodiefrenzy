@@ -1,5 +1,5 @@
 // API utility functions for the frontend
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://lakeshoreconveniencee-backend-production.up.railway.app';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://lakeshore-convenience.onrender.com';
 
 console.log('API Base URL:', API_BASE_URL);
 
