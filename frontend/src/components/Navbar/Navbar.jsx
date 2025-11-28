@@ -103,7 +103,7 @@ const Navbar = () => {
                 />
                 <Link 
                   to="/" 
-                  className="font-dancingscript text-2xl sm:text-3xl text-[#4CAF50] hover:text-[#388E3C] transition-colors duration-300"
+                  className="font-semibold text-xl sm:text-2xl text-[#4CAF50] hover:text-[#388E3C] transition-colors duration-300"
                 >
                   Lakeshore Convenience
                 </Link>
