@@ -40,5 +40,5 @@ echo "   - Click 'New Project'"
 echo "   - Import your GitHub repository"
 echo "   - Set Framework Preset to 'Vite'"
 echo "   - Set Root Directory to 'admin'"
-echo "   - Add Environment Variable: REACT_APP_API_URL=https://lakeshoreconveniencee-backend-production.up.railway.app"
-echo "   - Click 'Deploy'"
+echo "   - The API URL is already configured in the .env.production file"
+echo "   - Click 'Deploy'
