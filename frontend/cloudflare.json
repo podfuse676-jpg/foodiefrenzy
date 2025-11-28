@@ -1,0 +1,9 @@
+{
+  "name": "lakeshore-convenience",
+  "build_command": "npm run build",
+  "publish_directory": "dist",
+  "environment_variables": {
+    "VITE_API_URL": "https://lakeshoreconveniencee-backend-production.up.railway.app",
+    "VITE_FRONTEND_URL": "https://lakeshoreconvenience.com"
+  }
+}

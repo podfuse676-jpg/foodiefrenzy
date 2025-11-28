@@ -1,0 +1,15 @@
+name = "lakeshore-convenience"
+main = "./dist"
+compatibility_date = "2025-11-28"
+
+[site]
+bucket = "./dist"
+entry-point = "."
+
+[build]
+command = "npm run build"
+watch_dir = "./src"
+
+[vars]
+VITE_API_URL = "https://lakeshoreconveniencee-backend-production.up.railway.app"
+VITE_FRONTEND_URL = "https://lakeshoreconvenience.com"
