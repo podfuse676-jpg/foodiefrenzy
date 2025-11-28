@@ -130,10 +130,10 @@ export const teamMembers = [
 // ABOUT HOMEPAGE
 // Updated to use light fresh colors
 export const aboutfeature = [
-  { icon: FaBolt, title: "Fast Delivery", text: "Quick grocery delivery", color: "from-[#8BC34A] to-[#7CB342]" },
-  { icon: FaRegClock, title: "Always Open", text: "24/7 grocery service", color: "from-[#FFC107] to-[#FF9800]" },
-  { icon: FaCalendarCheck, title: "Easy Ordering", text: "Simple online shopping", color: "from-[#8BC34A] to-[#FFC107]" },
-  { icon: FaFire, title: "Fresh Produce", text: "Quality fresh groceries", color: "from-[#7CB342] to-[#8BC34A]" }
+  { icon: FaBolt, title: "Fast Delivery", text: "Quick delivery for all your favourite products", color: "from-[#8BC34A] to-[#7CB342]" },
+  { icon: FaRegClock, title: "Always Open", text: "24/7 convenience shopping", color: "from-[#FFC107] to-[#FF9800]" },
+  { icon: FaCalendarCheck, title: "Easy Ordering", text: "Simple and smooth shopping experience", color: "from-[#8BC34A] to-[#FFC107]" },
+  { icon: FaFire, title: "Top Products", text: "Exotic snacks, candies & essentials you'll love", color: "from-[#7CB342] to-[#8BC34A]" }
 ];
 
 // SPECIAL MENU
