@@ -1,260 +1,261 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import apiConfig from '../../utils/apiConfig';
-import {
-  FaEnvelope,
-  FaLock,
-  FaUserPlus,
-  FaEye,
-  FaEyeSlash,
-  FaCheckCircle,
-  FaPhone,
-  FaExclamationTriangle
-} from 'react-icons/fa';
+import { FaEnvelope, FaKey, FaArrowLeft, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
-
-const url = apiConfig.baseURL;
+import apiConfig from '../../utils/apiConfig';
 
 const EmailLogin = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    rememberMe: false,
-  });
-  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [otp, setOtp] = useState('');
+  const [step, setStep] = useState(1); // 1: Enter email, 2: Enter OTP
   const [loading, setLoading] = useState(false);
-  const [loginStatus, setLoginStatus] = useState(''); // For visual feedback
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  
   const navigate = useNavigate();
+  const url = apiConfig.baseURL;
 
-  useEffect(() => {
-    const stored = localStorage.getItem('loginData');
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      setFormData({
-        email: parsed.email || '',
-        password: '',
-        rememberMe: parsed.rememberMe || false,
-      });
-    }
-  }, []);
-
-  const toggleShowPassword = () => setShowPassword(prev => !prev);
-
-  const handleChange = ({ target: { name, value, type, checked } }) =>
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-
-  const handleSubmit = async e => {
+  const handleSendOTP = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setLoginStatus('logging-in');
+    setError('');
+    setSuccess('');
+    
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address');
+      setLoading(false);
+      return;
+    }
     
     try {
-      const res = await axios.post(`${url}/api/users/login`, {
-        email: formData.email,
-        password: formData.password,
-      });
-
-      if (res.data.success && res.data.token) {
-        // Save your JWT - use only one consistent key
-        localStorage.setItem('authToken', res.data.token);
-        
-        // Remove old token key if it exists
-        localStorage.removeItem('token');
-        
-        // Save login state for app-wide authentication
-        localStorage.setItem('loginData', JSON.stringify({ 
-          loggedIn: true,
-          email: formData.email,
-          rememberMe: formData.rememberMe 
-        }));
-        
-        // Clear the cart to ensure no items from previous session
-        localStorage.removeItem('cart');
-  
-        setLoginStatus('success');
-        toast.success('Login successful!');
-        
-        // Redirect to home page after successful login
-        setTimeout(() => {
-          navigate('/');
-        }, 1500);
-  
+      const response = await axios.post(`${url}/api/email-auth/send-email-otp`, { email });
+      
+      if (response.data.emailSent) {
+        setSuccess('OTP sent successfully! Please check your email.');
+        setStep(2); // Move to OTP entry step
+        toast.success('OTP sent to your email!');
       } else {
-        throw new Error(res.data.message || 'Login failed.');
+        setError(response.data.message || 'Failed to send OTP');
       }
-  
     } catch (err) {
-      setLoginStatus('error');
-      let msg = 'Login failed. Please check your credentials and try again.';
-      
-      // Provide more specific error messages based on the error type
-      if (err.response?.status === 401) {
-        msg = 'Invalid email or password. Please try again.';
-      } else if (err.response?.status === 404) {
-        msg = 'User not found. Please check your email address or create a new account.';
-      } else if (err.response?.data?.message) {
-        msg = err.response.data.message;
-      } else if (err.code === 'ECONNABORTED') {
-        msg = 'Request timeout. Please check your internet connection and try again.';
-      } else if (err.message) {
-        msg = err.message;
-      }
-      
-      toast.error(msg);
+      console.error('Error sending OTP:', err);
+      setError(err.response?.data?.message || 'Failed to send OTP. Please try again.');
+      toast.error('Failed to send OTP');
     } finally {
       setLoading(false);
-      setTimeout(() => setLoginStatus(''), 3000);
+    }
+  };
+
+  const handleVerifyOTP = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setSuccess('');
+    
+    // Validate OTP
+    if (!otp || otp.length !== 6) {
+      setError('Please enter a valid 6-digit OTP');
+      setLoading(false);
+      return;
+    }
+    
+    try {
+      const response = await axios.post(`${url}/api/email-auth/verify-email-otp`, { email, otp });
+      
+      if (response.data.token) {
+        // Save token and user data
+        localStorage.setItem('authToken', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        localStorage.setItem('loginData', JSON.stringify({ 
+          loggedIn: true,
+          email: response.data.user.email,
+          rememberMe: true
+        }));
+        
+        // Clear cart
+        localStorage.removeItem('cart');
+        
+        setSuccess('Login successful! Redirecting...');
+        toast.success('Login successful!');
+        
+        // Redirect to home page after a short delay
+        setTimeout(() => {
+          navigate('/');
+          window.location.reload();
+        }, 1500);
+      } else {
+        setError(response.data.message || 'Failed to verify OTP');
+      }
+    } catch (err) {
+      console.error('Error verifying OTP:', err);
+      setError(err.response?.data?.message || 'Invalid OTP. Please try again.');
+      toast.error('Invalid OTP');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    setLoading(true);
+    setError('');
+    setSuccess('');
+    
+    try {
+      const response = await axios.post(`${url}/api/email-auth/send-email-otp`, { email });
+      
+      if (response.data.emailSent) {
+        setSuccess('New OTP sent successfully! Please check your email.');
+        toast.success('New OTP sent to your email!');
+      } else {
+        setError(response.data.message || 'Failed to resend OTP');
+      }
+    } catch (err) {
+      console.error('Error resending OTP:', err);
+      setError(err.response?.data?.message || 'Failed to resend OTP. Please try again.');
+      toast.error('Failed to resend OTP');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    // Updated to have a distinct email login styling
     <div className="min-h-screen bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white backdrop-blur-sm rounded-2xl shadow-2xl border-2 border-[#8BC34A]/30 p-8">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-[#8BC34A] to-[#FFC107] bg-clip-text text-transparent mb-2">
-            Welcome Back
+            {step === 1 ? 'Email Login' : 'Verify OTP'}
           </h2>
           <p className="text-gray-800/80">
-            Sign in to your account
+            {step === 1 
+              ? 'Enter your email to receive a verification code' 
+              : 'Enter the 6-digit code sent to your email'}
           </p>
         </div>
         
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Email Field */}
-          <div>
-            <label className="block text-gray-800 text-sm font-bold mb-2" htmlFor="email">
-              Email
-            </label>
-            <div className="relative">
-              <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="your@email.com"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full bg-white border-2 border-[#8BC34A]/30 rounded-xl py-3 px-4 text-gray-800 placeholder-[#8BC34A]/50 focus:outline-none focus:border-[#8BC34A] transition-colors"
-                required
-              />
-              <div className="absolute inset-y-0 right-0 flex items-center pr-4">
-                <FaEnvelope className="text-[#8BC34A]" />
+        {error && (
+          <div className="mb-6 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm flex items-center">
+            <FaExclamationTriangle className="mr-2" />
+            {error}
+          </div>
+        )}
+        
+        {success && (
+          <div className="mb-6 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm flex items-center">
+            <FaCheckCircle className="mr-2" />
+            {success}
+          </div>
+        )}
+        
+        {step === 1 ? (
+          <form onSubmit={handleSendOTP} className="space-y-6">
+            <div>
+              <label className="block text-gray-800 text-sm font-bold mb-2" htmlFor="email">
+                Email Address
+              </label>
+              <div className="relative">
+                <input
+                  className="w-full bg-white border-2 border-[#8BC34A]/30 rounded-xl py-3 px-4 text-gray-800 placeholder-[#8BC34A]/50 focus:outline-none focus:border-[#8BC34A] transition-colors"
+                  id="email"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-4">
+                  <FaEnvelope className="text-[#8BC34A]" />
+                </div>
               </div>
             </div>
-          </div>
-
-          {/* Password Field */}
-          <div>
-            <label className="block text-gray-800 text-sm font-bold mb-2" htmlFor="password">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                name="password"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full bg-white border-2 border-[#8BC34A]/30 rounded-xl py-3 px-4 text-gray-800 placeholder-[#8BC34A]/50 focus:outline-none focus:border-[#8BC34A] transition-colors"
-                required
-              />
-              <div className="absolute inset-y-0 right-0 flex items-center pr-4">
-                <button
-                  type="button"
-                  onClick={toggleShowPassword}
-                  className="text-[#8BC34A] hover:text-[#FFC107] transition-colors"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Remember Me */}
-          <div className="flex items-center">
-            <label className="flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                name="rememberMe"
-                checked={formData.rememberMe}
-                onChange={handleChange}
-                className="form-checkbox h-5 w-5 text-[#8BC34A] bg-white border-[#8BC34A] rounded focus:ring-[#8BC34A] cursor-pointer"
-              />
-              <span className="ml-2 text-gray-800">Remember me</span>
-            </label>
-          </div>
-          
-          {/* Visual feedback for login status */}
-          {loginStatus && (
-            <div className={`p-3 rounded-lg text-center ${
-              loginStatus === 'logging-in' ? 'bg-blue-100/30 text-blue-800' :
-              loginStatus === 'success' ? 'bg-green-100/30 text-green-800' :
-              loginStatus === 'error' ? 'bg-red-100/30 text-red-800' :
-              'bg-gray-100/30 text-gray-800'
-            }`}>
-              {loginStatus === 'logging-in' && (
-                <div className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-[#8BC34A] to-[#7CB342] text-white font-bold py-3 px-4 rounded-xl hover:from-[#7CB342] hover:to-[#689F38] transition-all transform hover:scale-[1.02] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  <span>Signing in...</span>
-                </div>
-              )}
-              {loginStatus === 'success' && (
-                <div className="flex items-center justify-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span>Login successful! Redirecting...</span>
-                </div>
-              )}
-              {loginStatus === 'error' && (
-                <div className="flex items-center justify-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
-                  <span>Login failed. Please try again.</span>
-                </div>
-              )}
+                  Sending OTP...
+                </span>
+              ) : 'Send Verification Code'}
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleVerifyOTP} className="space-y-6">
+            <div className="text-center mb-4">
+              <p className="text-gray-700">
+                Code sent to: <span className="font-semibold">{email}</span>
+              </p>
             </div>
-          )}
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-[#8BC34A] to-[#7CB342] hover:from-[#7CB342] hover:to-[#8BC34A] text-white font-bold py-3 px-4 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? (
-              <span className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Signing In...
-              </span>
-            ) : 'Sign In'}
-          </button>
-        </form>
-
-        <div className="mt-8 pt-6 border-t border-[#8BC34A]/30 text-center">
-          <p className="text-sm text-gray-800/70 mb-4">
-            Don't have an account?{' '}
-            <Link 
-              to="/signup"
-              className="text-[#8BC34A] hover:text-[#FFC107] font-semibold transition-colors"
+            
+            <div>
+              <label className="block text-gray-800 text-sm font-bold mb-2" htmlFor="otp">
+                Verification Code
+              </label>
+              <input
+                className="w-full bg-white border-2 border-[#8BC34A]/30 rounded-xl py-3 px-4 text-gray-800 placeholder-[#8BC34A]/50 focus:outline-none focus:border-[#8BC34A] transition-colors text-center text-2xl tracking-widest"
+                id="otp"
+                type="text"
+                placeholder="123456"
+                maxLength="6"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                required
+              />
+              <p className="mt-2 text-sm text-gray-500 text-center">
+                Enter the 6-digit code sent to your email
+              </p>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                type="submit"
+                disabled={loading || otp.length !== 6}
+                className="flex-1 bg-gradient-to-r from-[#8BC34A] to-[#7CB342] text-white font-bold py-3 px-4 rounded-xl hover:from-[#7CB342] hover:to-[#689F38] transition-all transform hover:scale-[1.02] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Verifying...
+                  </span>
+                ) : 'Verify Code'}
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="flex-1 text-[#8BC34A] font-bold py-3 px-4 rounded-xl border-2 border-[#8BC34A]/30 hover:bg-[#8BC34A]/10 transition-colors flex items-center justify-center"
+              >
+                <FaArrowLeft className="mr-2" />
+                Change Email
+              </button>
+            </div>
+          </form>
+        )}
+        
+        {step === 2 && (
+          <div className="mt-6 text-center">
+            <button
+              onClick={handleResendOTP}
+              disabled={loading}
+              className="text-[#8BC34A] hover:text-[#FFC107] font-semibold transition-colors text-sm disabled:opacity-50"
             >
-              Create Account
-            </Link>
-          </p>
-          
+              Didn't receive the code? Resend OTP
+            </button>
+          </div>
+        )}
+        
+        <div className="mt-8 pt-6 border-t border-[#8BC34A]/30 text-center">
           <p className="text-sm text-gray-800/70">
             Want to login with phone instead?{' '}
             <Link 

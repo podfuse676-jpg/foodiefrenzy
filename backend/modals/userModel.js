@@ -13,10 +13,10 @@ const userSchema = new mongoose.Schema({
 
 // Add indexes for better query performance
 // Index on email for faster login lookups
-userSchema.index({ email: 1 });
+// userSchema.index({ email: 1 }); // Removed to avoid duplicate index
 
 // Index on phoneNumber for faster phone login lookups
-userSchema.index({ phoneNumber: 1 });
+// userSchema.index({ phoneNumber: 1 }); // Removed to avoid duplicate index
 
 // Index on phone verification fields for faster verification queries
 userSchema.index({ phoneVerificationCode: 1, phoneVerificationExpires: 1 });
