@@ -25,7 +25,7 @@ import Image1 from "./Image1.png";
 import Image2 from "./Image2.png";
 import Image3 from "./Image3.png";
 import Image4 from "./Image4.png";
-import Video from "./Video.mp4";
+// import Video from "./Video.mp4"; // Commented out to avoid large file issue
 
 // ABOUT PAGE
 export const features = [
@@ -172,5 +172,39 @@ export const contactFormFields = [
 export const bannerAssets = {
     bannerImage: BannerImage,
     orbitImages: [Image1, Image2, Image3, Image4],
-    video: Video,
+    // video: Video, // Commented out to avoid large file issue
+};
+
+export const heroData = {
+  id: 'hero1',
+  title: "Lakeshore Convenience",
+  subtitle: "Your Trusted Grocery & Convenience Partner",
+  description: "Experience the finest selection of groceries, fresh produce, and convenience items delivered right to your door across Canada.",
+  ctaText: "Explore Our Menu",
+  ctaLink: "/menu",
+  image: BannerImage,
+  // video: Video, // Commented out to avoid large file issue
+  features: [
+    {
+      id: 1,
+      title: "Fast Delivery",
+      text: "Quick grocery delivery in 30 minutes",
+      icon: FaShippingFast,
+      img: IA1,
+    },
+    {
+      id: 2,
+      title: "Fresh Produce",
+      text: "Locally sourced fresh fruits and vegetables",
+      icon: FaLeaf,
+      img: IA2,
+    },
+    {
+      id: 3,
+      title: "Quality Products",
+      text: "Premium quality groceries and essentials",
+      icon: FaHeart,
+      img: IA3,
+    },
+  ],
 };

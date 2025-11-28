@@ -15,6 +15,7 @@ import MyOrders from './pages/MyOredrs/MyOrders';
 import OrderDetailPage from './pages/OrderDetail/OrderDetail';
 import VerifyPaymentPage from './pages/VerifyPaymentPage/VerifyPaymentPage';
 import EmailLogin from './pages/EmailLogin/EmailLogin';
+import TestMenu from './TestMenu';
 
 function App() {
   const location = useLocation();
@@ -31,6 +32,7 @@ function App() {
       <Route path="/menu" element={<Menu />} />
       <Route path="/item/:id" element={<ProductDetail />} />
       <Route path="/faq" element={<FAQ />} />
+      <Route path="/test-menu" element={<TestMenu />} />
 
       {/* Payment verification */}
       <Route path="/myorder/verify" element={<VerifyPaymentPage />} />
