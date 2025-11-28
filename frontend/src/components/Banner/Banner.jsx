@@ -49,7 +49,7 @@ const Banner = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Find fresh produce and groceries..."
+                  placeholder="Find your favourite products and essentials..."
                   className="w-full py-4 pr-6 bg-transparent outline-none placeholder-gray-500 text-lg font-medium tracking-wide input-focus"
                 />
                 <button
