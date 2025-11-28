@@ -1407,6 +1407,16 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Add 404 handler for unmatched routes
+app.use((req, res) => {
+  console.log('404 - Route not found:', req.method, req.url);
+  res.status(404).json({
+    message: 'Route not found',
+    method: req.method,
+    url: req.url
+  });
+});
+
 // Start server - Listen on all interfaces for Render/Railway deployment
 console.log(`Attempting to start server on port ${PORT}...`);
 
