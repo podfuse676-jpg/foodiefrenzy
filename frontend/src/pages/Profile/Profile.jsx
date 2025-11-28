@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import apiConfig from '../../utils/apiConfig';
 import SEO from '../../components/SEO/SEO';
+import { FiUser, FiMail, FiPhone, FiKey, FiEdit, FiLock, FiLogOut, FiCalendar, FiCreditCard } from 'react-icons/fi';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -144,9 +145,16 @@ const Profile = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('loginData');
+    navigate('/');
+    window.location.reload();
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8BC34A] mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading profile...</p>
@@ -157,7 +165,7 @@ const Profile = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6]">
         <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
           <div className="text-center">
             <div className="text-red-500 text-5xl mb-4">⚠️</div>
@@ -183,15 +191,37 @@ const Profile = () => {
         keywords="profile, account, settings, user information"
       />
       
-      <div className="min-h-screen bg-gray-50 py-12">
+      <div className="min-h-screen bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] py-8 sm:py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="px-6 py-8 sm:p-10">
-              <div className="text-center mb-10">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Your Profile</h1>
-                <p className="text-gray-600">Manage your account information and settings</p>
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+            {/* Profile Header */}
+            <div className="bg-gradient-to-r from-[#8BC34A] to-[#7CB342] px-6 py-8 sm:p-10 text-white">
+              <div className="flex flex-col sm:flex-row items-center">
+                <div className="bg-white/20 rounded-full p-4 mb-4 sm:mb-0 sm:mr-6">
+                  <FiUser className="h-12 w-12 text-white" />
+                </div>
+                <div className="text-center sm:text-left">
+                  <h1 className="text-2xl sm:text-3xl font-bold mb-2">{user?.username}</h1>
+                  <p className="text-white/90 mb-1 flex items-center justify-center sm:justify-start">
+                    <FiMail className="mr-2" />
+                    {user?.email}
+                  </p>
+                  {user?.phoneNumber && (
+                    <p className="text-white/90 flex items-center justify-center sm:justify-start">
+                      <FiPhone className="mr-2" />
+                      {user?.phoneNumber}
+                    </p>
+                  )}
+                </div>
+                <div className="mt-4 sm:mt-0 sm:ml-auto">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/20">
+                    {user?.role === 'admin' ? 'Administrator' : 'Customer'}
+                  </span>
+                </div>
               </div>
-              
+            </div>
+            
+            <div className="px-6 py-8 sm:p-10">
               {success && (
                 <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
                   {success}
@@ -207,70 +237,98 @@ const Profile = () => {
               {!editing && !changePassword ? (
                 <div className="space-y-8">
                   {/* Profile Information */}
-                  <div className="border-b border-gray-200 pb-8">
+                  <div className="border border-gray-200 rounded-xl p-6 shadow-sm">
                     <div className="flex justify-between items-center mb-6">
-                      <h2 className="text-xl font-semibold text-gray-900">Profile Information</h2>
+                      <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                        <FiUser className="mr-2 text-[#8BC34A]" />
+                        Profile Information
+                      </h2>
                       <button
                         onClick={() => setEditing(true)}
-                        className="bg-[#8BC34A] text-white px-4 py-2 rounded-lg hover:bg-[#7CB342] transition-colors text-sm font-medium"
+                        className="flex items-center bg-[#8BC34A] text-white px-4 py-2 rounded-lg hover:bg-[#7CB342] transition-colors text-sm font-medium"
                       >
+                        <FiEdit className="mr-2" />
                         Edit Profile
                       </button>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-500 mb-1">Username</label>
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <div className="flex items-center text-sm font-medium text-gray-500 mb-1">
+                          <FiUser className="mr-2" />
+                          Username
+                        </div>
                         <p className="text-lg font-medium text-gray-900">{user?.username}</p>
                       </div>
                       
-                      <div>
-                        <label className="block text-sm font-medium text-gray-500 mb-1">Email</label>
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <div className="flex items-center text-sm font-medium text-gray-500 mb-1">
+                          <FiMail className="mr-2" />
+                          Email
+                        </div>
                         <p className="text-lg font-medium text-gray-900">{user?.email}</p>
                       </div>
                       
-                      <div>
-                        <label className="block text-sm font-medium text-gray-500 mb-1">Phone Number</label>
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <div className="flex items-center text-sm font-medium text-gray-500 mb-1">
+                          <FiPhone className="mr-2" />
+                          Phone Number
+                        </div>
                         <p className="text-lg font-medium text-gray-900">
                           {user?.phoneNumber || 'Not provided'}
                         </p>
                       </div>
                       
-                      <div>
-                        <label className="block text-sm font-medium text-gray-500 mb-1">Account Type</label>
-                        <p className="text-lg font-medium text-gray-900 capitalize">{user?.role || 'user'}</p>
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <div className="flex items-center text-sm font-medium text-gray-500 mb-1">
+                          <FiCalendar className="mr-2" />
+                          Member Since
+                        </div>
+                        <p className="text-lg font-medium text-gray-900">
+                          {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
+                        </p>
                       </div>
                     </div>
                   </div>
                   
-                  {/* Password Change */}
-                  <div className="border-b border-gray-200 pb-8">
-                    <div className="flex justify-between items-center">
-                      <h2 className="text-xl font-semibold text-gray-900">Password</h2>
+                  {/* Account Settings */}
+                  <div className="border border-gray-200 rounded-xl p-6 shadow-sm">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                      <FiKey className="mr-2 text-[#8BC34A]" />
+                      Account Settings
+                    </h2>
+                    
+                    <div className="space-y-4">
                       <button
                         onClick={() => setChangePassword(true)}
-                        className="bg-[#8BC34A] text-white px-4 py-2 rounded-lg hover:bg-[#7CB342] transition-colors text-sm font-medium"
+                        className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
                       >
-                        Change Password
+                        <div className="flex items-center">
+                          <div className="bg-[#8BC34A]/10 p-2 rounded-lg mr-4">
+                            <FiLock className="h-5 w-5 text-[#8BC34A]" />
+                          </div>
+                          <div className="text-left">
+                            <h3 className="font-medium text-gray-900">Change Password</h3>
+                            <p className="text-sm text-gray-500">Update your password for security</p>
+                          </div>
+                        </div>
+                        <FiEdit className="h-5 w-5 text-gray-400" />
                       </button>
-                    </div>
-                    <p className="mt-2 text-gray-600">Update your password to keep your account secure</p>
-                  </div>
-                  
-                  {/* Account Actions */}
-                  <div>
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4">Account Actions</h2>
-                    <div className="flex flex-wrap gap-4">
+                      
                       <button
-                        onClick={() => {
-                          localStorage.removeItem('authToken');
-                          localStorage.removeItem('loginData');
-                          navigate('/');
-                          window.location.reload();
-                        }}
-                        className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm font-medium"
+                        onClick={handleLogout}
+                        className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
                       >
-                        Logout
+                        <div className="flex items-center">
+                          <div className="bg-red-500/10 p-2 rounded-lg mr-4">
+                            <FiLogOut className="h-5 w-5 text-red-500" />
+                          </div>
+                          <div className="text-left">
+                            <h3 className="font-medium text-gray-900">Logout</h3>
+                            <p className="text-sm text-gray-500">Sign out of your account</p>
+                          </div>
+                        </div>
+                        <FiLogOut className="h-5 w-5 text-gray-400" />
                       </button>
                     </div>
                   </div>
@@ -280,7 +338,29 @@ const Profile = () => {
               {/* Edit Profile Form */}
               {editing && (
                 <form onSubmit={handleUpdateProfile} className="space-y-6">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-6">Edit Profile</h2>
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                      <FiEdit className="mr-2 text-[#8BC34A]" />
+                      Edit Profile
+                    </h2>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditing(false);
+                        setError('');
+                        setSuccess('');
+                        // Reset form to original values
+                        setFormData({
+                          username: user?.username,
+                          email: user?.email,
+                          phoneNumber: user?.phoneNumber || ''
+                        });
+                      }}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -293,7 +373,7 @@ const Profile = () => {
                         name="username"
                         value={formData.username}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#8BC34A] focus:border-[#8BC34A]"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#8BC34A] focus:border-[#8BC34A] transition-colors"
                         required
                       />
                     </div>
@@ -308,12 +388,12 @@ const Profile = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#8BC34A] focus:border-[#8BC34A]"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#8BC34A] focus:border-[#8BC34A] transition-colors"
                         required
                       />
                     </div>
                     
-                    <div>
+                    <div className="md:col-span-2">
                       <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
                         Phone Number
                       </label>
@@ -323,7 +403,7 @@ const Profile = () => {
                         name="phoneNumber"
                         value={formData.phoneNumber}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#8BC34A] focus:border-[#8BC34A]"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#8BC34A] focus:border-[#8BC34A] transition-colors"
                       />
                     </div>
                   </div>
@@ -331,8 +411,9 @@ const Profile = () => {
                   <div className="flex flex-wrap gap-4 pt-4">
                     <button
                       type="submit"
-                      className="bg-[#8BC34A] text-white px-6 py-2 rounded-lg hover:bg-[#7CB342] transition-colors font-medium"
+                      className="bg-[#8BC34A] text-white px-6 py-3 rounded-lg hover:bg-[#7CB342] transition-colors font-medium flex items-center"
                     >
+                      <FiEdit className="mr-2" />
                       Save Changes
                     </button>
                     <button
@@ -348,7 +429,7 @@ const Profile = () => {
                           phoneNumber: user?.phoneNumber || ''
                         });
                       }}
-                      className="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                      className="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors font-medium"
                     >
                       Cancel
                     </button>
@@ -359,7 +440,28 @@ const Profile = () => {
               {/* Change Password Form */}
               {changePassword && (
                 <form onSubmit={handleChangePassword} className="space-y-6">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-6">Change Password</h2>
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                      <FiLock className="mr-2 text-[#8BC34A]" />
+                      Change Password
+                    </h2>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setChangePassword(false);
+                        setError('');
+                        setSuccess('');
+                        setPasswordData({
+                          currentPassword: '',
+                          newPassword: '',
+                          confirmPassword: ''
+                        });
+                      }}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                   
                   <div className="space-y-4">
                     <div>
@@ -372,7 +474,7 @@ const Profile = () => {
                         name="currentPassword"
                         value={passwordData.currentPassword}
                         onChange={handlePasswordChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#8BC34A] focus:border-[#8BC34A]"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#8BC34A] focus:border-[#8BC34A] transition-colors"
                         required
                       />
                     </div>
@@ -387,7 +489,7 @@ const Profile = () => {
                         name="newPassword"
                         value={passwordData.newPassword}
                         onChange={handlePasswordChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#8BC34A] focus:border-[#8BC34A]"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#8BC34A] focus:border-[#8BC34A] transition-colors"
                         required
                       />
                       <p className="mt-1 text-sm text-gray-500">Must be at least 8 characters long</p>
@@ -403,7 +505,7 @@ const Profile = () => {
                         name="confirmPassword"
                         value={passwordData.confirmPassword}
                         onChange={handlePasswordChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#8BC34A] focus:border-[#8BC34A]"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#8BC34A] focus:border-[#8BC34A] transition-colors"
                         required
                       />
                     </div>
@@ -412,8 +514,9 @@ const Profile = () => {
                   <div className="flex flex-wrap gap-4 pt-4">
                     <button
                       type="submit"
-                      className="bg-[#8BC34A] text-white px-6 py-2 rounded-lg hover:bg-[#7CB342] transition-colors font-medium"
+                      className="bg-[#8BC34A] text-white px-6 py-3 rounded-lg hover:bg-[#7CB342] transition-colors font-medium flex items-center"
                     >
+                      <FiLock className="mr-2" />
                       Change Password
                     </button>
                     <button
@@ -428,7 +531,7 @@ const Profile = () => {
                           confirmPassword: ''
                         });
                       }}
-                      className="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                      className="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors font-medium"
                     >
                       Cancel
                     </button>

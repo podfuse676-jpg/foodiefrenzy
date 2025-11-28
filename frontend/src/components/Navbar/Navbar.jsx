@@ -240,7 +240,7 @@ const Navbar = () => {
             </div>
 
             {/* Cart and Auth Buttons */}
-            <div className="flex items-center">
+            <div className="flex items-center space-x-3">
               {/* Cart */}
               <motion.div
                 whileHover={{ 
@@ -276,7 +276,7 @@ const Navbar = () => {
                 <div className="flex items-center space-x-2">
                   <motion.button
                     onClick={() => navigate('/profile')}
-                    className="ml-2 sm:ml-4 px-2 py-1 sm:px-3 sm:py-2 rounded-md text-xs sm:text-sm font-medium bg-white text-[#8BC34A] hover:bg-gray-100 transition-colors flex items-center btn-press-feedback"
+                    className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-xs sm:text-sm font-medium bg-white text-[#8BC34A] hover:bg-gray-100 transition-colors flex items-center btn-press-feedback shadow-sm border border-[#8BC34A]/30"
                     whileHover={{ 
                       scale: 1.05,
                       backgroundColor: "#f3f4f6",
@@ -289,7 +289,7 @@ const Navbar = () => {
                   </motion.button>
                   <motion.button
                     onClick={handleLogout}
-                    className="ml-2 sm:ml-4 px-2 py-1 sm:px-3 sm:py-2 rounded-md text-xs sm:text-sm font-medium bg-white text-[#8BC34A] hover:bg-gray-100 transition-colors flex items-center btn-press-feedback"
+                    className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-xs sm:text-sm font-medium bg-white text-[#8BC34A] hover:bg-gray-100 transition-colors flex items-center btn-press-feedback shadow-sm border border-[#8BC34A]/30"
                     whileHover={{ 
                       scale: 1.05,
                       backgroundColor: "#f3f4f6",
@@ -304,7 +304,7 @@ const Navbar = () => {
               ) : (
                 <motion.button
                   onClick={handleLoginClick}
-                  className="ml-2 sm:ml-4 px-2 py-1 sm:px-3 sm:py-2 rounded-md text-xs sm:text-sm font-medium bg-white text-[#8BC34A] hover:bg-gray-100 transition-colors flex items-center btn-press-feedback"
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-xs sm:text-sm font-medium bg-white text-[#8BC34A] hover:bg-gray-100 transition-colors flex items-center btn-press-feedback shadow-sm border border-[#8BC34A]/30"
                   whileHover={{ 
                     scale: 1.05,
                     backgroundColor: "#f3f4f6",
@@ -320,7 +320,7 @@ const Navbar = () => {
               {/* Mobile menu button */}
               <motion.button
                 onClick={() => setIsOpen(!isOpen)}
-                className="md:hidden ml-2 sm:ml-4 p-1.5 sm:p-2 rounded-md text-[#4CAF50] hover:bg-[#4CAF50]/10 focus:outline-none btn-press-feedback"
+                className="md:hidden p-1.5 sm:p-2 rounded-md text-[#4CAF50] hover:bg-[#4CAF50]/10 focus:outline-none btn-press-feedback"
                 whileHover={{ 
                   backgroundColor: "rgba(76, 175, 80, 0.1)",
                   transition: { duration: 0.2 } 
