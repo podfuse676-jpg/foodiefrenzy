@@ -224,11 +224,21 @@ VITE_API_URL=https://lakeshoreconveniencee-backend-production.up.railway.app
 
 ### Deployment Options
 
-#### Option 1: Render (Traditional)
+#### Option 1: Vercel-Only Deployment (Recommended)
+
+Deploy all services to Vercel for a simplified, cost-effective solution without Cloudinary dependencies:
+
+1. Deploy frontend to Vercel
+2. Deploy admin panel to Vercel
+3. Deploy backend to Railway or Render
+
+For detailed instructions, see [Vercel Deployment Guide](VERCEL_DEPLOYMENT_GUIDE.md) and [Vercel-Only Deployment Guide](VERCEL_ONLY_DEPLOYMENT.md).
+
+#### Option 2: Render (Traditional)
 
 For Render deployment instructions, see [Deployment Guide](DEPLOYMENT_GUIDE.md).
 
-#### Option 2: Railway (Recommended)
+#### Option 3: Railway
 
 Railway provides better performance and eliminates the sleeping issues common with Render's free tier. For Railway deployment instructions, see [Railway Deployment Guide](RAILWAY_DEPLOYMENT_GUIDE.md).
 
@@ -236,6 +246,8 @@ Railway provides better performance and eliminates the sleeping issues common wi
 
 For detailed deployment instructions, see:
 
+- [Vercel Deployment Guide](VERCEL_DEPLOYMENT_GUIDE.md)
+- [Vercel-Only Deployment Guide](VERCEL_ONLY_DEPLOYMENT.md)
 - [Deployment Guide](DEPLOYMENT_GUIDE.md)
 - [Railway Deployment Guide](RAILWAY_DEPLOYMENT_GUIDE.md)
 - [Admin Panel Deployment Guide](ADMIN_DEPLOYMENT_GUIDE.md)

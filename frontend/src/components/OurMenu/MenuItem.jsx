@@ -16,6 +16,9 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
     // 'Cappuccino': 'https://example.com/cappuccino.jpg',
     // 'Green Tea': 'https://example.com/green-tea.jpg',
     // 'Sandwich': 'https://example.com/sandwich.jpg'
+    // Special offers examples:
+    'Special Offer 1': 'https://res.cloudinary.com/dfjypp016/image/upload/v1761670243/foodiefrenzy_items/foodiefrenzy_items/Dashboard_Polish_1761670242267.webp',
+    'Special Offer 2': 'https://res.cloudinary.com/dfjypp016/image/upload/v1761670308/foodiefrenzy_items/foodiefrenzy_items/Car_Perfume_1761670306659.webp'
   };
 
   // Generate image URL
@@ -31,7 +34,15 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
       // Ensure we're using the full URL for Cloudinary images
       const imageUrl = item.imageUrl || item.image;
       console.log('Using item image URL:', imageUrl);
-      return imageUrl;
+      
+      // If it's already a full URL (Cloudinary), return as is
+      if (imageUrl.startsWith('http')) {
+        return imageUrl;
+      }
+      
+      // If it's a relative path, construct full URL
+      const baseUrl = import.meta.env.VITE_API_URL || 'https://lakeshoreconveniencee-backend-production.up.railway.app';
+      return `${baseUrl}${imageUrl}`;
     }
     
     // Generate image based on item name

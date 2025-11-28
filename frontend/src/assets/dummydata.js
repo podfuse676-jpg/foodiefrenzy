@@ -25,7 +25,7 @@ import Image1 from "./Image1.png";
 import Image2 from "./Image2.png";
 import Image3 from "./Image3.png";
 import Image4 from "./Image4.png";
-import Video from "./Video.mp4"; // Restored video import
+// import Video from "./Video.mp4"; // Commented out missing video import
 
 // ABOUT PAGE
 export const features = [
@@ -81,6 +81,9 @@ export const stats = [
 
 // Placeholder for empty image
 const emptyImage = '';
+
+// Add a placeholder for missing video
+const emptyVideo = '';
 
 export const teamMembers = [
     {
@@ -172,7 +175,7 @@ export const contactFormFields = [
 export const bannerAssets = {
     bannerImage: BannerImage,
     orbitImages: [Image1, Image2, Image3, Image4],
-    video: Video,
+    video: emptyVideo, // Use empty video placeholder instead of missing video
 };
 
 export const heroData = {
@@ -183,7 +186,7 @@ export const heroData = {
   ctaText: "Explore Our Menu",
   ctaLink: "/menu",
   image: BannerImage,
-  video: Video,
+  video: emptyVideo, // Use empty video placeholder instead of missing video
   features: [
     {
       id: 1,

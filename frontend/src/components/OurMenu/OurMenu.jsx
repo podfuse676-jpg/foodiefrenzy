@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useInView } from 'react-intersection-observer';
-import apiClient, { apiCallWithFallback } from '../../utils/apiClient';
-import { useCart } from '../../CartContext/CartContext';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { FiShoppingCart, FiSearch, FiX } from 'react-icons/fi';
 import MenuItem from './MenuItem';
 import ItemDetailView from './ItemDetailView';
-import apiConfig from '../../utils/apiConfig';
-import { useLoading } from '../../LoadingContext/LoadingContext';
-import { ProductCardSkeleton, CategorySkeleton } from '../SkeletonLoader/SkeletonLoader';
 import './Om.css';
+import { useCart } from '../../CartContext/CartContext';
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
+import { getItems } from '../../utils/api';
 
 const OurMenu = () => {
   const [menuData, setMenuData] = useState({});
@@ -18,24 +18,17 @@ const OurMenu = () => {
   const [error, setError] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const { cartItems: rawCart, addToCart, updateQuantity, removeFromCart } = useCart();
-  const { startLoading, completeLoading } = useLoading();
   const cartItems = rawCart.filter(ci => ci.item);
-  const url = apiConfig.baseURL;
+  const url = 'https://api.example.com';
   
-  // Intersection Observer for scroll-based animations
-  const { ref, inView } = useInView({
-    threshold: 0.1,
-    triggerOnce: false
-  });
-
   useEffect(() => {
     const fetchMenu = async () => {
       try {
-        startLoading('Loading grocery items...');
+        NProgress.start();
         setError(null);
         
         // Remove fallback data to ensure we always show real backend data
-        const response = await apiClient.get('/api/items');
+        const response = await getItems();
         const items = response.data;
         
         console.log('Items fetched from API:', items.length);
@@ -84,7 +77,7 @@ const OurMenu = () => {
         setError('Failed to load menu items. Please try again later.');
       } finally {
         setLoading(false);
-        completeLoading();
+        NProgress.done();
       }
     };
     fetchMenu();
