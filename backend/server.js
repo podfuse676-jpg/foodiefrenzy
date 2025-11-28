@@ -1347,6 +1347,26 @@ app.get('/api/debug/env', (req, res) => {
   });
 });
 
+// Add a global error handler
+app.use((err, req, res, next) => {
+  console.error('=== GLOBAL ERROR HANDLER ===');
+  console.error('Error:', err);
+  console.error('Error stack:', err.stack);
+  console.error('Request URL:', req.url);
+  console.error('Request method:', req.method);
+  console.error('Request headers:', req.headers);
+  
+  // Send error response
+  if (res.headersSent) {
+    return next(err);
+  }
+  
+  res.status(500).json({
+    message: 'Internal server error',
+    error: process.env.NODE_ENV === 'development' ? err.message : {}
+  });
+});
+
 // Start server - Listen on all interfaces for Render/Railway deployment
 console.log(`Attempting to start server on port ${PORT}...`);
 
