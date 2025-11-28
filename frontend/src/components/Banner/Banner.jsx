@@ -34,7 +34,7 @@ const Banner = () => {
               </span>
               <br />
               <span className="font-serif italic bg-gradient-to-r from-[#FFC107] to-[#8BC34A] bg-clip-text text-transparent">
-                delivery just a click away
+                delivery just a click away!!!
               </span>
             </h1>
 
