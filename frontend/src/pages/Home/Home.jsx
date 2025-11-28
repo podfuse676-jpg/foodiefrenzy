@@ -29,10 +29,10 @@ const Home = () => {
         <>
             <SEO 
                 title="Lakeshore Convenience - Nationwide Grocery Delivery Across Canada"
-                description="Shop fresh groceries and convenience items online from Lakeshore Convenience. Fast delivery to your door across Canada. Fresh produce, quality groceries, and unique items available nationwide."
+                description="Lakeshore Convenience brings you exotic chips, premium beverages, imported candies, daily essentials, and unique convenience items—delivered fast across Canada. Shop exclusive snacks, fresh products, and must-have essentials all in one place."
                 keywords="grocery delivery, convenience store, Canada, fresh produce, quality groceries, online shopping, food delivery, nationwide delivery"
                 ogTitle="Lakeshore Convenience - Nationwide Grocery Delivery Across Canada"
-                ogDescription="Shop fresh groceries and convenience items online from Lakeshore Convenience. Fast delivery to your door across Canada."
+                ogDescription="Lakeshore Convenience brings you exotic chips, premium beverages, imported candies, daily essentials, and unique convenience items—delivered fast across Canada. Shop exclusive snacks, fresh products, and must-have essentials all in one place."
                 ogUrl="https://lakeshoreconvenience.com"
                 canonicalUrl="https://lakeshoreconvenience.com"
             />
