@@ -1004,6 +1004,12 @@ app.post('/api/update-item-images', async (req, res) => {
   try {
     console.log('=== UPDATE ITEM IMAGES REQUEST ===');
     
+    // Import the Item model
+    const Item = (await import('./modals/item.js')).default;
+    
+    // Import cloudinary
+    const cloudinary = (await import('cloudinary')).v2;
+    
     // List all resources in the foodiefrenzy_items folder
     const result = await cloudinary.api.resources({
       type: 'upload',
