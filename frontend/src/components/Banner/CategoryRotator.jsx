@@ -5,6 +5,7 @@ import Cappuccino from '../../assets/Cappuccino.png';
 import BreakfastBurrito from '../../assets/BreakfastBurrito.png';
 import Nachos from '../../assets/Nachos.png';
 import IcedLatte from '../../assets/IcedLatte.png';
+import { bannerAssets } from '../../assets/dummydata';
 
 const CategoryRotator = () => {
   const navigate = useNavigate();
@@ -70,7 +71,7 @@ const CategoryRotator = () => {
       >
         <div className="bg-white rounded-full w-full h-full flex items-center justify-center p-2">
           <img 
-            src="https://img.freepik.com/premium-vector/adorable-young-boy-carrying-basket-full-groceries-cartoon_1323048-9028.jpg" 
+            src={bannerAssets.bannerImage} 
             alt="Cute animated boy holding a grocery basket" 
             className="w-full h-full object-cover rounded-full"
           />
