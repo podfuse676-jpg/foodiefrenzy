@@ -43,6 +43,10 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
   
   const imageUrl = getImageUrl();
   
+  // State for image loading status
+  const [imageLoadError, setImageLoadError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   // Handle adding to cart
   const handleAddToCart = () => {
     setIsAnimating(true);
@@ -70,24 +74,31 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
     <div className="relative bg-white rounded-2xl overflow-hidden border-2 border-[#8BC34A]/30 backdrop-blur-sm flex flex-col items-center gap-3 transition-all duration-300 hover:border-[#8BC34A] hover:shadow-xl hover:shadow-[#8BC34A]/10 transform hover:-translate-y-1 p-4 group card-hover">
       {/* Image Container - improved for mobile with lazy loading */}
       <div className="w-full h-32 flex-shrink-0 relative overflow-hidden rounded-lg transition-transform duration-300 group-hover:scale-105">
-        {imageUrl ? (
+        {imageUrl && !imageLoadError ? (
           <img
             src={imageUrl}
             alt={item.name}
-            className="w-full h-full object-contain"
+            className={`w-full h-full object-contain transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
             loading="lazy" // Add lazy loading
             onError={(e) => {
               console.error('Image failed to load:', imageUrl, 'Item:', item.name);
+              setImageLoadError(true);
               // Fallback to a default image if the image fails to load
-              e.target.src = 'https://source.unsplash.com/200x200/?grocery';
+              e.target.src = 'https://source.unsplash.com/200x200/?grocery,item';
             }}
             onLoad={(e) => {
               console.log('Image loaded successfully:', imageUrl, 'Item:', item.name);
+              setImageLoaded(true);
             }}
           />
         ) : (
           <div className="w-full h-full bg-[#8BC34A]/10 flex items-center justify-center">
-            <span className="text-[#8BC34A] text-xs text-center px-1">No Image</span>
+            <div className="text-center">
+              <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 mx-auto" />
+              <span className="text-[#8BC34A] text-xs text-center px-1 mt-2 block">
+                {imageLoadError ? 'Image unavailable' : 'Loading image...'}
+              </span>
+            </div>
           </div>
         )}
       </div>
