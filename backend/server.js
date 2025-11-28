@@ -999,6 +999,165 @@ app.get('/sitemap.xml', async (req, res) => {
   }
 });
 
+// Add a route to update item images with correct Cloudinary URLs
+app.post('/api/update-item-images', async (req, res) => {
+  try {
+    console.log('=== UPDATE ITEM IMAGES REQUEST ===');
+    
+    // List all resources in the foodiefrenzy_items folder
+    const result = await cloudinary.api.resources({
+      type: 'upload',
+      prefix: 'foodiefrenzy_items/',
+      max_results: 500
+    });
+    
+    console.log(`Found ${result.resources.length} images in Cloudinary.`);
+    
+    // Map of item names to their correct Cloudinary URLs (use the most recent)
+    const itemImageMap = {};
+    
+    // Process all Cloudinary images to build the mapping
+    result.resources.forEach(resource => {
+      // Extract the item name from the public_id (before the timestamp)
+      const parts = resource.public_id.split('/');
+      if (parts.length > 1) {
+        const filename = parts[1];
+        // Remove the timestamp part (after the last underscore)
+        const nameParts = filename.split('_');
+        if (nameParts.length > 1) {
+          nameParts.pop(); // Remove timestamp
+          const itemName = nameParts.join('_').replace(/-/g, ' '); // Convert underscores to spaces
+          
+          // Only store the most recent image for each item
+          if (!itemImageMap[itemName] || resource.created_at > itemImageMap[itemName].created_at) {
+            itemImageMap[itemName] = {
+              url: resource.secure_url,
+              created_at: resource.created_at
+            };
+          }
+        }
+      }
+    });
+    
+    // Items we need to update
+    const targetItems = [
+      'Wiper Fluid',
+      'Tire Cleaner',
+      'Dashboard Polish',
+      'Car Air Freshener',
+      'Car Perfume'
+    ];
+    
+    let updatedCount = 0;
+    let notFoundCount = 0;
+    const updateResults = [];
+    
+    // Update each target item
+    for (const itemName of targetItems) {
+      try {
+        console.log(`\nProcessing item: ${itemName}`);
+        
+        // Find the item in the database
+        const item = await Item.findOne({ 
+          name: { $regex: new RegExp(itemName, 'i') } // Case insensitive match
+        });
+        
+        if (!item) {
+          console.log(`  ⚠️  Item not found in database: ${itemName}`);
+          updateResults.push({
+            item: itemName,
+            status: 'not_found',
+            message: 'Item not found in database'
+          });
+          notFoundCount++;
+          continue;
+        }
+        
+        // Find the correct Cloudinary URL
+        const correctImageData = itemImageMap[itemName];
+        if (!correctImageData) {
+          console.log(`  ⚠️  No Cloudinary URL found for: ${itemName}`);
+          updateResults.push({
+            item: itemName,
+            status: 'no_image',
+            message: 'No Cloudinary URL found for this item'
+          });
+          notFoundCount++;
+          continue;
+        }
+        
+        const correctUrl = correctImageData.url;
+        
+        // Check if the item already has the correct URL
+        if (item.imageUrl === correctUrl) {
+          console.log(`  ✓ Item already has correct URL: ${itemName}`);
+          updateResults.push({
+            item: itemName,
+            status: 'already_correct',
+            message: 'Item already has correct URL',
+            oldUrl: item.imageUrl,
+            newUrl: correctUrl
+          });
+          updatedCount++;
+          continue;
+        }
+        
+        // Update the item with the correct URL
+        const updatedItem = await Item.findByIdAndUpdate(
+          item._id,
+          { imageUrl: correctUrl },
+          { new: true }
+        );
+        
+        console.log(`  ✓ Updated item with correct Cloudinary URL: ${itemName}`);
+        console.log(`    Old URL: ${item.imageUrl}`);
+        console.log(`    New URL: ${updatedItem.imageUrl}`);
+        
+        updateResults.push({
+          item: itemName,
+          status: 'updated',
+          message: 'Item updated with correct Cloudinary URL',
+          oldUrl: item.imageUrl,
+          newUrl: updatedItem.imageUrl
+        });
+        updatedCount++;
+        
+      } catch (error) {
+        console.log(`  ✗ Failed to update item ${itemName}: ${error.message}`);
+        updateResults.push({
+          item: itemName,
+          status: 'error',
+          message: error.message
+        });
+      }
+    }
+    
+    console.log(`\nUpdate Summary:`);
+    console.log(`  Successfully updated: ${updatedCount}`);
+    console.log(`  Not found/failures: ${notFoundCount}`);
+    console.log(`  Total processed: ${targetItems.length}`);
+    
+    res.json({
+      success: true,
+      message: 'Item image update process completed',
+      summary: {
+        updated: updatedCount,
+        notFound: notFoundCount,
+        total: targetItems.length
+      },
+      results: updateResults
+    });
+    
+  } catch (error) {
+    console.error('Update error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update item images',
+      error: error.message
+    });
+  }
+});
+
 // Start server - Listen on all interfaces for Render/Railway deployment
 console.log(`Attempting to start server on port ${PORT}...`);
 
