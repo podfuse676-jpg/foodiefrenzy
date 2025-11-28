@@ -29,8 +29,7 @@ const OurMenu = () => {
         setError(null);
         
         // Remove fallback data to ensure we always show real backend data
-        const response = await getItems();
-        const items = response.data;
+        const items = await getItems();
         
         console.log('Items fetched from API:', items.length);
         
