@@ -35,7 +35,8 @@
     "test-start": "node test-server-start.js",
     "test-new-order-model": "node testNewOrderModel.js",
     "test-new-order-routes": "node testNewOrderRoutes.js",
-    "test-nodemailer": "node test-nodemailer.js"
+    "test-nodemailer": "node test-nodemailer.js",
+    "test-email-service": "node test-email-service.js"
   },
   "author": "",
   "license": "ISC",
