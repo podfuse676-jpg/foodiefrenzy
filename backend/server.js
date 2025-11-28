@@ -390,15 +390,15 @@ const generalLimiter = rateLimit({
   },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  // Fix for Railway deployment - handle X-Forwarded-For headers properly with IPv6 support
-  keyGenerator: (req) => {
-    // Use X-Forwarded-For header if available (for proxy environments like Railway)
+  // Use the built-in ipKeyGenerator for IPv6 support
+  keyGenerator: rateLimit.ipKeyGenerator((req) => {
+    // Use X-Forwarded-For header if available (for proxy environments)
     if (req.headers['x-forwarded-for']) {
       return req.headers['x-forwarded-for'].split(',')[0].trim();
     }
     // Fallback to connection remote address
     return req.ip;
-  },
+  }),
   // Add skipSuccessfulRequests to reduce load on successful requests
   skipSuccessfulRequests: false
 });
@@ -412,15 +412,15 @@ const loginLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  // Fix for Railway deployment - handle X-Forwarded-For headers properly with IPv6 support
-  keyGenerator: (req) => {
-    // Use X-Forwarded-For header if available (for proxy environments like Railway)
+  // Use the built-in ipKeyGenerator for IPv6 support
+  keyGenerator: rateLimit.ipKeyGenerator((req) => {
+    // Use X-Forwarded-For header if available (for proxy environments)
     if (req.headers['x-forwarded-for']) {
       return req.headers['x-forwarded-for'].split(',')[0].trim();
     }
     // Fallback to connection remote address
     return req.ip;
-  },
+  }),
   skipSuccessfulRequests: true
 });
 
@@ -433,15 +433,15 @@ const apiLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  // Fix for Railway deployment - handle X-Forwarded-For headers properly with IPv6 support
-  keyGenerator: (req) => {
-    // Use X-Forwarded-For header if available (for proxy environments like Railway)
+  // Use the built-in ipKeyGenerator for IPv6 support
+  keyGenerator: rateLimit.ipKeyGenerator((req) => {
+    // Use X-Forwarded-For header if available (for proxy environments)
     if (req.headers['x-forwarded-for']) {
       return req.headers['x-forwarded-for'].split(',')[0].trim();
     }
     // Fallback to connection remote address
     return req.ip;
-  },
+  }),
   skipSuccessfulRequests: false
 });
 
