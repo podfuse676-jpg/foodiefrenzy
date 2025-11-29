@@ -128,6 +128,7 @@ import userRoutes from './routes/userRoute.js';
 import phoneAuthRoutes from './routes/phoneAuthRoute.js';
 import emailAuthRoutes from './routes/emailAuthRoute.js';
 import whatsappAuthRoutes from './routes/whatsappAuthRoute.js';
+import emailOTPRoutes from './routes/emailOTPRoutes.js'; // Add email OTP routes
 import reviewRoutes from './routes/reviewRoute.js';
 import testRoutes from './routes/testRoute.js';
 
@@ -645,6 +646,8 @@ console.log('Registering /api/email-auth routes');
 app.use('/api/email-auth', emailAuthRoutes);
 console.log('Registering /api/whatsapp-auth routes');
 app.use('/api/whatsapp-auth', whatsappAuthRoutes);
+console.log('Registering /api/email-otp routes'); // Add email OTP routes
+app.use('/api/email-otp', emailOTPRoutes); // Add email OTP routes
 console.log('Registering /api/reviews routes');
 app.use('/api/reviews', reviewRoutes);
 console.log('Registering /api/test routes');
@@ -860,11 +863,21 @@ app.post('/api/test-email-services', async (req, res) => {
       console.log('Resend service error:', error.message);
     }
     
-    // Test SMTP fallback service
-    try {
-      console.log('Testing SMTP fallback service...');
-      const smtpFallbackService = await import('./services/smtpFallbackService.js');
-      
+    res.json({
+      message: 'Email service test completed',
+      environment: {
+        resendApiKey: process.env.RESEND_API_KEY ? 'SET' : 'NOT SET',
+        fromEmail: process.env.FROM_EMAIL ? 'SET' : 'NOT SET'
+      },
+      serviceStatus,
+      testResults
+    });
+  } catch (error) {
+    console.error('Error in comprehensive email service test:', error);
+    res.status(500).json({ error: error.message, stack: error.stack });
+  }
+});
+
       if (smtpFallbackService.default.transporter) {
         const result = await smtpFallbackService.default.sendOTP(testEmail, testOtp);
         testResults.smtpFallback = result;
@@ -881,8 +894,9 @@ app.post('/api/test-email-services', async (req, res) => {
     res.json({
       message: 'Email service test completed',
       environment: {
-        resendApiKey: process.env.RESEND_API_KEY ? 'SET' : 'NOT SET',
-        fromEmail: process.env.FROM_EMAIL ? 'SET' : 'NOT SET'
+        emailUser: process.env.EMAIL_USER ? 'SET' : 'NOT SET',
+        emailPass: process.env.EMAIL_PASS ? 'SET' : 'NOT SET',
+        sendGridKey: process.env.SENDGRID_API_KEY ? 'SET' : 'NOT SET'
       },
       serviceStatus,
       testResults

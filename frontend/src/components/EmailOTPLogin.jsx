@@ -30,7 +30,7 @@ const EmailOTPLogin = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/api/email-auth/send-email-otp`, {
+      const response = await axios.post(`${API_URL}/api/email-otp/send-email-otp`, {
         email
       });
 
@@ -60,16 +60,14 @@ const EmailOTPLogin = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/api/email-auth/verify-email-otp`, {
+      const response = await axios.post(`${API_URL}/api/email-otp/verify-email-otp`, {
         email,
         otp
       });
 
       if (response.data.token) {
-        // Save token and user info to localStorage using consistent keys
-        localStorage.setItem('authToken', response.data.token);
+        // Save token and user info to localStorage
         localStorage.setItem('token', response.data.token);
-        localStorage.setItem('loginData', JSON.stringify(response.data.user));
         localStorage.setItem('user', JSON.stringify(response.data.user));
         setSuccess('Login successful! Redirecting...');
         
@@ -100,7 +98,7 @@ const EmailOTPLogin = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/api/email-auth/send-email-otp`, {
+      const response = await axios.post(`${API_URL}/api/email-otp/send-email-otp`, {
         email
       });
 

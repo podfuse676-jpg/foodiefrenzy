@@ -26,7 +26,7 @@ userRouter.get("/profile", authMiddleware, async (req, res) => {
 
 userRouter.put("/profile", authMiddleware, async (req, res) => {
     try {
-        const { username, email, phoneNumber, firstName, lastName, address, city, zipCode } = req.body
+        const { username, email, phoneNumber } = req.body
         
         // Check if email is already taken by another user
         if (email) {
@@ -44,30 +44,10 @@ userRouter.put("/profile", authMiddleware, async (req, res) => {
             }
         }
         
-        // Prepare update data
-        const updateData = {
-            username, 
-            email, 
-            phoneNumber,
-            firstName,
-            lastName,
-            address,
-            city,
-            zipCode,
-            profileCompleted: !!(firstName && lastName) // Mark profile as completed if first and last name are provided
-        };
-        
-        // Remove undefined fields
-        Object.keys(updateData).forEach(key => {
-            if (updateData[key] === undefined) {
-                delete updateData[key];
-            }
-        });
-        
         // Update user data
         const updatedUser = await userModel.findByIdAndUpdate(
             req.user._id,
-            updateData,
+            { username, email, phoneNumber },
             { new: true, runValidators: true }
         ).select('-password')
         

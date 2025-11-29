@@ -8,15 +8,7 @@ const userSchema = new mongoose.Schema({
     isPhoneVerified: { type: Boolean, default: false },
     phoneVerificationCode: { type: String },
     phoneVerificationExpires: { type: Date },
-    role: { type: String, enum: ['user', 'admin'], default: 'user' }, // Add role field
-    
-    // Profile completion fields
-    firstName: { type: String },
-    lastName: { type: String },
-    address: { type: String },
-    city: { type: String },
-    zipCode: { type: String },
-    profileCompleted: { type: Boolean, default: false }
+    role: { type: String, enum: ['user', 'admin'], default: 'user' } // Add role field
 })
 
 // Add indexes for better query performance
