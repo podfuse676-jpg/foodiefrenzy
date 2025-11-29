@@ -1,58 +1,49 @@
-// Test script to verify email service functionality
+// Test email service configuration
 import dotenv from 'dotenv';
 dotenv.config();
 
-import emailService from './services/emailService.js';
+console.log('=== EMAIL SERVICE TEST ===');
 
-async function testEmailService() {
-  console.log('🧪 Testing Email Service...');
-  
-  // Check if environment variables are set
-  console.log('Checking environment variables...');
-  console.log('- EMAIL_USER:', process.env.EMAIL_USER ? 'SET' : 'NOT SET');
-  console.log('- EMAIL_PASS:', process.env.EMAIL_PASS ? 'SET' : 'NOT SET');
-  console.log('- JWT_SECRET:', process.env.JWT_SECRET ? 'SET' : 'NOT SET');
-  
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.log('❌ EMAIL_USER and/or EMAIL_PASS not set. Please configure environment variables.');
-    process.exit(1);
-  }
-  
-  // Wait a moment for the transporter to initialize
-  console.log('\n⏳ Waiting for email transporter to initialize...');
-  await new Promise(resolve => setTimeout(resolve, 5000));
+// Check environment variables
+console.log('Environment Variables:');
+console.log('- RESEND_API_KEY:', process.env.RESEND_API_KEY ? 'SET' : 'NOT SET');
+console.log('- FROM_EMAIL:', process.env.FROM_EMAIL ? process.env.FROM_EMAIL : 'NOT SET');
+
+try {
+  console.log('\nTesting Resend email service import...');
+  const resendEmailService = await import('./services/resendEmailService.js');
+  console.log('✅ Resend email service imported successfully');
   
   // Test sending an OTP
-  console.log('\n📧 Testing OTP email sending...');
-  const testEmail = process.env.EMAIL_USER; // Send to the same email for testing
+  console.log('\n📧 Testing OTP email sending with Resend service...');
+  const testEmail = process.env.FROM_EMAIL || 'test@example.com';
   const testOTP = '123456';
   
   try {
     console.log(`Sending OTP ${testOTP} to ${testEmail}...`);
-    const result = await emailService.sendOTP(testEmail, testOTP);
+    const result = await resendEmailService.default.sendOTP(testEmail, testOTP);
     
     if (result.success) {
-      console.log('✅ Email sent successfully!');
+      console.log('✅ Resend email sent successfully!');
       console.log('Message ID:', result.messageId);
     } else {
-      console.log('❌ Failed to send email:', result.error);
+      console.log('❌ Failed to send Resend email:', result.error);
       
       // Provide specific guidance based on error
       if (result.error.includes('timeout')) {
         console.log('\n🔧 TROUBLESHOOTING TIP:');
-        console.log('This appears to be a network timeout issue, which is common on some hosting platforms.');
-        console.log('Try these solutions:');
-        console.log('1. Check if your hosting provider blocks outbound SMTP connections');
-        console.log('2. Consider using a different email service like SendGrid or Mailgun');
-        console.log('3. Contact your hosting provider about SMTP restrictions');
+        console.log('This appears to be a network timeout issue.');
+        console.log('1. Check your RESEND_API_KEY environment variable');
+        console.log('2. Consider using a different email service like Mailgun');
       }
     }
   } catch (error) {
-    console.log('💥 Error during email test:', error.message);
+    console.log('💥 Error during Resend email test:', error.message);
   }
   
-  console.log('\n🏁 Email service test completed.');
+  console.log('\n🏁 Resend email service test completed.');
+} catch (error) {
+  console.log('❌ Error importing Resend email service:', error.message);
 }
 
-// Run the test
-testEmailService();
+console.log('\n=== TEST COMPLETE ===');

@@ -67,8 +67,10 @@ const WhatsAppLogin = () => {
       });
 
       if (response.data.token) {
-        // Save token and user info to localStorage
+        // Save token and user info to localStorage using consistent keys
+        localStorage.setItem('authToken', response.data.token);
         localStorage.setItem('token', response.data.token);
+        localStorage.setItem('loginData', JSON.stringify(response.data.user));
         localStorage.setItem('user', JSON.stringify(response.data.user));
         setSuccess('Login successful! Redirecting...');
         

@@ -2,11 +2,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import User from '../modals/userModel.js';
 import OTP from '../modals/otpModel.js';
-import emailService from '../services/emailService.js';
-import alternativeEmailService from '../services/alternativeEmailService.js';
-import sendGridEmailService from '../services/sendGridEmailService.js';
-import smtpFallbackService from '../services/smtpFallbackService.js';
-import resendEmailService from '../services/resendEmailService.js'; // Add Resend service
+import resendEmailService from '../services/resendEmailService.js'; // Only import Resend
 
 // Generate a 6-digit OTP
 const generateOTP = () => {
@@ -55,36 +51,12 @@ export const sendEmailOTP = async (req, res) => {
     );
     console.log('✅ OTP saved to database:', otpRecord._id);
 
-    // Try Resend first (most reliable in hosting environments)
+    // Send OTP via Resend (only service now)
     console.log(`📤 Attempting to send OTP email to ${email} using Resend...`);
-    let emailResult = await resendEmailService.sendOTP(email, otp);
-    
-    // If Resend fails, try SendGrid
-    if (!emailResult.success) {
-      console.log('⚠️ Resend failed, trying SendGrid...');
-      emailResult = await sendGridEmailService.sendOTP(email, otp);
-    }
-    
-    // If SendGrid fails, try primary email service
-    if (!emailResult.success) {
-      console.log('⚠️ SendGrid failed, trying primary email service...');
-      emailResult = await emailService.sendOTP(email, otp);
-    }
-    
-    // If primary service fails, try alternative service
-    if (!emailResult.success) {
-      console.log('⚠️ Primary email service failed, trying alternative service...');
-      emailResult = await alternativeEmailService.sendOTP(email, otp);
-    }
-    
-    // If alternative service fails, try SMTP fallback
-    if (!emailResult.success) {
-      console.log('⚠️ Alternative email service failed, trying SMTP fallback...');
-      emailResult = await smtpFallbackService.sendOTP(email, otp);
-    }
+    const emailResult = await resendEmailService.sendOTP(email, otp);
     
     if (!emailResult.success) {
-      console.log('❌ All email services failed:', emailResult.error);
+      console.log('❌ Failed to send OTP email via Resend:', emailResult.error);
       return res.status(500).json({ 
         message: 'Failed to send OTP email',
         error: emailResult.error

@@ -803,31 +803,20 @@ app.get('/api/debug-env', (req, res) => {
 app.post('/api/test-email', async (req, res) => {
   try {
     console.log('=== EMAIL TEST ENDPOINT ===');
-    console.log('EMAIL_USER:', process.env.EMAIL_USER ? 'SET' : 'NOT SET');
-    console.log('EMAIL_PASS:', process.env.EMAIL_PASS ? 'SET' : 'NOT SET');
-    console.log('SENDGRID_API_KEY:', process.env.SENDGRID_API_KEY ? 'SET' : 'NOT SET');
+    console.log('RESEND_API_KEY:', process.env.RESEND_API_KEY ? 'SET' : 'NOT SET');
+    console.log('FROM_EMAIL:', process.env.FROM_EMAIL ? 'SET' : 'NOT SET');
     
     // Import and test email services
-    const emailService = await import('./services/emailService.js');
-    const alternativeEmailService = await import('./services/alternativeEmailService.js');
-    const sendGridEmailService = await import('./services/sendGridEmailService.js');
-    const smtpFallbackService = await import('./services/smtpFallbackService.js');
+    const resendEmailService = await import('./services/resendEmailService.js');
     
-    console.log('Primary transporter:', emailService.default.transporter ? 'INITIALIZED' : 'NOT INITIALIZED');
-    console.log('Alternative transporter:', alternativeEmailService.default.transporter ? 'INITIALIZED' : 'NOT INITIALIZED');
-    console.log('SendGrid transporter:', sendGridEmailService.default.transporter ? 'INITIALIZED' : 'NOT INITIALIZED');
-    console.log('SMTP Fallback transporter:', smtpFallbackService.default.transporter ? 'INITIALIZED' : 'NOT INITIALIZED');
+    console.log('Resend service initialized:', resendEmailService.default.resend ? 'YES' : 'NO');
     
     res.json({
       message: 'Email configuration check completed',
-      emailUser: process.env.EMAIL_USER ? 'SET' : 'NOT SET',
-      emailPass: process.env.EMAIL_PASS ? 'SET' : 'NOT SET',
-      sendGridKey: process.env.SENDGRID_API_KEY ? 'SET' : 'NOT SET',
+      resendApiKey: process.env.RESEND_API_KEY ? 'SET' : 'NOT SET',
+      fromEmail: process.env.FROM_EMAIL ? 'SET' : 'NOT SET',
       services: {
-        primary: emailService.default.transporter ? 'INITIALIZED' : 'NOT INITIALIZED',
-        alternative: alternativeEmailService.default.transporter ? 'INITIALIZED' : 'NOT INITIALIZED',
-        sendGrid: sendGridEmailService.default.transporter ? 'INITIALIZED' : 'NOT INITIALIZED',
-        smtpFallback: smtpFallbackService.default.transporter ? 'INITIALIZED' : 'NOT INITIALIZED'
+        resend: resendEmailService.default.resend ? 'INITIALIZED' : 'NOT INITIALIZED'
       }
     });
   } catch (error) {
@@ -841,98 +830,54 @@ app.post('/api/test-email-services', async (req, res) => {
   try {
     console.log('=== COMPREHENSIVE EMAIL SERVICE TEST ===');
     
-    // Import all email services
-    const emailService = await import('./services/emailService.js');
-    const alternativeEmailService = await import('./services/alternativeEmailService.js');
-    const sendGridEmailService = await import('./services/sendGridEmailService.js');
-    const smtpFallbackService = await import('./services/smtpFallbackService.js');
+    // Import Resend email service
+    const resendEmailService = await import('./services/resendEmailService.js');
     
-    console.log('Services imported successfully');
+    console.log('Resend service imported successfully');
     
     // Check initialization status
     const serviceStatus = {
-      primary: {
-        imported: !!emailService.default,
-        initialized: emailService.default.transporter ? 'YES' : 'NO',
-        transporter: emailService.default.transporter ? typeof emailService.default.transporter : 'NONE'
-      },
-      alternative: {
-        imported: !!alternativeEmailService.default,
-        initialized: alternativeEmailService.default.transporter ? 'YES' : 'NO',
-        transporter: alternativeEmailService.default.transporter ? typeof alternativeEmailService.default.transporter : 'NONE'
-      },
-      sendgrid: {
-        imported: !!sendGridEmailService.default,
-        initialized: sendGridEmailService.default.initialized ? 'YES' : 'NO',
-        transporter: sendGridEmailService.default.initialized ? 'READY' : 'NOT READY'
-      },
-      smtpFallback: {
-        imported: !!smtpFallbackService.default,
-        initialized: smtpFallbackService.default.transporter ? 'YES' : 'NO',
-        transporter: smtpFallbackService.default.transporter ? typeof smtpFallbackService.default.transporter : 'NONE'
+      resend: {
+        imported: !!resendEmailService.default,
+        initialized: resendEmailService.default.resend ? 'YES' : 'NO'
       }
     };
     
     console.log('Service Status:', JSON.stringify(serviceStatus, null, 2));
     
-    // Try to send a test email with each service
+    // Try to send a test email with Resend service
     const testResults = {};
-    const testEmail = 'lakeshoreconvenience@gmail.com';
+    const testEmail = process.env.FROM_EMAIL || 'test@example.com';
     const testOtp = '123456';
     
-    console.log(`Testing email services with ${testEmail}`);
+    console.log(`Testing Resend email service with ${testEmail}`);
     
-    // Test primary service
+    // Test Resend service
     try {
-      console.log('Testing primary email service...');
-      if (emailService.default.transporter) {
-        const result = await emailService.default.sendOTP(testEmail, testOtp);
-        testResults.primary = result;
-        console.log('Primary service result:', result);
-      } else {
-        testResults.primary = { success: false, error: 'Transporter not initialized' };
-        console.log('Primary service not initialized');
-      }
+      console.log('Testing Resend email service...');
+      const result = await resendEmailService.default.sendOTP(testEmail, testOtp);
+      testResults.resend = result;
+      console.log('Resend service result:', result);
     } catch (error) {
-      testResults.primary = { success: false, error: error.message };
-      console.log('Primary service error:', error.message);
+      testResults.resend = { success: false, error: error.message };
+      console.log('Resend service error:', error.message);
     }
     
-    // Test alternative service
-    try {
-      console.log('Testing alternative email service...');
-      if (alternativeEmailService.default.transporter) {
-        const result = await alternativeEmailService.default.sendOTP(testEmail, testOtp);
-        testResults.alternative = result;
-        console.log('Alternative service result:', result);
-      } else {
-        testResults.alternative = { success: false, error: 'Transporter not initialized' };
-        console.log('Alternative service not initialized');
-      }
-    } catch (error) {
-      testResults.alternative = { success: false, error: error.message };
-      console.log('Alternative service error:', error.message);
-    }
-    
-    // Test SendGrid service
-    try {
-      console.log('Testing SendGrid email service...');
-      if (sendGridEmailService.default.initialized) {
-        const result = await sendGridEmailService.default.sendOTP(testEmail, testOtp);
-        testResults.sendgrid = result;
-        console.log('SendGrid service result:', result);
-      } else {
-        testResults.sendgrid = { success: false, error: 'Service not initialized' };
-        console.log('SendGrid service not initialized');
-      }
-    } catch (error) {
-      testResults.sendgrid = { success: false, error: error.message };
-      console.log('SendGrid service error:', error.message);
-    }
-    
-    // Test SMTP fallback service
-    try {
-      console.log('Testing SMTP fallback email service...');
+    res.json({
+      message: 'Email service test completed',
+      environment: {
+        resendApiKey: process.env.RESEND_API_KEY ? 'SET' : 'NOT SET',
+        fromEmail: process.env.FROM_EMAIL ? 'SET' : 'NOT SET'
+      },
+      serviceStatus,
+      testResults
+    });
+  } catch (error) {
+    console.error('Error in comprehensive email service test:', error);
+    res.status(500).json({ error: error.message, stack: error.stack });
+  }
+});
+
       if (smtpFallbackService.default.transporter) {
         const result = await smtpFallbackService.default.sendOTP(testEmail, testOtp);
         testResults.smtpFallback = result;

@@ -21,42 +21,44 @@ Users report that they're not receiving OTP emails after entering their email ad
 
 1. Check that these environment variables are set in your Render dashboard:
 
-   - `EMAIL_USER` = lakeshoreconvenience@gmail.com
-   - `EMAIL_PASS` = [Your Gmail app password]
+   - `RESEND_API_KEY` = [Your Resend API key]
+   - `FROM_EMAIL` = noreply@lakeshoreconvenience.com
    - `OTP_EXPIRY_MINUTES` = 5
    - `JWT_SECRET` = [Your JWT secret]
 
 2. Verify values are correct:
-   - `EMAIL_USER` should be your Gmail address
-   - `EMAIL_PASS` should be an App Password, NOT your regular Gmail password
+   - `RESEND_API_KEY` should be your Resend API key
+   - `FROM_EMAIL` should be a verified sender domain/email
 
-##### B. Incorrect Gmail App Password
+##### B. Incorrect Resend API Key
 
 **Symptoms:**
 
 - Authentication errors in logs
-- Messages about "Invalid credentials" or "Bad credentials"
+- Messages about "Invalid API key" or "Unauthorized"
 
 **Solution:**
 
-1. Generate a new App Password:
-   - Go to your Google Account settings
-   - Navigate to Security → 2-Step Verification → App passwords
-   - Generate a new app password for "Mail"
-   - Use this 16-character password (without spaces) as your `EMAIL_PASS`
+1. Generate a new Resend API key:
+   - Go to your Resend dashboard
+   - Navigate to API Keys section
+   - Generate a new API key with appropriate permissions
+   - Use this API key as your `RESEND_API_KEY`
 
-##### C. Gmail Security Settings
+##### C. Domain Verification Issues
 
 **Symptoms:**
 
-- Connection timeouts
-- SSL/TLS errors
+- Emails being rejected
+- DNS verification errors
 
 **Solution:**
 
-1. Ensure "Less secure app access" is disabled (it should be disabled for security)
-2. Make sure 2-Factor Authentication is enabled
-3. Use App Passwords instead of your regular password
+1. Ensure your domain is verified in Resend:
+   - Go to your Resend dashboard
+   - Navigate to Domains section
+   - Add and verify your domain (noreply@lakeshoreconvenience.com)
+   - Follow DNS verification steps
 
 ##### D. Network/Firewall Issues (CONNECTION TIMEOUT)
 
@@ -67,23 +69,7 @@ Users report that they're not receiving OTP emails after entering their email ad
 - "Connection timeout" error messages
 
 **Solution:**
-This is the most common issue on Render. Many hosting providers block outbound SMTP connections for security reasons.
-
-**Immediate Solutions:**
-
-1. **Try Alternative Email Services:**
-
-   - Sign up for SendGrid (Free tier: 100 emails/day)
-   - Use Mailgun (Free tier: 5,000 emails/month)
-   - Try AWS SES (Free tier available)
-
-2. **Contact Render Support:**
-
-   - Ask if they block outbound SMTP connections on free tier
-   - Request SMTP access for your service
-
-3. **Use Alternative Ports/Configuration:**
-   - We've implemented alternative SMTP configurations that may work better
+This is less common with Resend as it uses HTTP APIs rather than SMTP connections.
 
 ### 2. Testing the Email Service
 
@@ -96,7 +82,6 @@ You can test if the email service is working correctly:
    cd backend
    npm run test-email-service
    npm run test-alternative-email-service
-   npm run test-sendgrid-email-service
    ```
 
 #### Manual API Test
@@ -129,44 +114,21 @@ curl -X POST https://lakeshore-convenience.onrender.com/api/email-auth/send-emai
 - "Failed to send OTP email"
 - "Connection timeout" (ETIMEDOUT)
 
-### 4. Verifying Gmail Configuration
+### 4. Verifying Resend Configuration
 
-#### Steps to Ensure Gmail Works:
+#### Steps to Ensure Resend Works:
 
-1. **Enable 2-Factor Authentication:**
+1. **Sign up for Resend:**
 
-   - Go to Google Account settings
-   - Click "Security"
-   - Enable "2-Step Verification"
-
-2. **Generate App Password:**
-
-   - In Security section, click "App passwords"
-   - Select "Mail" and your device
-   - Copy the 16-character password
-
-3. **Use App Password (Not Regular Password):**
-   - In Render environment variables, set `EMAIL_PASS` to the app password
-   - Remove any spaces from the app password
-
-### 5. Setting Up SendGrid (RECOMMENDED SOLUTION)
-
-SendGrid is more reliable on hosting platforms like Render.
-
-#### Steps to Set Up SendGrid:
-
-1. **Sign up for SendGrid:**
-
-   - Go to https://sendgrid.com/
-   - Click "Start for Free"
+   - Go to https://resend.com/
+   - Click "Sign up"
    - Complete registration
 
 2. **Get Your API Key:**
 
-   - Go to Settings → API Keys
+   - Go to API Keys section
    - Click "Create API Key"
    - Give it a name (e.g., "FoodieFrenzy")
-   - Select "Full Access"
    - Copy the generated API key
 
 3. **Configure Render Environment Variables:**
@@ -175,27 +137,60 @@ SendGrid is more reliable on hosting platforms like Render.
    - Select your backend service
    - Go to "Environment"
    - Add these variables:
-     - `SENDGRID_API_KEY` = [Your SendGrid API key]
+     - `RESEND_API_KEY` = [Your Resend API key]
      - `FROM_EMAIL` = noreply@lakeshoreconvenience.com (or your verified sender)
 
-4. **Verify Your Sender Identity:**
-   - In SendGrid, go to Settings → Sender Authentication
-   - Add a Single Sender Verification for your FROM_EMAIL
-   - Confirm the verification email
+4. **Verify Your Domain:**
+   - In Resend, go to Domains section
+   - Add your domain
+   - Follow DNS verification steps
+   - Confirm the verification
+
+### 5. Setting Up Resend (RECOMMENDED SOLUTION)
+
+Resend is more reliable on hosting platforms like Render and doesn't have SMTP connection issues.
+
+#### Steps to Set Up Resend:
+
+1. **Sign up for Resend:**
+
+   - Go to https://resend.com/
+   - Click "Sign up"
+   - Complete registration
+
+2. **Get Your API Key:**
+
+   - Go to API Keys section
+   - Click "Create API Key"
+   - Give it a name (e.g., "FoodieFrenzy")
+   - Copy the generated API key
+
+3. **Configure Render Environment Variables:**
+
+   - Go to your Render dashboard
+   - Select your backend service
+   - Go to "Environment"
+   - Add these variables:
+     - `RESEND_API_KEY` = [Your Resend API key]
+     - `FROM_EMAIL` = noreply@lakeshoreconvenience.com (or your verified sender)
+
+4. **Verify Your Domain:**
+   - In Resend, go to Domains section
+   - Add your domain
+   - Follow DNS verification steps
+   - Confirm the verification
 
 ### 6. Debugging Checklist
 
 Before reporting issues, check:
 
 - [ ] Environment variables are set correctly in Render
-- [ ] `EMAIL_USER` is a valid Gmail address
-- [ ] `EMAIL_PASS` is a Gmail App Password (not regular password)
-- [ ] 2-Factor Authentication is enabled on the Gmail account
-- [ ] App Password was generated correctly
+- [ ] `RESEND_API_KEY` is a valid Resend API key
+- [ ] `FROM_EMAIL` is a verified sender domain/email
 - [ ] Recent logs don't show authentication errors
 - [ ] Test email script runs successfully locally
 - [ ] Both primary and alternative email services were tested
-- [ ] SendGrid API key is set (if using SendGrid)
+- [ ] Domain is verified in Resend
 
 ### 7. Common Error Messages and Fixes
 
@@ -203,24 +198,26 @@ Before reporting issues, check:
 | ------------------------------------ | ----------------------------- | -------------------------------------------- |
 | "Invalid login" or "Bad credentials" | Wrong password                | Use App Password instead of regular password |
 | "Service not found"                  | Network issue                 | Check Render logs, contact support           |
-| "Connection timeout" (ETIMEDOUT)     | Firewall/Network restrictions | Use SendGrid or contact Render               |
-| "Email service not configured"       | Missing env vars              | Set EMAIL_USER and EMAIL_PASS in Render      |
+| "Connection timeout" (ETIMEDOUT)     | Firewall/Network restrictions | Use Resend or contact Render                 |
+| "Email service not configured"       | Missing env vars              | Set RESEND_API_KEY in Render                 |
 
 ### 8. Alternative Email Services
 
-If Gmail continues to have connection issues, consider these alternatives:
+If you continue to have connection issues, Resend is already implemented and is the recommended solution.
 
-#### SendGrid (Recommended)
+#### Resend (Already Implemented)
 
-1. Sign up at https://sendgrid.com/
-2. Get free API key
-3. Update your email service to use SendGrid SMTP:
-   - Host: smtp.sendgrid.net
-   - Port: 587
-   - Username:apikey
-   - Password: YOUR_SENDGRID_API_KEY
+Resend is already integrated into your application. You just need to:
 
-#### Mailgun
+1. Sign up at https://resend.com/
+2. Get your API key
+3. Set the `RESEND_API_KEY` environment variable in Render
+
+#### Other Alternatives
+
+If Resend doesn't work for your use case:
+
+##### Mailgun
 
 1. Sign up at https://www.mailgun.com/
 2. Get sandbox domain credentials
@@ -233,7 +230,7 @@ If Gmail continues to have connection issues, consider these alternatives:
 Add this to your Render environment variables:
 
 ```
-DEBUG=nodemailer:*
+DEBUG=resend:*
 ```
 
 #### Test Locally
@@ -241,10 +238,9 @@ DEBUG=nodemailer:*
 1. Create a `.env` file in the backend directory:
 
    ```
-   EMAIL_USER=lakeshoreconvenience@gmail.com
-   EMAIL_PASS=your_app_password
+   RESEND_API_KEY=your_resend_api_key
+   FROM_EMAIL=noreply@lakeshoreconvenience.com
    JWT_SECRET=your_jwt_secret
-   SENDGRID_API_KEY=your_sendgrid_api_key (optional)
    ```
 
 2. Run the test scripts:
@@ -252,7 +248,6 @@ DEBUG=nodemailer:*
    cd backend
    npm run test-email-service
    npm run test-alternative-email-service
-   npm run test-sendgrid-email-service
    ```
 
 If this works locally but not on Render, the issue is likely with Render's network restrictions.
@@ -264,5 +259,5 @@ If you're still having issues:
 1. Share recent Render logs showing the timeout error
 2. Verify your environment variables are set correctly
 3. Try the test scripts locally to isolate the issue
-4. Check that you're using an App Password, not your regular Gmail password
-5. Consider switching to SendGrid or another email service provider
+4. Check that you're using a valid Resend API key
+5. Consider verifying your domain in Resend dashboard
