@@ -38,7 +38,8 @@
     "test-nodemailer": "node test-nodemailer.js",
     "test-email-service": "node test-email-service.js",
     "test-alternative-email-service": "node test-alternative-email-service.js",
-    "test-whatsapp-service": "node test-whatsapp-service.js"
+    "test-whatsapp-service": "node test-whatsapp-service.js",
+    "test-resend-service": "node test-resend-service.js"
   },
   "author": "",
   "license": "ISC",
