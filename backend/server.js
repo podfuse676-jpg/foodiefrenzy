@@ -126,9 +126,10 @@ import orderRoutes from './routes/orderRoute.js';
 import newOrderRoutes from './routes/newOrderRoutes.js';
 import userRoutes from './routes/userRoute.js';
 import phoneAuthRoutes from './routes/phoneAuthRoute.js';
-import emailAuthRoutes from './routes/emailAuthRoute.js'; // Add email auth routes
+import emailAuthRoutes from './routes/emailAuthRoute.js';
+import whatsappAuthRoutes from './routes/whatsappAuthRoute.js'; // Add WhatsApp auth routes
 import reviewRoutes from './routes/reviewRoute.js';
-import testRoutes from './routes/testRoute.js'; // Add test routes
+import testRoutes from './routes/testRoute.js';
 
 // Import models after database connection
 import User from './modals/userModel.js';
@@ -635,17 +636,19 @@ app.use('/api/cart', cartRoutes);
 console.log('Registering /api/orders routes');
 app.use('/api/orders', orderRoutes);
 console.log('Registering /api/orders (new) routes');
-app.use('/api/orders', newOrderRoutes); // Add new order routes
+app.use('/api/orders', newOrderRoutes);
 console.log('Registering /api/users routes');
 app.use('/api/users', userRoutes);
 console.log('Registering /api/auth routes');
 app.use('/api/auth', phoneAuthRoutes);
-console.log('Registering /api/email-auth routes'); // Add email auth routes
-app.use('/api/email-auth', emailAuthRoutes); // Add email auth routes
+console.log('Registering /api/email-auth routes');
+app.use('/api/email-auth', emailAuthRoutes);
+console.log('Registering /api/whatsapp-auth routes'); // Add WhatsApp auth routes
+app.use('/api/whatsapp-auth', whatsappAuthRoutes); // Add WhatsApp auth routes
 console.log('Registering /api/reviews routes');
 app.use('/api/reviews', reviewRoutes);
 console.log('Registering /api/test routes');
-app.use('/api/test', testRoutes); // Add test routes
+app.use('/api/test', testRoutes);
 
 console.log('=== ROUTES REGISTERED ===');
 
