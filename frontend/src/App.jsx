@@ -10,13 +10,14 @@ import Menu from './pages/Menu/Menu';
 import ProductDetail from './pages/ProductDetail/ProductDetail';
 import FAQ from './pages/FAQ/FAQ';
 import PrivateRoute from './components/PrivateRoute/PrivateRoute';
-import PhoneLogin from './components/PhoneLogin';
+import PhoneLogin from './components/Login/PhoneLoginModern';
 import MyOrders from './pages/MyOredrs/MyOrders';
 import OrderDetailPage from './pages/OrderDetail/OrderDetail';
 import VerifyPaymentPage from './pages/VerifyPaymentPage/VerifyPaymentPage';
-import EmailLogin from './pages/EmailLogin/EmailLogin';
+import EmailLogin from './components/Login/EmailLoginModern';
 import WhatsAppLogin from './components/WhatsAppLogin';
 import EmailOTPLogin from './components/EmailOTPLogin'; // Import Email OTP login component
+import LoginSelector from './pages/LoginSelector';
 import TestMenu from './TestMenu';
 import Profile from './pages/Profile/Profile';
 import SetCredentials from './components/SetCredentials/SetCredentials';
@@ -29,7 +30,7 @@ function App() {
       {/* Public */}
       <Route path="/" element={<Home />} />
       <Route path="/signup" element={<SignUp />} />
-      <Route path="/login" element={<EmailOTPLogin />} /> {/* Changed to Email OTP login */}
+      <Route path="/login" element={<LoginSelector />} />
       <Route path="/phone-login" element={<PhoneLogin />} />
       <Route path="/email-login" element={<EmailLogin />} />
       <Route path="/whatsapp-login" element={<WhatsAppLogin />} />
