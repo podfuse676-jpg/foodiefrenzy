@@ -656,8 +656,8 @@ console.log('Registering /api/orders routes');
 app.use('/api/orders', orderRoutes);
 
 // Register new order routes after (they are all protected)
-console.log('Registering /api/orders (new) routes');
-app.use('/api/orders', newOrderRoutes);
+console.log('Registering /api/new-orders routes');
+app.use('/api/new-orders', newOrderRoutes);
 
 console.log('Registering /api/users routes');
 app.use('/api/users', userRoutes);
