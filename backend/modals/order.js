@@ -5,7 +5,7 @@ const orderItemSchema = new mongoose.Schema({
   productId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Item',
-    required: true
+    required: false  // Make this optional to handle cases where we don't have a valid product ID
   },
   name: { type: String, required: true },
   image: { type: String, default: '' },

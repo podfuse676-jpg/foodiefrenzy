@@ -40,11 +40,14 @@ export const createOrder = async (req, res) => {
         // Normalize incoming item structure to match order model schema
         const orderItems = items.map(({ item, name, price, imageUrl, quantity, productId }) => {
             // Handle different possible item structures from frontend
-            const itemName = item?.name || name || 'Unknown Item';
-            const itemPrice = Number(item?.price ?? price) || 0;
-            const itemImage = item?.imageUrl || imageUrl || '';
+            // For cart items, item contains the full item object with _id
+            const itemObj = item || {};
+            const itemName = itemObj.name || name || 'Unknown Item';
+            const itemPrice = Number(itemObj.price ?? price) || 0;
+            const itemImage = itemObj.imageUrl || imageUrl || '';
             const itemQuantity = Number(quantity) || 0;
-            const itemProductId = item?._id || productId || null;
+            // Extract productId from item._id if available, otherwise use productId or null
+            const itemProductId = itemObj._id || productId || null;
             
             return {
                 productId: itemProductId,
