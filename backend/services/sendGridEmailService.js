@@ -1,60 +1,38 @@
-// SendGrid email service - more reliable on hosting providers
-import nodemailer from 'nodemailer';
+// SendGrid email service - using official SendGrid SDK for better reliability
+import sgMail from '@sendgrid/mail';
 
 class SendGridEmailService {
   constructor() {
     // Check if SendGrid API key is set
     if (!process.env.SENDGRID_API_KEY) {
       console.warn('⚠️  SendGrid email service not configured: SENDGRID_API_KEY not set');
-      this.transporter = null;
+      this.initialized = false;
       return;
     }
 
     try {
-      // SendGrid SMTP configuration
-      this.transporter = nodemailer.createTransport({
-        host: 'smtp.sendgrid.net',
-        port: 587,
-        secure: false, // true for 465, false for other ports
-        auth: {
-          user: 'apikey',
-          pass: process.env.SENDGRID_API_KEY
-        },
-        tls: {
-          rejectUnauthorized: false
-        },
-        connectionTimeout: 30000, // 30 seconds
-        greetingTimeout: 30000,
-        socketTimeout: 30000
-      });
-      
-      // Verify transporter configuration
-      this.transporter.verify((error, success) => {
-        if (error) {
-          console.error('❌ SendGrid email transporter configuration error:', error);
-          this.transporter = null;
-        } else {
-          console.log('✅ SendGrid email transporter is ready to send emails');
-        }
-      });
+      // Set API key
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      this.initialized = true;
+      console.log('✅ SendGrid email service initialized successfully');
     } catch (error) {
-      console.error('❌ Failed to create SendGrid email transporter:', error);
-      this.transporter = null;
+      console.error('❌ Failed to initialize SendGrid email service:', error);
+      this.initialized = false;
     }
   }
 
   async sendOTP(email, otp) {
-    // Check if transporter is available
-    if (!this.transporter) {
+    // Check if service is initialized
+    if (!this.initialized) {
       const errorMsg = 'SendGrid email service not configured properly. Check SENDGRID_API_KEY environment variable.';
       console.error('❌', errorMsg);
       return { success: false, error: errorMsg };
     }
 
     try {
-      const mailOptions = {
-        from: process.env.FROM_EMAIL || 'noreply@lakeshoreconvenience.com',
+      const msg = {
         to: email,
+        from: process.env.FROM_EMAIL || 'noreply@lakeshoreconvenience.com',
         subject: 'Your OTP for Login - Lakeshore Convenience',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -79,20 +57,16 @@ class SendGridEmailService {
       };
 
       console.log(`📧 [SendGrid] Sending OTP to ${email}...`);
-      const info = await this.transporter.sendMail(mailOptions);
-      console.log('✅ [SendGrid] OTP email sent successfully:', info.messageId);
-      return { success: true, messageId: info.messageId };
+      await sgMail.send(msg);
+      console.log('✅ [SendGrid] OTP email sent successfully');
+      return { success: true };
     } catch (error) {
       console.error('❌ [SendGrid] Error sending OTP email:', error);
       let errorMessage = error.message;
-      if (error.code === 'EAUTH') {
-        errorMessage = 'Authentication failed. Check your SENDGRID_API_KEY.';
-      } else if (error.code === 'ECONNREFUSED') {
-        errorMessage = 'Connection to SendGrid refused. Check your network connection.';
-      } else if (error.code === 'ENOTFOUND') {
-        errorMessage = 'SendGrid server not found. Check your configuration.';
-      } else if (error.code === 'ETIMEDOUT') {
-        errorMessage = 'Connection timeout. This may be a network issue.';
+      
+      if (error.response) {
+        console.error('SendGrid API Response:', error.response.body);
+        errorMessage = `SendGrid API error: ${error.response.body.errors ? error.response.body.errors[0].message : 'Unknown error'}`;
       }
       
       return { success: false, error: errorMessage };
