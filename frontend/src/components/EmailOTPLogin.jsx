@@ -30,7 +30,7 @@ const EmailOTPLogin = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/api/email-otp/send-email-otp`, {
+      const response = await axios.post(`${API_URL}/api/email-auth/send-email-otp`, {
         email
       });
 
@@ -60,7 +60,7 @@ const EmailOTPLogin = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/api/email-otp/verify-email-otp`, {
+      const response = await axios.post(`${API_URL}/api/email-auth/verify-email-otp`, {
         email,
         otp
       });
@@ -100,7 +100,7 @@ const EmailOTPLogin = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/api/email-otp/send-email-otp`, {
+      const response = await axios.post(`${API_URL}/api/email-auth/send-email-otp`, {
         email
       });
 
