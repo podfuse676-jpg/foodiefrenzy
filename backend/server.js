@@ -878,35 +878,6 @@ app.post('/api/test-email-services', async (req, res) => {
   }
 });
 
-      if (smtpFallbackService.default.transporter) {
-        const result = await smtpFallbackService.default.sendOTP(testEmail, testOtp);
-        testResults.smtpFallback = result;
-        console.log('SMTP fallback service result:', result);
-      } else {
-        testResults.smtpFallback = { success: false, error: 'Transporter not initialized' };
-        console.log('SMTP fallback service not initialized');
-      }
-    } catch (error) {
-      testResults.smtpFallback = { success: false, error: error.message };
-      console.log('SMTP fallback service error:', error.message);
-    }
-    
-    res.json({
-      message: 'Email service test completed',
-      environment: {
-        emailUser: process.env.EMAIL_USER ? 'SET' : 'NOT SET',
-        emailPass: process.env.EMAIL_PASS ? 'SET' : 'NOT SET',
-        sendGridKey: process.env.SENDGRID_API_KEY ? 'SET' : 'NOT SET'
-      },
-      serviceStatus,
-      testResults
-    });
-  } catch (error) {
-    console.error('Error in comprehensive email service test:', error);
-    res.status(500).json({ error: error.message, stack: error.stack });
-  }
-});
-
 app.delete('/api/orders/cleanup', async (req, res) => {
   try {
     // This should only be used in development or by authorized admins
