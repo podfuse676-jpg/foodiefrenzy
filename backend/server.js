@@ -634,10 +634,13 @@ console.log('Registering /api/items routes');
 app.use('/api/items', itemRoutes);
 console.log('Registering /api/cart routes');
 app.use('/api/cart', cartRoutes);
-console.log('Registering /api/orders routes');
-app.use('/api/orders', orderRoutes);
+
+// Register new order routes BEFORE old order routes to ensure /my route is matched correctly
 console.log('Registering /api/orders (new) routes');
 app.use('/api/orders', newOrderRoutes);
+console.log('Registering /api/orders routes');
+app.use('/api/orders', orderRoutes);
+
 console.log('Registering /api/users routes');
 app.use('/api/users', userRoutes);
 console.log('Registering /api/auth routes');
@@ -648,6 +651,7 @@ console.log('Registering /api/whatsapp-auth routes');
 app.use('/api/whatsapp-auth', whatsappAuthRoutes);
 console.log('Registering /api/email-otp routes'); // Add email OTP routes
 app.use('/api/email-otp', emailOTPRoutes); // Add email OTP routes
+
 console.log('Registering /api/reviews routes');
 app.use('/api/reviews', reviewRoutes);
 console.log('Registering /api/test routes');
@@ -663,7 +667,6 @@ const checkDatabaseConnection = (req, res, next) => {
   if (req.path === '/health' || req.path.startsWith('/test')) {
     return next();
   }
-  
   // For API routes, check if database is connected
   if (!databaseConnected && req.path.startsWith('/api')) {
     return res.status(503).json({ 
