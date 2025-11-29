@@ -198,10 +198,10 @@ const OrderDetail = () => {
                 <div className="space-y-4">
                   {order.items.map((item, index) => (
                     <div key={index} className="flex items-center gap-4 p-4 bg-white rounded-xl border border-[#8BC34A]/20">
-                      {item.image ? (
+                      {item.item?.imageUrl ? (
                         <img
-                          src={item.image.startsWith('http') ? item.image : `${url}${item.image}`}
-                          alt={item.name}
+                          src={item.item.imageUrl.startsWith('http') ? item.item.imageUrl : `${url}${item.item.imageUrl}`}
+                          alt={item.item?.name || 'Product Image'}
                           className="w-16 h-16 object-cover rounded-lg"
                           onError={(e) => {
                             e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIEVycm9yPC90ZXh0Pjwvc3ZnPg==';
@@ -214,13 +214,13 @@ const OrderDetail = () => {
                       )}
                       
                       <div className="flex-1">
-                        <h4 className="font-medium text-gray-800">{item.name}</h4>
+                        <h4 className="font-medium text-gray-800">{item.item?.name || 'Unknown Product'}</h4>
                         <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
                       </div>
                       
                       <div className="text-right">
-                        <p className="font-medium text-[#FFC107]">${typeof item.price === 'number' && typeof item.quantity === 'number' ? (item.price * item.quantity).toFixed(2) : '0.00'} CAD</p>
-                        <p className="text-sm text-gray-600">${typeof item.price === 'number' ? item.price.toFixed(2) : '0.00'} each</p>
+                        <p className="font-medium text-[#FFC107]">${typeof item.item?.price === 'number' && typeof item.quantity === 'number' ? (item.item.price * item.quantity).toFixed(2) : '0.00'} CAD</p>
+                        <p className="text-sm text-gray-600">${typeof item.item?.price === 'number' ? item.item.price.toFixed(2) : '0.00'} each</p>
                       </div>
                     </div>
                   ))}
