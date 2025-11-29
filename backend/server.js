@@ -765,7 +765,7 @@ app.get('/test-after-middleware', (req, res) => {
   });
 });
 
-// Debug endpoint to check environment variables
+// Add a debug endpoint to check environment variables
 app.get('/api/debug-env', (req, res) => {
   res.json({
     MONGODB_URI: process.env.MONGODB_URI ? 'SET' : 'NOT SET',
@@ -781,7 +781,11 @@ app.get('/api/debug-env', (req, res) => {
     // Add Render-specific environment variables
     RENDER: process.env.RENDER || 'NOT SET',
     RENDER_SERVICE_ID: process.env.RENDER_SERVICE_ID || 'NOT SET',
-    RENDER_EXTERNAL_HOSTNAME: process.env.RENDER_EXTERNAL_HOSTNAME || 'NOT SET'
+    RENDER_EXTERNAL_HOSTNAME: process.env.RENDER_EXTERNAL_HOSTNAME || 'NOT SET',
+    // Add email-specific environment variables
+    EMAIL_USER: process.env.EMAIL_USER ? 'SET' : 'NOT SET',
+    EMAIL_PASS: process.env.EMAIL_PASS ? 'SET' : 'NOT SET',
+    SENDGRID_API_KEY: process.env.SENDGRID_API_KEY ? 'SET' : 'NOT SET'
   });
 });
 
@@ -1682,3 +1686,4 @@ server.on('listening', () => {
   console.log('==============================');
 });
 // Trigger redeployment
+console.log('Redeployment trigger updated: v1.0');
