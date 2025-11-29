@@ -71,10 +71,10 @@ export const addToCart = asyncHandler(async (req, res) => {
     });
 });
 
-// PUT /api/cart/:id
+// PUT /api/cart/:itemId
 export const updateCartItem = asyncHandler(async (req, res) => {
     const { quantity, selectedSize } = req.body;
-    const cartItem = await CartItem.findOne({ _id: req.params.id, user: req.user._id });
+    const cartItem = await CartItem.findOne({ _id: req.params.itemId, user: req.user._id });
     if (!cartItem) {
         res.status(404);
         throw new Error('Cart item not found');
@@ -96,15 +96,15 @@ export const updateCartItem = asyncHandler(async (req, res) => {
     });
 });
 
-// DELETE /api/cart/:id
+// DELETE /api/cart/:itemId
 export const deleteCartItem = asyncHandler(async (req, res) => {
-    const cartItem = await CartItem.findOne({ _id: req.params.id, user: req.user._id });
+    const cartItem = await CartItem.findOne({ _id: req.params.itemId, user: req.user._id });
     if (!cartItem) {
         res.status(404);
         throw new Error('Cart item not found');
     }
     await cartItem.deleteOne();
-    res.json({ _id: req.params.id });
+    res.json({ _id: req.params.itemId });
 });
 
 // POST /api/cart/clear

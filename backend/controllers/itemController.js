@@ -1,4 +1,5 @@
 import Item from '../modals/item.js';
+import { fixBrokenImageUrl } from '../utils/imageUtils.js';
 
 export const getItems = async (req, res, next) => {
     try {
@@ -12,18 +13,21 @@ export const getItems = async (req, res, next) => {
             // Log the original imageUrl for debugging
             console.log(`Item: ${itemObj.name}, Original imageUrl: ${itemObj.imageUrl}`);
             
+            // Fix broken image URLs
+            const fixedItem = fixBrokenImageUrl(itemObj);
+            
             // For local URLs, we need to prefix with host
-            if (itemObj.imageUrl && !itemObj.imageUrl.startsWith('http')) {
+            if (fixedItem.imageUrl && !fixedItem.imageUrl.startsWith('http') && !fixedItem.imageUrl.startsWith('data:')) {
                 // This is a local URL, prefix with host
                 // Use HTTPS in production, HTTP in development
                 const protocol = process.env.NODE_ENV === 'production' ? 'https' : req.protocol;
                 const host = `${protocol}://${req.get('host')}`;
                 // Convert relative URL to absolute
-                itemObj.imageUrl = host + itemObj.imageUrl;
-                console.log(`Converted relative URL to absolute: ${itemObj.imageUrl}`);
+                fixedItem.imageUrl = host + fixedItem.imageUrl;
+                console.log(`Converted relative URL to absolute: ${fixedItem.imageUrl}`);
             }
             
-            return itemObj;
+            return fixedItem;
         });
         
         console.log(`Found ${itemsWithFullUrls.length} items`);
@@ -47,15 +51,19 @@ export const getItemById = async (req, res, next) => {
         
         // Prefix image URL with host for relative paths (local storage)
         const itemObj = item.toObject();
-        if (itemObj.imageUrl && !itemObj.imageUrl.startsWith('http')) {
+        
+        // Fix broken image URLs
+        const fixedItem = fixBrokenImageUrl(itemObj);
+        
+        if (fixedItem.imageUrl && !fixedItem.imageUrl.startsWith('http') && !fixedItem.imageUrl.startsWith('data:')) {
             // Use HTTPS in production, HTTP in development
             const protocol = process.env.NODE_ENV === 'production' ? 'https' : req.protocol;
             const host = `${protocol}://${req.get('host')}`;
-            itemObj.imageUrl = host + itemObj.imageUrl;
+            fixedItem.imageUrl = host + fixedItem.imageUrl;
         }
         
-        console.log('Found item:', itemObj.name);
-        res.json(itemObj);
+        console.log('Found item:', fixedItem.name);
+        res.json(fixedItem);
     } catch (err) {
         console.error('Get item by ID error:', err);
         next(err);

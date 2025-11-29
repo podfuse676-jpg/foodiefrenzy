@@ -18,7 +18,7 @@ router
 router.post('/clear', authMiddleware, clearCart);
 
 router
-    .route('/:id')
+    .route('/:itemId')
     .put(authMiddleware, updateCartItem)
     .delete(authMiddleware, deleteCartItem);
 

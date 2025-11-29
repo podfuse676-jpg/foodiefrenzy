@@ -17,7 +17,15 @@ import healthCheck from './health.js';
 // Load environment variables
 dotenv.config();
 
+dotenv.config();
+console.log('✓ Loaded environment variables');
+
 // Add debugging at the top of the file
+console.log('=== SERVER.JS STARTING ===');
+console.log('Current working directory:', process.cwd());
+console.log('Arguments:', process.argv);
+console.log('========================');
+
 console.log('=== SERVER STARTUP DEBUG INFO ===');
 console.log('Node version:', process.version);
 console.log('Current working directory:', process.cwd());
@@ -317,21 +325,6 @@ console.log('- process.env.$PORT:', process.env.$PORT);
 console.log('- process.env.RENDER_PORT:', process.env.RENDER_PORT);
 console.log('- Final PORT value:', PORT);
 
-// Handle preflight OPTIONS requests for all routes
-app.options('*', (req, res) => {
-  console.log('=== PREFLIGHT REQUEST ===');
-  console.log('Origin:', req.headers.origin);
-  console.log('Headers requested:', req.headers['access-control-request-headers']);
-  console.log('Method requested:', req.headers['access-control-request-method']);
-  
-  // Set CORS headers for preflight
-  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', req.headers['access-control-request-headers'] || 'Content-Type,Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.sendStatus(200);
-});
-
 // Add a simple test endpoint at the very beginning
 app.get('/test-very-beginning', (req, res) => {
   res.json({ 
@@ -505,17 +498,6 @@ const generalLimiter = rateLimit({
   },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  // Handle X-Forwarded-For headers for proxy environments
-  keyGenerator: (req) => {
-    // Use X-Forwarded-For header if available (for proxy environments)
-    if (req.headers['x-forwarded-for']) {
-      return req.headers['x-forwarded-for'].split(',')[0].trim();
-    }
-    // Fallback to connection remote address
-    return req.ip;
-  },
-  // Add skipSuccessfulRequests to reduce load on successful requests
-  skipSuccessfulRequests: false
 });
 
 // Specific rate limiter for login attempts to prevent brute force attacks
@@ -527,15 +509,6 @@ const loginLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  // Handle X-Forwarded-For headers for proxy environments
-  keyGenerator: (req) => {
-    // Use X-Forwarded-For header if available (for proxy environments)
-    if (req.headers['x-forwarded-for']) {
-      return req.headers['x-forwarded-for'].split(',')[0].trim();
-    }
-    // Fallback to connection remote address
-    return req.ip;
-  },
   skipSuccessfulRequests: true
 });
 
@@ -548,16 +521,6 @@ const apiLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  // Handle X-Forwarded-For headers for proxy environments
-  keyGenerator: (req) => {
-    // Use X-Forwarded-For header if available (for proxy environments)
-    if (req.headers['x-forwarded-for']) {
-      return req.headers['x-forwarded-for'].split(',')[0].trim();
-    }
-    // Fallback to connection remote address
-    return req.ip;
-  },
-  skipSuccessfulRequests: false
 });
 
 // Apply rate limiting to all requests
@@ -716,6 +679,17 @@ app.use('/uploads', express.static('uploads'));
 // Add a route to serve images with proper headers (for local fallback)
 app.get('/uploads/images/:imageName', (req, res) => {
   const imageName = req.params.imageName;
+  // Validate that imageName is provided and not empty
+  if (!imageName || imageName.trim() === '') {
+    return res.status(400).json({ message: 'Image name is required' });
+  }
+  
+  // Sanitize the imageName to prevent directory traversal attacks
+  const sanitizedImageName = imageName.replace(/[^a-zA-Z0-9._-]/g, '');
+  if (sanitizedImageName !== imageName) {
+    return res.status(400).json({ message: 'Invalid image name format' });
+  }
+  
   const imagePath = path.join(process.cwd(), 'uploads', 'images', imageName);
   
   console.log(`Request for image: ${imageName}`);
@@ -1019,6 +993,24 @@ app.get('/api/test-cloudinary', async (req, res) => {
 // Test endpoint to verify item ID format
 app.get('/api/test-item-id/:id', (req, res) => {
   const { id } = req.params;
+  
+  // Validate that id is provided and not empty
+  if (!id || id.trim() === '') {
+    return res.status(400).json({ 
+      error: 'ID parameter is required', 
+      message: 'Please provide a valid item ID' 
+    });
+  }
+  
+  // Sanitize the ID to prevent injection attacks
+  const sanitizedId = id.replace(/[^a-zA-Z0-9]/g, '');
+  if (sanitizedId !== id) {
+    return res.status(400).json({ 
+      error: 'Invalid ID format', 
+      message: 'ID contains invalid characters' 
+    });
+  }
+  
   console.log('=== TESTING ITEM ID ===');
   console.log('Item ID:', id);
   console.log('Item ID length:', id ? id.length : 0);
