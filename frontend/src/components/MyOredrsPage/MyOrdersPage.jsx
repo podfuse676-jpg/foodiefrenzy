@@ -205,7 +205,10 @@ const UserOrdersPage = () => {
 
   // Display star ratings
   const renderRating = (rating) => {
-    if (!rating || rating === 0) {
+    // Handle cases where rating might be undefined or null
+    const safeRating = typeof rating === 'number' && !isNaN(rating) ? rating : 0;
+    
+    if (safeRating === 0) {
       return <span className="text-gray-500 text-sm">No reviews</span>;
     }
     
@@ -216,14 +219,14 @@ const UserOrdersPage = () => {
             <FiStar
               key={i}
               className={`${
-                i < Math.floor(rating) ? 'text-yellow-400' : 'text-gray-300'
+                i < Math.floor(safeRating) ? 'text-yellow-400' : 'text-gray-300'
               } text-sm`}
-              fill={i < Math.floor(rating) ? 'currentColor' : 'none'}
+              fill={i < Math.floor(safeRating) ? 'currentColor' : 'none'}
             />
           ))}
         </div>
         <span className="text-gray-800 text-sm font-cinzel">
-          {rating.toFixed(1)}
+          {safeRating.toFixed(1)}
         </span>
       </div>
     );
@@ -294,10 +297,13 @@ const UserOrdersPage = () => {
                 </tr>
                 {orders.map((order) => {
                   const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
-                  const totalPrice = order.total ?? order.items.reduce(
-                    (sum, item) => sum + (item.item.price * item.quantity),
-                    0
-                  );
+                  // Safely calculate totalPrice with fallbacks
+                  const totalPrice = order.total !== undefined && order.total !== null ? 
+                    order.total : 
+                    order.items.reduce(
+                      (sum, item) => sum + ((item.item?.price || 0) * (item.quantity || 0)),
+                      0
+                    );
                   const paymentMethod = getPaymentMethodDetails(order.paymentMethod);
                   const status = statusStyles[order.status] || statusStyles.processing;
                   const paymentStatus = statusStyles[order.paymentStatus] || statusStyles.pending;
@@ -354,7 +360,7 @@ const UserOrdersPage = () => {
                                     {item.item.name}
                                   </span>
                                   <div className="flex items-center gap-2 text-xs text-[#8BC34A]/60">
-                                    <span>${item.item.price} CAD</span>
+                                    <span>${typeof item.item.price === 'number' ? item.item.price.toFixed(2) : '0.00'} CAD</span>
                                     <span className="mx-1">•</span>
                                     <span>x{item.quantity}</span>
                                   </div>
@@ -372,7 +378,7 @@ const UserOrdersPage = () => {
                         </div>
                       </td>
 
-                      <td className="p-4 text-[#FFC107] text-lg">${totalPrice.toFixed(2)} CAD</td>
+                      <td className="p-4 text-[#FFC107] text-lg">${typeof totalPrice === 'number' ? totalPrice.toFixed(2) : '0.00'} CAD</td>
 
                       <td className="p-4">
                         <div className="flex flex-col gap-2">

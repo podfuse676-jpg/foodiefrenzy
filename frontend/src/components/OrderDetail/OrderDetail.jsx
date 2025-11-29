@@ -219,8 +219,8 @@ const OrderDetail = () => {
                       </div>
                       
                       <div className="text-right">
-                        <p className="font-medium text-[#FFC107]">${(item.price * item.quantity).toFixed(2)} CAD</p>
-                        <p className="text-sm text-gray-600">${item.price.toFixed(2)} each</p>
+                        <p className="font-medium text-[#FFC107]">${typeof item.price === 'number' && typeof item.quantity === 'number' ? (item.price * item.quantity).toFixed(2) : '0.00'} CAD</p>
+                        <p className="text-sm text-gray-600">${typeof item.price === 'number' ? item.price.toFixed(2) : '0.00'} each</p>
                       </div>
                     </div>
                   ))}
@@ -229,25 +229,25 @@ const OrderDetail = () => {
                 <div className="mt-6 pt-6 border-t border-[#8BC34A]/20">
                   <div className="flex justify-between mb-2">
                     <span className="text-gray-600">Subtotal:</span>
-                    <span className="text-gray-800">${order.subtotal?.toFixed(2) || '0.00'} CAD</span>
+                    <span className="text-gray-800">${typeof order.subtotal === 'number' ? order.subtotal.toFixed(2) : '0.00'} CAD</span>
                   </div>
                   <div className="flex justify-between mb-2">
                     <span className="text-gray-600">Tax (5%):</span>
-                    <span className="text-gray-800">${order.tax?.toFixed(2) || '0.00'} CAD</span>
+                    <span className="text-gray-800">${typeof order.tax === 'number' ? order.tax.toFixed(2) : '0.00'} CAD</span>
                   </div>
                   <div className="flex justify-between mb-2">
                     <span className="text-gray-600">Shipping:</span>
-                    <span className="text-gray-800">${order.shipping?.toFixed(2) || '0.00'} CAD</span>
+                    <span className="text-gray-800">${typeof order.shipping === 'number' ? order.shipping.toFixed(2) : '0.00'} CAD</span>
                   </div>
                   {order.codFee > 0 && (
                     <div className="flex justify-between mb-2">
                       <span className="text-gray-600">COD Fee:</span>
-                      <span className="text-gray-800">${order.codFee?.toFixed(2) || '0.00'} CAD</span>
+                      <span className="text-gray-800">${typeof order.codFee === 'number' ? order.codFee.toFixed(2) : '0.00'} CAD</span>
                     </div>
                   )}
                   <div className="flex justify-between mt-4 pt-4 border-t border-[#8BC34A]/30">
                     <span className="text-lg font-bold text-gray-800">Total:</span>
-                    <span className="text-lg font-bold text-[#FFC107]">${order.total?.toFixed(2) || '0.00'} CAD</span>
+                    <span className="text-lg font-bold text-[#FFC107]">${typeof order.total === 'number' ? order.total.toFixed(2) : '0.00'} CAD</span>
                   </div>
                 </div>
               </div>
