@@ -317,9 +317,6 @@ console.log('- process.env.$PORT:', process.env.$PORT);
 console.log('- process.env.RENDER_PORT:', process.env.RENDER_PORT);
 console.log('- Final PORT value:', PORT);
 
-// Apply CORS middleware BEFORE handling preflight requests
-app.use(cors(corsOptions));
-
 // Handle preflight OPTIONS requests for all routes
 app.options('*', (req, res) => {
   console.log('=== PREFLIGHT REQUEST ===');
