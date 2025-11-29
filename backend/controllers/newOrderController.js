@@ -17,8 +17,10 @@ export const getMyOrders = async (req, res) => {
             items: order.items?.map(item => ({
                 _id: item._id,
                 item: {
-                    ...item.item,
-                    imageUrl: item.item?.imageUrl || ''
+                    _id: item.productId,
+                    name: item.name,
+                    imageUrl: item.image || '',
+                    price: item.price
                 },
                 quantity: item.quantity
             })) || [],
@@ -37,7 +39,7 @@ export const getMyOrders = async (req, res) => {
             shipping: order.shipping || 0,
             codFee: order.codFee || 0,
             paymentMethod: order.paymentMethod || 'cod',
-            status: order.status || 'processing'
+            status: order.status || order.paymentStatus || 'processing'
         }));
 
         res.json(formattedOrders);
@@ -70,8 +72,10 @@ export const getOrderById = async (req, res) => {
             items: order.items?.map(item => ({
                 _id: item._id,
                 item: {
-                    ...item.item,
-                    imageUrl: item.item?.imageUrl || ''
+                    _id: item.productId,
+                    name: item.name,
+                    imageUrl: item.image || '',
+                    price: item.price
                 },
                 quantity: item.quantity
             })) || [],
@@ -90,7 +94,7 @@ export const getOrderById = async (req, res) => {
             shipping: order.shipping || 0,
             codFee: order.codFee || 0,
             paymentMethod: order.paymentMethod || 'cod',
-            status: order.status || 'processing'
+            status: order.status || order.paymentStatus || 'processing'
         };
         
         res.json(formattedOrder);
