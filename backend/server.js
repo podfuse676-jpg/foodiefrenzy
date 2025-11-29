@@ -127,7 +127,8 @@ import newOrderRoutes from './routes/newOrderRoutes.js';
 import userRoutes from './routes/userRoute.js';
 import phoneAuthRoutes from './routes/phoneAuthRoute.js';
 import emailAuthRoutes from './routes/emailAuthRoute.js';
-import whatsappAuthRoutes from './routes/whatsappAuthRoute.js'; // Add WhatsApp auth routes
+import whatsappAuthRoutes from './routes/whatsappAuthRoute.js';
+import emailOTPRoutes from './routes/emailOTPRoutes.js'; // Add email OTP routes
 import reviewRoutes from './routes/reviewRoute.js';
 import testRoutes from './routes/testRoute.js';
 
@@ -643,8 +644,10 @@ console.log('Registering /api/auth routes');
 app.use('/api/auth', phoneAuthRoutes);
 console.log('Registering /api/email-auth routes');
 app.use('/api/email-auth', emailAuthRoutes);
-console.log('Registering /api/whatsapp-auth routes'); // Add WhatsApp auth routes
-app.use('/api/whatsapp-auth', whatsappAuthRoutes); // Add WhatsApp auth routes
+console.log('Registering /api/whatsapp-auth routes');
+app.use('/api/whatsapp-auth', whatsappAuthRoutes);
+console.log('Registering /api/email-otp routes'); // Add email OTP routes
+app.use('/api/email-otp', emailOTPRoutes); // Add email OTP routes
 console.log('Registering /api/reviews routes');
 app.use('/api/reviews', reviewRoutes);
 console.log('Registering /api/test routes');
@@ -672,6 +675,7 @@ const checkDatabaseConnection = (req, res, next) => {
   
   next();
 };
+
 
 // Apply database connection check middleware AFTER routes are registered
 // But before the 404 handler to ensure routes are properly handled

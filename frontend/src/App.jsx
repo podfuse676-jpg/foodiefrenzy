@@ -15,7 +15,8 @@ import MyOrders from './pages/MyOredrs/MyOrders';
 import OrderDetailPage from './pages/OrderDetail/OrderDetail';
 import VerifyPaymentPage from './pages/VerifyPaymentPage/VerifyPaymentPage';
 import EmailLogin from './pages/EmailLogin/EmailLogin';
-import WhatsAppLogin from './components/WhatsAppLogin'; // Import WhatsApp login component
+import WhatsAppLogin from './components/WhatsAppLogin';
+import EmailOTPLogin from './components/EmailOTPLogin'; // Import Email OTP login component
 import TestMenu from './TestMenu';
 import Profile from './pages/Profile/Profile';
 import SetCredentials from './components/SetCredentials/SetCredentials';
@@ -28,10 +29,11 @@ function App() {
       {/* Public */}
       <Route path="/" element={<Home />} />
       <Route path="/signup" element={<SignUp />} />
-      <Route path="/login" element={<WhatsAppLogin />} /> {/* Changed to WhatsApp login */}
+      <Route path="/login" element={<EmailOTPLogin />} /> {/* Changed to Email OTP login */}
       <Route path="/phone-login" element={<PhoneLogin />} />
-      <Route path="/email-login" element={<EmailLogin />} /> {/* Moved email login to separate route */}
-      <Route path="/whatsapp-login" element={<WhatsAppLogin />} /> {/* Added WhatsApp login route */}
+      <Route path="/email-login" element={<EmailLogin />} />
+      <Route path="/whatsapp-login" element={<WhatsAppLogin />} />
+      <Route path="/email-otp-login" element={<EmailOTPLogin />} /> {/* Added Email OTP login route */}
       <Route path="/set-credentials" element={<SetCredentials />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/about" element={<AboutPage />} />
