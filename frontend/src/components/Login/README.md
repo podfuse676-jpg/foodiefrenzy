@@ -4,17 +4,6 @@ This directory contains modern, premium-styled login components for the applicat
 
 ## Components
 
-### EmailLoginModern.jsx
-
-A clean, modern email login form with:
-
-- Email and password fields
-- Password visibility toggle
-- "Remember me" option
-- Social login alternatives
-- Consistent branding with gradient accents
-- Responsive design
-
 ### PhoneLoginModern.jsx
 
 A sleek phone number login form with:
@@ -24,7 +13,6 @@ A sleek phone number login form with:
 - Code display for testing
 - Back navigation
 - Alternative login options
-- Consistent styling with EmailLoginModern
 
 ## Design Principles
 
@@ -40,12 +28,11 @@ A sleek phone number login form with:
 Import the components directly:
 
 ```jsx
-import { EmailLoginModern, PhoneLoginModern } from "./components/Login";
+import { PhoneLoginModern } from "./components/Login";
 ```
 
 Or import individually:
 
 ```jsx
-import EmailLoginModern from "./components/Login/EmailLoginModern";
 import PhoneLoginModern from "./components/Login/PhoneLoginModern";
 ```

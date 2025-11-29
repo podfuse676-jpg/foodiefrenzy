@@ -17,12 +17,12 @@ const LoginSelector = () => {
         
         <div className="space-y-4">
           <Link 
-            to="/email-login"
+            to="/email-otp-login"
             className="w-full flex items-center justify-between bg-white border-2 border-[#8BC34A]/30 text-[#8BC34A] hover:bg-[#8BC34A]/10 font-semibold py-4 px-6 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg"
           >
             <div className="flex items-center">
               <FaEnvelope className="text-[#8BC34A] text-xl mr-4" />
-              <span className="text-lg">Email & Password</span>
+              <span className="text-lg">Email OTP</span>
             </div>
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#8BC34A]" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />

@@ -8,8 +8,8 @@ This document provides an overview of all login components in the application.
 src/
 ├── components/
 │   ├── Login/
-│   │   ├── EmailLoginModern.jsx
 │   │   ├── PhoneLoginModern.jsx
+│   │   ├── EmailOTPLoginModern.jsx
 │   │   ├── index.js
 │   │   └── README.md
 │   ├── EmailLogin.jsx (legacy)
@@ -28,19 +28,6 @@ src/
 
 ## Modern Login Components
 
-### EmailLoginModern.jsx
-
-Located: `src/components/Login/EmailLoginModern.jsx`
-
-A premium-styled email login form featuring:
-
-- Email and password fields with validation
-- Password visibility toggle
-- "Remember me" option
-- Loading states and visual feedback
-- Alternative login options (Phone, WhatsApp)
-- Brand-consistent styling with gradients and rounded elements
-
 ### PhoneLoginModern.jsx
 
 Located: `src/components/Login/PhoneLoginModern.jsx`
@@ -52,7 +39,18 @@ A sleek phone number login form with:
 - Display of verification code for testing
 - Back navigation between steps
 - Alternative login options (Email, WhatsApp)
-- Consistent styling with EmailLoginModern
+
+### EmailOTPLoginModern.jsx
+
+Located: `src/components/EmailOTPLoginModern.jsx`
+
+A modern email OTP login form featuring:
+
+- Email input with validation
+- OTP verification flow
+- Loading states and visual feedback
+- Alternative login options (Phone, WhatsApp)
+- Brand-consistent styling with gradients and rounded elements
 
 ## Login Selector Page
 
@@ -86,8 +84,8 @@ The original phone login component (maintained for backward compatibility).
 All modern components are integrated into the application through `App.jsx`:
 
 - `/login` routes to LoginSelector
-- `/email-login` routes to EmailLoginModern
 - `/phone-login` routes to PhoneLoginModern
+- `/email-otp-login` routes to EmailOTPLoginModern
 - Other routes remain unchanged
 
 ## Styling

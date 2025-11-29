@@ -240,7 +240,7 @@ const PhoneLoginModern = () => {
           
           <div className="flex justify-center gap-4">
             <Link 
-              to="/email-login"
+              to="/email-otp-login"
               className="flex items-center gap-2 bg-white border-2 border-[#8BC34A]/30 text-[#8BC34A] hover:bg-[#8BC34A]/10 font-semibold py-2 px-4 rounded-lg transition-colors"
             >
               <FaEnvelope className="text-[#8BC34A]" />

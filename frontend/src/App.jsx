@@ -14,9 +14,8 @@ import PhoneLogin from './components/Login/PhoneLoginModern';
 import MyOrders from './pages/MyOredrs/MyOrders';
 import OrderDetailPage from './pages/OrderDetail/OrderDetail';
 import VerifyPaymentPage from './pages/VerifyPaymentPage/VerifyPaymentPage';
-import EmailLogin from './components/Login/EmailLoginModern';
 import WhatsAppLogin from './components/WhatsAppLogin';
-import EmailOTPLogin from './components/EmailOTPLogin'; // Import Email OTP login component
+import EmailOTPLoginModern from './components/EmailOTPLoginModern'; // Import modern Email OTP login component
 import LoginSelector from './pages/LoginSelector';
 import TestMenu from './TestMenu';
 import Profile from './pages/Profile/Profile';
@@ -32,9 +31,8 @@ function App() {
       <Route path="/signup" element={<SignUp />} />
       <Route path="/login" element={<LoginSelector />} />
       <Route path="/phone-login" element={<PhoneLogin />} />
-      <Route path="/email-login" element={<EmailLogin />} />
       <Route path="/whatsapp-login" element={<WhatsAppLogin />} />
-      <Route path="/email-otp-login" element={<EmailOTPLogin />} /> {/* Added Email OTP login route */}
+      <Route path="/email-otp-login" element={<EmailOTPLoginModern />} /> {/* Added Email OTP login route */}
       <Route path="/set-credentials" element={<SetCredentials />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/about" element={<AboutPage />} />
