@@ -98,10 +98,9 @@ userRouter.put("/change-password", authMiddleware, async (req, res) => {
 })
 
 // Admin-only routes
-userRouter.use("/admin", authMiddleware, adminMiddleware)
 
 // Get all users (admin only)
-userRouter.get("/admin/users", async (req, res) => {
+userRouter.get("/admin/users", authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const users = await userModel.find({}).select('-password').sort({ createdAt: -1 })
         res.json({ 
@@ -115,7 +114,7 @@ userRouter.get("/admin/users", async (req, res) => {
 })
 
 // Get user details including orders (admin only)
-userRouter.get("/admin/users/:userId", async (req, res) => {
+userRouter.get("/admin/users/:userId", authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const { userId } = req.params
         
@@ -140,7 +139,7 @@ userRouter.get("/admin/users/:userId", async (req, res) => {
 })
 
 // Get all orders (admin only)
-userRouter.get("/admin/orders", async (req, res) => {
+userRouter.get("/admin/orders", authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const orders = await Order.find({}).populate('user', 'username email phoneNumber').sort({ createdAt: -1 }).limit(100)
         res.json({ 
@@ -154,7 +153,7 @@ userRouter.get("/admin/orders", async (req, res) => {
 })
 
 // Get specific order details (admin only)
-userRouter.get("/admin/orders/:orderId", async (req, res) => {
+userRouter.get("/admin/orders/:orderId", authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const { orderId } = req.params
         
