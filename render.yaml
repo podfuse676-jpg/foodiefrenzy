@@ -16,7 +16,7 @@ services:
       - key: JWT_SECRET
         sync: false
       - key: CORS_ORIGIN
-        value: https://foodiefrenzy-frontend.vercel.app,https://foodiefrenzy-admin.vercel.app
+        value: https://foodiefrenzy-frontend.vercel.app,https://foodiefrenzy-admin.vercel.app,https://admin.lakeshoreconvenience.com
       - key: FRONTEND_URL
         value: https://foodiefrenzy-frontend.vercel.app
       - key: ADMIN_URL
