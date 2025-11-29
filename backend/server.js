@@ -829,40 +829,128 @@ app.post('/api/test-email', async (req, res) => {
   }
 });
 
-// Add a SendGrid test endpoint
-app.post('/api/test-sendgrid', async (req, res) => {
+// Add a comprehensive email service test endpoint
+app.post('/api/test-email-services', async (req, res) => {
   try {
-    console.log('=== SENDGRID TEST ENDPOINT ===');
-    console.log('SENDGRID_API_KEY:', process.env.SENDGRID_API_KEY ? `SET (${process.env.SENDGRID_API_KEY.substring(0, 10)}...)` : 'NOT SET');
+    console.log('=== COMPREHENSIVE EMAIL SERVICE TEST ===');
     
-    if (!process.env.SENDGRID_API_KEY) {
-      return res.status(400).json({ error: 'SENDGRID_API_KEY not set in environment variables' });
-    }
-    
-    // Import and test SendGrid service
+    // Import all email services
+    const emailService = await import('./services/emailService.js');
+    const alternativeEmailService = await import('./services/alternativeEmailService.js');
     const sendGridEmailService = await import('./services/sendGridEmailService.js');
-    console.log('SendGrid service imported:', sendGridEmailService.default ? 'SUCCESS' : 'FAILED');
+    const smtpFallbackService = await import('./services/smtpFallbackService.js');
     
-    if (!sendGridEmailService.default) {
-      return res.status(500).json({ error: 'Failed to import SendGrid service' });
+    console.log('Services imported successfully');
+    
+    // Check initialization status
+    const serviceStatus = {
+      primary: {
+        imported: !!emailService.default,
+        initialized: emailService.default.transporter ? 'YES' : 'NO',
+        transporter: emailService.default.transporter ? typeof emailService.default.transporter : 'NONE'
+      },
+      alternative: {
+        imported: !!alternativeEmailService.default,
+        initialized: alternativeEmailService.default.transporter ? 'YES' : 'NO',
+        transporter: alternativeEmailService.default.transporter ? typeof alternativeEmailService.default.transporter : 'NONE'
+      },
+      sendgrid: {
+        imported: !!sendGridEmailService.default,
+        initialized: sendGridEmailService.default.initialized ? 'YES' : 'NO',
+        transporter: sendGridEmailService.default.initialized ? 'READY' : 'NOT READY'
+      },
+      smtpFallback: {
+        imported: !!smtpFallbackService.default,
+        initialized: smtpFallbackService.default.transporter ? 'YES' : 'NO',
+        transporter: smtpFallbackService.default.transporter ? typeof smtpFallbackService.default.transporter : 'NONE'
+      }
+    };
+    
+    console.log('Service Status:', JSON.stringify(serviceStatus, null, 2));
+    
+    // Try to send a test email with each service
+    const testResults = {};
+    const testEmail = 'lakeshoreconvenience@gmail.com';
+    const testOtp = '123456';
+    
+    console.log(`Testing email services with ${testEmail}`);
+    
+    // Test primary service
+    try {
+      console.log('Testing primary email service...');
+      if (emailService.default.transporter) {
+        const result = await emailService.default.sendOTP(testEmail, testOtp);
+        testResults.primary = result;
+        console.log('Primary service result:', result);
+      } else {
+        testResults.primary = { success: false, error: 'Transporter not initialized' };
+        console.log('Primary service not initialized');
+      }
+    } catch (error) {
+      testResults.primary = { success: false, error: error.message };
+      console.log('Primary service error:', error.message);
     }
     
-    console.log('SendGrid transporter:', sendGridEmailService.default.transporter ? 'INITIALIZED' : 'NOT INITIALIZED');
+    // Test alternative service
+    try {
+      console.log('Testing alternative email service...');
+      if (alternativeEmailService.default.transporter) {
+        const result = await alternativeEmailService.default.sendOTP(testEmail, testOtp);
+        testResults.alternative = result;
+        console.log('Alternative service result:', result);
+      } else {
+        testResults.alternative = { success: false, error: 'Transporter not initialized' };
+        console.log('Alternative service not initialized');
+      }
+    } catch (error) {
+      testResults.alternative = { success: false, error: error.message };
+      console.log('Alternative service error:', error.message);
+    }
     
-    // Try to send a test email
-    console.log('Attempting to send test email...');
-    const result = await sendGridEmailService.default.sendOTP('lakeshoreconvenience@gmail.com', '123456');
-    console.log('Send result:', result);
+    // Test SendGrid service
+    try {
+      console.log('Testing SendGrid email service...');
+      if (sendGridEmailService.default.initialized) {
+        const result = await sendGridEmailService.default.sendOTP(testEmail, testOtp);
+        testResults.sendgrid = result;
+        console.log('SendGrid service result:', result);
+      } else {
+        testResults.sendgrid = { success: false, error: 'Service not initialized' };
+        console.log('SendGrid service not initialized');
+      }
+    } catch (error) {
+      testResults.sendgrid = { success: false, error: error.message };
+      console.log('SendGrid service error:', error.message);
+    }
+    
+    // Test SMTP fallback service
+    try {
+      console.log('Testing SMTP fallback email service...');
+      if (smtpFallbackService.default.transporter) {
+        const result = await smtpFallbackService.default.sendOTP(testEmail, testOtp);
+        testResults.smtpFallback = result;
+        console.log('SMTP fallback service result:', result);
+      } else {
+        testResults.smtpFallback = { success: false, error: 'Transporter not initialized' };
+        console.log('SMTP fallback service not initialized');
+      }
+    } catch (error) {
+      testResults.smtpFallback = { success: false, error: error.message };
+      console.log('SMTP fallback service error:', error.message);
+    }
     
     res.json({
-      message: 'SendGrid test completed',
-      apiKey: process.env.SENDGRID_API_KEY ? 'SET' : 'NOT SET',
-      serviceImported: !!sendGridEmailService.default,
-      transporterInitialized: !!sendGridEmailService.default.transporter,
-      sendResult: result
+      message: 'Email service test completed',
+      environment: {
+        emailUser: process.env.EMAIL_USER ? 'SET' : 'NOT SET',
+        emailPass: process.env.EMAIL_PASS ? 'SET' : 'NOT SET',
+        sendGridKey: process.env.SENDGRID_API_KEY ? 'SET' : 'NOT SET'
+      },
+      serviceStatus,
+      testResults
     });
   } catch (error) {
-    console.error('Error in SendGrid test endpoint:', error);
+    console.error('Error in comprehensive email service test:', error);
     res.status(500).json({ error: error.message, stack: error.stack });
   }
 });
