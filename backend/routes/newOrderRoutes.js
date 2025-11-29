@@ -11,7 +11,7 @@ router.use(authMiddleware);
 // GET /api/orders/my
 router.get('/my', getMyOrders);
 
-// GET /api/orders/:id
-router.get('/:id', getOrderById);
+// GET /api/orders/my/:id
+router.get('/my/:id', getOrderById);
 
 export default router;
