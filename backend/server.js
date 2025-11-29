@@ -335,6 +335,21 @@ app.use((req, res, next) => {
   next();
 });
 
+// Handle preflight OPTIONS requests for all routes
+app.options('*', (req, res) => {
+  console.log('=== PREFLIGHT REQUEST ===');
+  console.log('Origin:', req.headers.origin);
+  console.log('Headers requested:', req.headers['access-control-request-headers']);
+  console.log('Method requested:', req.headers['access-control-request-method']);
+  
+  // Set CORS headers for preflight
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', req.headers['access-control-request-headers'] || 'Content-Type,Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.sendStatus(200);
+});
+
 // Add early health check endpoint - this should be one of the first routes
 app.get('/health', (req, res) => {
   res.status(200).json({ 
@@ -456,7 +471,8 @@ const corsOptions = {
     console.log('Origin not allowed, rejecting request');
     callback(new Error('Not allowed by CORS'));
   },
-  credentials: true
+  credentials: true,
+  optionsSuccessStatus: 200 // Some legacy browsers choke on 204
 };
 
 app.use(cors(corsOptions));
@@ -635,11 +651,13 @@ app.use('/api/items', itemRoutes);
 console.log('Registering /api/cart routes');
 app.use('/api/cart', cartRoutes);
 
-// Register new order routes BEFORE old order routes to ensure /my route is matched correctly
-console.log('Registering /api/orders (new) routes');
-app.use('/api/orders', newOrderRoutes);
+// Register order routes first (they have public endpoints)
 console.log('Registering /api/orders routes');
 app.use('/api/orders', orderRoutes);
+
+// Register new order routes after (they are all protected)
+console.log('Registering /api/orders (new) routes');
+app.use('/api/orders', newOrderRoutes);
 
 console.log('Registering /api/users routes');
 app.use('/api/users', userRoutes);
@@ -1703,6 +1721,36 @@ app.get('/api/debug/env', (req, res) => {
     frontend_url: process.env.FRONTEND_URL,
     admin_url: process.env.ADMIN_URL,
     node_env: process.env.NODE_ENV
+  });
+});
+
+// Add a debug endpoint to check CORS configuration
+app.get('/api/debug/cors', (req, res) => {
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    process.env.FRONTEND_URL || 'http://localhost:5173',
+    process.env.ADMIN_URL || 'http://localhost:5174',
+    'https://foodiefrenzy-frontend.vercel.app',
+    'https://foodiefrenzy-admin.vercel.app',
+    'https://foodiefrenzy-5hdf.vercel.app', // Add the specific admin deployment URL
+    'https://foodiefrenzy-nine.vercel.app',
+    'https://admin-7y4pypy16-podfuse676-6967s-projects.vercel.app',
+    'https://www.lakeshoreconvenience.com', // Add custom domain
+    'https://lakeshoreconvenience.com', // Add custom domain without www
+    'https://admin.lakeshoreconvenience.com', // Add custom admin domain
+    'https://*.lakeshore-convenience.pages.dev' // Add Cloudflare Pages wildcard
+  ];
+    
+  // Add origins from CORS_ORIGIN environment variable if set
+  if (process.env.CORS_ORIGIN) {
+    const corsOrigins = process.env.CORS_ORIGIN.split(',').map(origin => origin.trim());
+    allowedOrigins.push(...corsOrigins);
+  }
+    
+  res.json({
+    allowedOrigins: allowedOrigins,
+    currentOrigin: req.get('Origin')
   });
 });
 

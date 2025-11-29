@@ -49,6 +49,10 @@ const loginUser = async (req, res) => {
         console.log('Generating token...');
         const token = createToken(user);
         console.log('Login successful for user:', user.email);
+        
+        // Set CORS headers explicitly for login response
+        res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+        res.header('Access-Control-Allow-Credentials', 'true');
         res.json({ success: true, token, role: user.role })
     }
     catch (error) {
