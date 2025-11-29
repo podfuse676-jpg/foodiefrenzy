@@ -1,7 +1,7 @@
 // src/components/AddItems.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
-import { FiUpload, FiHeart, FiStar } from 'react-icons/fi';
+import { FiUpload, FiHeart, FiStar, FiX } from 'react-icons/fi';
 import { FaRupeeSign } from 'react-icons/fa';
 // Removed AdminNavbar import since it's handled in App.jsx
 import { styles } from '../../assets/dummyadmin';
@@ -37,6 +37,7 @@ const AddItems = () => {
     'Breakfast', 'Lunch', 'Dinner', 'Mexican', 'Italian', 'Desserts', 'Drinks'
   ]);
   const [hoverRating, setHoverRating] = useState(0);
+  const [showModal, setShowModal] = useState(false);
 
   const handleInputChange = e => {
     const { name, value } = e.target;
@@ -128,6 +129,9 @@ const AddItems = () => {
         total: 0, image: null, preview: ''
       });
       
+      // Close modal
+      setShowModal(false);
+      
       // Clear any file input
       const fileInput = document.querySelector('input[type="file"]');
       if (fileInput) fileInput.value = '';
@@ -153,223 +157,271 @@ const AddItems = () => {
     }
   };
 
-  return (
-    <div className={styles.formWrapper}>
-      <div className="max-w-4xl mx-auto">
-        <div className={styles.formCard}>
-          <h2 className={styles.formTitle}>Add New Menu Item</h2>
-          <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-            <div className={styles.uploadWrapper}>
-              <label className={styles.uploadLabel}>
-                {formData.preview ? (
-                  <img
-                    src={formData.preview}
-                    alt="Preview"
-                    className={styles.previewImage}
-                  />
-                ) : (
-                  <div className="text-center p-4">
-                    <FiUpload className={styles.uploadIcon} />
-                    <p className={styles.uploadText}>
-                      Click to upload product image
-                    </p>
-                  </div>
-                )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                  required
+  // Modal form component
+  const AddItemModal = () => (
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 overflow-auto">
+      <div className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border-2 border-[#8BC34A]/30 shadow-2xl relative">
+        {/* Modal Header with gradient */}
+        <div className="flex justify-between items-center mb-6 pb-4 border-b border-[#8BC34A]/10">
+          <h3 className="text-2xl font-bold text-gray-800 bg-gradient-to-r from-[#8BC34A] to-[#FFC107] bg-clip-text text-transparent">Add New Menu Item</h3>
+          <button 
+            onClick={() => setShowModal(false)}
+            className="text-gray-500 hover:text-gray-700 transition-colors"
+          >
+            <FiX className="text-2xl" />
+          </button>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Image Upload Section */}
+          <div className="flex flex-col items-center">
+            <label className="w-full max-w-xs h-48 bg-gradient-to-br from-[#F9FFF6] to-[#FFFFFF] border-2 border-dashed border-[#8BC34A]/30 rounded-2xl cursor-pointer flex flex-col items-center justify-center overflow-hidden hover:border-[#FFC107]/50 transition-all shadow-inner">
+              {formData.preview ? (
+                <img
+                  src={formData.preview}
+                  alt="Preview"
+                  className="w-full h-full object-cover rounded-2xl"
                 />
-              </label>
-            </div>
+              ) : (
+                <div className="text-center p-4">
+                  <FiUpload className="text-3xl text-[#8BC34A] mx-auto mb-2" />
+                  <p className="text-gray-600">
+                    Click to upload product image
+                  </p>
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+                required
+              />
+            </label>
+          </div>
 
-            <div className="space-y-6">
-              {/* Section 1: Convenience Store fields */}
-              <div className="p-4 bg-[#2b3a2b] rounded-lg border border-green-900/20">
-                <h3 className="text-lg text-green-200 mb-3">Convenience Store / Item</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block mb-2 text-sm text-green-400">Price Type</label>
-                    <input name="priceType" value={formData.priceType} onChange={handleInputChange} className={styles.inputField} placeholder="e.g. fixed / variable" />
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm text-green-400">Price Unit</label>
-                    <input name="priceUnit" value={formData.priceUnit} onChange={handleInputChange} className={styles.inputField} placeholder="e.g. per item / per kg" />
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm text-green-400">GST (%)</label>
-                    <input type="number" step="0.01" name="gst" value={formData.gst} onChange={handleInputChange} className={styles.inputField} placeholder="0.00" />
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm text-green-400">Cost</label>
-                    <input type="number" step="0.01" name="cost" value={formData.cost} onChange={handleInputChange} className={styles.inputField} placeholder="0.00" />
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm text-green-400">Product Code</label>
-                    <input name="productCode" value={formData.productCode} onChange={handleInputChange} className={styles.inputField} placeholder="e.g. PC123456" />
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm text-green-400">SKU</label>
-                    <input name="sku" value={formData.sku} onChange={handleInputChange} className={styles.inputField} placeholder="e.g. SKU123456" />
-                  </div>
+          <div className="space-y-6">
+            {/* Section 1: Convenience Store fields */}
+            <div className="p-4 bg-gradient-to-br from-[#F9FFF6] to-[#FFFFFF] rounded-xl border border-[#8BC34A]/20 shadow-sm">
+              <h3 className="text-lg text-gray-800 mb-3 font-medium">Convenience Store / Item</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block mb-2 text-sm text-gray-700">Price Type</label>
+                  <input name="priceType" value={formData.priceType} onChange={handleInputChange} className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" placeholder="e.g. fixed / variable" />
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm text-gray-700">Price Unit</label>
+                  <input name="priceUnit" value={formData.priceUnit} onChange={handleInputChange} className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" placeholder="e.g. per item / per kg" />
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm text-gray-700">GST (%)</label>
+                  <input type="number" step="0.01" name="gst" value={formData.gst} onChange={handleInputChange} className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" placeholder="0.00" />
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm text-gray-700">Cost</label>
+                  <input type="number" step="0.01" name="cost" value={formData.cost} onChange={handleInputChange} className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" placeholder="0.00" />
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm text-gray-700">Product Code</label>
+                  <input name="productCode" value={formData.productCode} onChange={handleInputChange} className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" placeholder="e.g. PC123456" />
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm text-gray-700">SKU</label>
+                  <input name="sku" value={formData.sku} onChange={handleInputChange} className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" placeholder="e.g. SKU123456" />
                 </div>
               </div>
+            </div>
 
-              {/* Section 2: Food Menu fields */}
-              <div className="p-4 bg-[#2b1f1f] rounded-lg border border-amber-900/20">
-                <h3 className="text-lg text-amber-200 mb-3">Food Menu Item</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block mb-2 text-sm text-amber-400">Item Name *</label>
-                    <input
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      className={styles.inputField}
-                      placeholder="e.g. Margherita Pizza"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm text-amber-400">Category *</label>
-                    <select
-                      name="category"
-                      value={formData.category}
-                      onChange={handleInputChange}
-                      className={styles.inputField}
-                      required
-                    >
-                      <option value="">Select a category</option>
-                      {categories.map(cat => (
-                        <option key={cat} value={cat}>{cat}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm text-amber-400">Price *</label>
-                    <div className="relative">
-                      <FaRupeeSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-400" />
-                      <input
-                        type="number"
-                        step="0.01"
-                        name="price"
-                        value={formData.price}
-                        onChange={handleInputChange}
-                        className={`${styles.inputField} pl-10`}
-                        placeholder="0.00"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm text-amber-400">Quantity</label>
+            {/* Section 2: Food Menu fields */}
+            <div className="p-4 bg-gradient-to-br from-[#FFF8E1] to-[#FFFDE7] rounded-xl border border-[#FFC107]/20 shadow-sm">
+              <h3 className="text-lg text-gray-800 mb-3 font-medium">Food Menu Item</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block mb-2 text-sm text-gray-700">Item Name *</label>
+                  <input
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors"
+                    placeholder="e.g. Margherita Pizza"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm text-gray-700">Category *</label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                    className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors"
+                    required
+                  >
+                    <option value="">Select a category</option>
+                    {categories.map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm text-gray-700">Price *</label>
+                  <div className="relative">
+                    <FaRupeeSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
                     <input
                       type="number"
-                      name="quantity"
-                      value={formData.quantity}
+                      step="0.01"
+                      name="price"
+                      value={formData.price}
                       onChange={handleInputChange}
-                      className={styles.inputField}
-                      placeholder="0"
+                      className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 pl-10 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors"
+                      placeholder="0.00"
+                      required
                     />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="block mb-2 text-sm text-amber-400">Description</label>
-                    <textarea
-                      name="description"
-                      value={formData.description}
-                      onChange={handleInputChange}
-                      className={`${styles.inputField} h-24`}
-                      placeholder="Describe the item..."
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm text-amber-400">Modifier Groups (comma separated)</label>
-                    <input
-                      name="modifierGroups"
-                      value={formData.modifierGroups}
-                      onChange={handleInputChange}
-                      className={styles.inputField}
-                      placeholder="e.g. Toppings, Sauces"
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm text-amber-400">Printer Labels (comma separated)</label>
-                    <input
-                      name="printerLabels"
-                      value={formData.printerLabels}
-                      onChange={handleInputChange}
-                      className={styles.inputField}
-                      placeholder="e.g. Kitchen, Bar"
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm text-amber-400">Flavour Options (comma separated)</label>
-                    <input
-                      name="flavourOptions"
-                      value={formData.flavourOptions}
-                      onChange={handleInputChange}
-                      className={styles.inputField}
-                      placeholder="e.g. Spicy, Mild"
-                    />
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        name="hidden"
-                        checked={formData.hidden}
-                        onChange={e => setFormData(prev => ({ ...prev, hidden: e.target.checked }))}
-                      />
-                      <span className="text-amber-200">Hidden (do not show on frontend)</span>
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        name="nonRevenue"
-                        checked={formData.nonRevenue}
-                        onChange={e => setFormData(prev => ({ ...prev, nonRevenue: e.target.checked }))}
-                      />
-                      <span className="text-amber-200">Non-revenue item</span>
-                    </label>
                   </div>
                 </div>
-              </div>
-
-              {/* Rating and Hearts */}
-              <div className="p-4 bg-[#2b1f1f] rounded-lg border border-amber-900/20">
-                <h3 className="text-lg text-amber-200 mb-3">Item Rating</h3>
+                <div>
+                  <label className="block mb-2 text-sm text-gray-700">Quantity</label>
+                  <input
+                    type="number"
+                    name="quantity"
+                    value={formData.quantity}
+                    onChange={handleInputChange}
+                    className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors"
+                    placeholder="0"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block mb-2 text-sm text-gray-700">Description</label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 h-24 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors"
+                    placeholder="Describe the item..."
+                  />
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm text-gray-700">Modifier Groups (comma separated)</label>
+                  <input
+                    name="modifierGroups"
+                    value={formData.modifierGroups}
+                    onChange={handleInputChange}
+                    className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors"
+                    placeholder="e.g. Toppings, Sauces"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm text-gray-700">Printer Labels (comma separated)</label>
+                  <input
+                    name="printerLabels"
+                    value={formData.printerLabels}
+                    onChange={handleInputChange}
+                    className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors"
+                    placeholder="e.g. Kitchen, Bar"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm text-gray-700">Flavour Options (comma separated)</label>
+                  <input
+                    name="flavourOptions"
+                    value={formData.flavourOptions}
+                    onChange={handleInputChange}
+                    className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors"
+                    placeholder="e.g. Spicy, Mild"
+                  />
+                </div>
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1">
-                    {[1, 2, 3, 4, 5].map(star => (
-                      <FiStar
-                        key={star}
-                        className={`text-2xl cursor-pointer ${star <= (hoverRating || formData.rating) ? 'text-amber-400 fill-current' : 'text-amber-100/30'}`}
-                        onMouseEnter={() => setHoverRating(star)}
-                        onMouseLeave={() => setHoverRating(0)}
-                        onClick={() => handleRating(star)}
-                      />
-                    ))}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleHearts}
-                    className="flex items-center gap-2 px-3 py-1 bg-rose-900/30 rounded-lg border border-rose-700/50 text-rose-300 hover:bg-rose-800/50 transition-colors"
-                  >
-                    <FiHeart className="fill-current" />
-                    <span>{formData.hearts} Hearts</span>
-                  </button>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      name="hidden"
+                      checked={formData.hidden}
+                      onChange={e => setFormData(prev => ({ ...prev, hidden: e.target.checked }))}
+                      className="rounded text-[#8BC34A] focus:ring-[#8BC34A]"
+                    />
+                    <span className="text-gray-700">Hidden (do not show on frontend)</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      name="nonRevenue"
+                      checked={formData.nonRevenue}
+                      onChange={e => setFormData(prev => ({ ...prev, nonRevenue: e.target.checked }))}
+                      className="rounded text-[#8BC34A] focus:ring-[#8BC34A]"
+                    />
+                    <span className="text-gray-700">Non-revenue item</span>
+                  </label>
                 </div>
               </div>
             </div>
 
-            <button type="submit" className={styles.submitButton}>
+            {/* Rating and Hearts */}
+            <div className="p-4 bg-gradient-to-br from-[#FFF8E1] to-[#FFFDE7] rounded-xl border border-[#FFC107]/20 shadow-sm">
+              <h3 className="text-lg text-gray-800 mb-3 font-medium">Item Rating</h3>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map(star => (
+                    <FiStar
+                      key={star}
+                      className={`text-2xl cursor-pointer ${star <= (hoverRating || formData.rating) ? 'text-[#FFC107] fill-current' : 'text-gray-300'}`}
+                      onMouseEnter={() => setHoverRating(star)}
+                      onMouseLeave={() => setHoverRating(0)}
+                      onClick={() => handleRating(star)}
+                    />
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={handleHearts}
+                  className="flex items-center gap-2 px-3 py-1 bg-rose-50 rounded-lg border border-rose-200 text-rose-500 hover:bg-rose-100 transition-colors"
+                >
+                  <FiHeart className="fill-current" />
+                  <span>{formData.hearts} Hearts</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4">
+            <button 
+              type="button"
+              className="px-4 py-2 rounded-xl bg-gray-100 border border-gray-300 text-gray-700 hover:bg-gray-200 transition-colors"
+              onClick={() => setShowModal(false)}
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              className="px-6 py-3 bg-gradient-to-r from-[#8BC34A] to-[#FFC107] rounded-xl font-semibold text-white hover:from-[#FFC107] hover:to-[#8BC34A] transition-all duration-300 shadow-lg hover:shadow-[#FFC107]/20"
+            >
               Add Item
             </button>
-          </form>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] py-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border-2 border-[#8BC34A]/20">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center text-gray-800">
+            Add New Menu Item
+          </h2>
+          
+          <div className="text-center">
+            <button
+              onClick={() => setShowModal(true)}
+              className="px-6 py-3 bg-gradient-to-r from-[#8BC34A] to-[#FFC107] rounded-xl font-semibold text-white hover:from-[#FFC107] hover:to-[#8BC34A] transition-all duration-300 shadow-lg hover:shadow-[#FFC107]/20"
+            >
+              Add New Item
+            </button>
+          </div>
         </div>
       </div>
+      
+      {/* Modal */}
+      {showModal && <AddItemModal />}
     </div>
   );
 };
