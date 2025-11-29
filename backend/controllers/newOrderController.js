@@ -9,24 +9,35 @@ export const getMyOrders = async (req, res) => {
     try {
         const orders = await Order.find({ user: req.user.id })
             .sort({ createdAt: -1 })
-            .select('_id createdAt total status items firstName lastName address city zipCode');
+            .lean();
 
-        // Format orders to match expected structure
+        // Format orders to match expected structure from the old controller
         const formattedOrders = orders.map(order => ({
-            _id: order._id,
-            createdAt: order.createdAt,
-            total: order.total,
-            status: order.paymentStatus,
-            shippingAddress: {
-                name: `${order.firstName} ${order.lastName}`
-            },
-            items: order.items.map(item => ({
-                productId: item.productId,
-                name: item.name,
-                image: item.image,
-                price: item.price,
+            ...order,
+            items: order.items?.map(item => ({
+                _id: item._id,
+                item: {
+                    ...item.item,
+                    imageUrl: item.item?.imageUrl || ''
+                },
                 quantity: item.quantity
-            }))
+            })) || [],
+            createdAt: order.createdAt,
+            paymentStatus: order.paymentStatus?.toLowerCase() || 'pending',
+            firstName: order.firstName || '',
+            lastName: order.lastName || '',
+            address: order.address || '',
+            city: order.city || '',
+            zipCode: order.zipCode || '',
+            phone: order.phone || '',
+            email: order.email || '',
+            total: order.total || 0,
+            subtotal: order.subtotal || 0,
+            tax: order.tax || 0,
+            shipping: order.shipping || 0,
+            codFee: order.codFee || 0,
+            paymentMethod: order.paymentMethod || 'cod',
+            status: order.status || 'processing'
         }));
 
         res.json(formattedOrders);
@@ -53,7 +64,36 @@ export const getOrderById = async (req, res) => {
             return res.status(403).json({ message: 'Access denied' });
         }
         
-        res.json(order);
+        // Format order to match expected structure
+        const formattedOrder = {
+            ...order.toObject(),
+            items: order.items?.map(item => ({
+                _id: item._id,
+                item: {
+                    ...item.item,
+                    imageUrl: item.item?.imageUrl || ''
+                },
+                quantity: item.quantity
+            })) || [],
+            createdAt: order.createdAt,
+            paymentStatus: order.paymentStatus?.toLowerCase() || 'pending',
+            firstName: order.firstName || '',
+            lastName: order.lastName || '',
+            address: order.address || '',
+            city: order.city || '',
+            zipCode: order.zipCode || '',
+            phone: order.phone || '',
+            email: order.email || '',
+            total: order.total || 0,
+            subtotal: order.subtotal || 0,
+            tax: order.tax || 0,
+            shipping: order.shipping || 0,
+            codFee: order.codFee || 0,
+            paymentMethod: order.paymentMethod || 'cod',
+            status: order.status || 'processing'
+        };
+        
+        res.json(formattedOrder);
     } catch (error) {
         console.error('getOrderById error:', error);
         if (error.name === 'CastError') {
