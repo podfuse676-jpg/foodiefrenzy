@@ -37,16 +37,21 @@ export const createOrder = async (req, res) => {
             return res.status(400).json({ message: 'Invalid or empty items array' });
         }
 
-        // Normalize incoming item structure
-        const orderItems = items.map(({ item, name, price, imageUrl, quantity }) => {
-            const base = item || {};
+        // Normalize incoming item structure to match order model schema
+        const orderItems = items.map(({ item, name, price, imageUrl, quantity, productId }) => {
+            // Handle different possible item structures from frontend
+            const itemName = item?.name || name || 'Unknown Item';
+            const itemPrice = Number(item?.price ?? price) || 0;
+            const itemImage = item?.imageUrl || imageUrl || '';
+            const itemQuantity = Number(quantity) || 0;
+            const itemProductId = item?._id || productId || null;
+            
             return {
-                item: {
-                    name: base.name || name || 'Unknown',
-                    price: Number(base.price ?? price) || 0,
-                    imageUrl: base.imageUrl || imageUrl || ''
-                },
-                quantity: Number(quantity) || 0
+                productId: itemProductId,
+                name: itemName,
+                image: itemImage,
+                price: itemPrice,
+                quantity: itemQuantity
             };
         });
 
@@ -66,8 +71,8 @@ export const createOrder = async (req, res) => {
                 ...orderItems.map(o => ({
                     price_data: {
                         currency: 'cad',
-                        product_data: { name: o.item.name },
-                        unit_amount: Math.round(o.item.price * 100)
+                        product_data: { name: o.name },
+                        unit_amount: Math.round(o.price * 100)
                     },
                     quantity: o.quantity
                 })),
