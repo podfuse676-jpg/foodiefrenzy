@@ -6,6 +6,7 @@ import emailService from '../services/emailService.js';
 import alternativeEmailService from '../services/alternativeEmailService.js';
 import sendGridEmailService from '../services/sendGridEmailService.js';
 import smtpFallbackService from '../services/smtpFallbackService.js';
+import resendEmailService from '../services/resendEmailService.js'; // Add Resend service
 
 // Generate a 6-digit OTP
 const generateOTP = () => {
@@ -54,9 +55,15 @@ export const sendEmailOTP = async (req, res) => {
     );
     console.log('✅ OTP saved to database:', otpRecord._id);
 
-    // Try SendGrid first (most reliable in hosting environments)
-    console.log(`📤 Attempting to send OTP email to ${email} using SendGrid...`);
-    let emailResult = await sendGridEmailService.sendOTP(email, otp);
+    // Try Resend first (most reliable in hosting environments)
+    console.log(`📤 Attempting to send OTP email to ${email} using Resend...`);
+    let emailResult = await resendEmailService.sendOTP(email, otp);
+    
+    // If Resend fails, try SendGrid
+    if (!emailResult.success) {
+      console.log('⚠️ Resend failed, trying SendGrid...');
+      emailResult = await sendGridEmailService.sendOTP(email, otp);
+    }
     
     // If SendGrid fails, try primary email service
     if (!emailResult.success) {
