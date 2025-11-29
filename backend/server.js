@@ -317,6 +317,24 @@ console.log('- process.env.$PORT:', process.env.$PORT);
 console.log('- process.env.RENDER_PORT:', process.env.RENDER_PORT);
 console.log('- Final PORT value:', PORT);
 
+// Apply CORS middleware BEFORE handling preflight requests
+app.use(cors(corsOptions));
+
+// Handle preflight OPTIONS requests for all routes
+app.options('*', (req, res) => {
+  console.log('=== PREFLIGHT REQUEST ===');
+  console.log('Origin:', req.headers.origin);
+  console.log('Headers requested:', req.headers['access-control-request-headers']);
+  console.log('Method requested:', req.headers['access-control-request-method']);
+  
+  // Set CORS headers for preflight
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', req.headers['access-control-request-headers'] || 'Content-Type,Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.sendStatus(200);
+});
+
 // Add a simple test endpoint at the very beginning
 app.get('/test-very-beginning', (req, res) => {
   res.json({ 
@@ -333,21 +351,6 @@ app.use((req, res, next) => {
   console.log(`Headers:`, req.headers);
   console.log(`========================`);
   next();
-});
-
-// Handle preflight OPTIONS requests for all routes
-app.options('*', (req, res) => {
-  console.log('=== PREFLIGHT REQUEST ===');
-  console.log('Origin:', req.headers.origin);
-  console.log('Headers requested:', req.headers['access-control-request-headers']);
-  console.log('Method requested:', req.headers['access-control-request-method']);
-  
-  // Set CORS headers for preflight
-  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', req.headers['access-control-request-headers'] || 'Content-Type,Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.sendStatus(200);
 });
 
 // Add early health check endpoint - this should be one of the first routes
@@ -467,6 +470,12 @@ const corsOptions = {
       }
     }
     
+    // Allow all origins in development
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('Development environment, allowing all origins');
+      return callback(null, true);
+    }
+    
     // Reject the request
     console.log('Origin not allowed, rejecting request');
     callback(new Error('Not allowed by CORS'));
@@ -475,6 +484,7 @@ const corsOptions = {
   optionsSuccessStatus: 200 // Some legacy browsers choke on 204
 };
 
+// Apply CORS middleware before any routes
 app.use(cors(corsOptions));
 
 // Add caching headers for static assets
