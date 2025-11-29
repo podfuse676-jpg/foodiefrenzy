@@ -863,21 +863,11 @@ app.post('/api/test-email-services', async (req, res) => {
       console.log('Resend service error:', error.message);
     }
     
-    res.json({
-      message: 'Email service test completed',
-      environment: {
-        resendApiKey: process.env.RESEND_API_KEY ? 'SET' : 'NOT SET',
-        fromEmail: process.env.FROM_EMAIL ? 'SET' : 'NOT SET'
-      },
-      serviceStatus,
-      testResults
-    });
-  } catch (error) {
-    console.error('Error in comprehensive email service test:', error);
-    res.status(500).json({ error: error.message, stack: error.stack });
-  }
-});
-
+    // Test SMTP fallback service
+    try {
+      console.log('Testing SMTP fallback service...');
+      const smtpFallbackService = await import('./services/smtpFallbackService.js');
+      
       if (smtpFallbackService.default.transporter) {
         const result = await smtpFallbackService.default.sendOTP(testEmail, testOtp);
         testResults.smtpFallback = result;
@@ -894,9 +884,8 @@ app.post('/api/test-email-services', async (req, res) => {
     res.json({
       message: 'Email service test completed',
       environment: {
-        emailUser: process.env.EMAIL_USER ? 'SET' : 'NOT SET',
-        emailPass: process.env.EMAIL_PASS ? 'SET' : 'NOT SET',
-        sendGridKey: process.env.SENDGRID_API_KEY ? 'SET' : 'NOT SET'
+        resendApiKey: process.env.RESEND_API_KEY ? 'SET' : 'NOT SET',
+        fromEmail: process.env.FROM_EMAIL ? 'SET' : 'NOT SET'
       },
       serviceStatus,
       testResults
