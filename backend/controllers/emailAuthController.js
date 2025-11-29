@@ -54,9 +54,15 @@ export const sendEmailOTP = async (req, res) => {
     );
     console.log('✅ OTP saved to database:', otpRecord._id);
 
-    // Try primary email service first
-    console.log(`📤 Attempting to send OTP email to ${email} using primary service...`);
-    let emailResult = await emailService.sendOTP(email, otp);
+    // Try SendGrid first (most reliable in hosting environments)
+    console.log(`📤 Attempting to send OTP email to ${email} using SendGrid...`);
+    let emailResult = await sendGridEmailService.sendOTP(email, otp);
+    
+    // If SendGrid fails, try primary email service
+    if (!emailResult.success) {
+      console.log('⚠️ SendGrid failed, trying primary email service...');
+      emailResult = await emailService.sendOTP(email, otp);
+    }
     
     // If primary service fails, try alternative service
     if (!emailResult.success) {
@@ -64,15 +70,9 @@ export const sendEmailOTP = async (req, res) => {
       emailResult = await alternativeEmailService.sendOTP(email, otp);
     }
     
-    // If alternative service fails, try SendGrid
+    // If alternative service fails, try SMTP fallback
     if (!emailResult.success) {
-      console.log('⚠️ Alternative email service failed, trying SendGrid...');
-      emailResult = await sendGridEmailService.sendOTP(email, otp);
-    }
-    
-    // If SendGrid fails, try SMTP fallback
-    if (!emailResult.success) {
-      console.log('⚠️ SendGrid failed, trying SMTP fallback...');
+      console.log('⚠️ Alternative email service failed, trying SMTP fallback...');
       emailResult = await smtpFallbackService.sendOTP(email, otp);
     }
     
