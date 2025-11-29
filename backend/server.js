@@ -828,6 +828,45 @@ app.post('/api/test-email', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// Add a SendGrid test endpoint
+app.post('/api/test-sendgrid', async (req, res) => {
+  try {
+    console.log('=== SENDGRID TEST ENDPOINT ===');
+    console.log('SENDGRID_API_KEY:', process.env.SENDGRID_API_KEY ? `SET (${process.env.SENDGRID_API_KEY.substring(0, 10)}...)` : 'NOT SET');
+    
+    if (!process.env.SENDGRID_API_KEY) {
+      return res.status(400).json({ error: 'SENDGRID_API_KEY not set in environment variables' });
+    }
+    
+    // Import and test SendGrid service
+    const sendGridEmailService = await import('./services/sendGridEmailService.js');
+    console.log('SendGrid service imported:', sendGridEmailService.default ? 'SUCCESS' : 'FAILED');
+    
+    if (!sendGridEmailService.default) {
+      return res.status(500).json({ error: 'Failed to import SendGrid service' });
+    }
+    
+    console.log('SendGrid transporter:', sendGridEmailService.default.transporter ? 'INITIALIZED' : 'NOT INITIALIZED');
+    
+    // Try to send a test email
+    console.log('Attempting to send test email...');
+    const result = await sendGridEmailService.default.sendOTP('lakeshoreconvenience@gmail.com', '123456');
+    console.log('Send result:', result);
+    
+    res.json({
+      message: 'SendGrid test completed',
+      apiKey: process.env.SENDGRID_API_KEY ? 'SET' : 'NOT SET',
+      serviceImported: !!sendGridEmailService.default,
+      transporterInitialized: !!sendGridEmailService.default.transporter,
+      sendResult: result
+    });
+  } catch (error) {
+    console.error('Error in SendGrid test endpoint:', error);
+    res.status(500).json({ error: error.message, stack: error.stack });
+  }
+});
+
 app.delete('/api/orders/cleanup', async (req, res) => {
   try {
     // This should only be used in development or by authorized admins
