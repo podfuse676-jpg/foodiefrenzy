@@ -791,6 +791,43 @@ app.get('/api/debug-env', (req, res) => {
 
 // ADD THIS NEW ENDPOINT FOR CLEANING UP ORDERS
 // WARNING: This endpoint should be removed after use or protected with authentication
+
+// Add a test email endpoint
+app.post('/api/test-email', async (req, res) => {
+  try {
+    console.log('=== EMAIL TEST ENDPOINT ===');
+    console.log('EMAIL_USER:', process.env.EMAIL_USER ? 'SET' : 'NOT SET');
+    console.log('EMAIL_PASS:', process.env.EMAIL_PASS ? 'SET' : 'NOT SET');
+    console.log('SENDGRID_API_KEY:', process.env.SENDGRID_API_KEY ? 'SET' : 'NOT SET');
+    
+    // Import and test email services
+    const emailService = await import('./services/emailService.js');
+    const alternativeEmailService = await import('./services/alternativeEmailService.js');
+    const sendGridEmailService = await import('./services/sendGridEmailService.js');
+    const smtpFallbackService = await import('./services/smtpFallbackService.js');
+    
+    console.log('Primary transporter:', emailService.default.transporter ? 'INITIALIZED' : 'NOT INITIALIZED');
+    console.log('Alternative transporter:', alternativeEmailService.default.transporter ? 'INITIALIZED' : 'NOT INITIALIZED');
+    console.log('SendGrid transporter:', sendGridEmailService.default.transporter ? 'INITIALIZED' : 'NOT INITIALIZED');
+    console.log('SMTP Fallback transporter:', smtpFallbackService.default.transporter ? 'INITIALIZED' : 'NOT INITIALIZED');
+    
+    res.json({
+      message: 'Email configuration check completed',
+      emailUser: process.env.EMAIL_USER ? 'SET' : 'NOT SET',
+      emailPass: process.env.EMAIL_PASS ? 'SET' : 'NOT SET',
+      sendGridKey: process.env.SENDGRID_API_KEY ? 'SET' : 'NOT SET',
+      services: {
+        primary: emailService.default.transporter ? 'INITIALIZED' : 'NOT INITIALIZED',
+        alternative: alternativeEmailService.default.transporter ? 'INITIALIZED' : 'NOT INITIALIZED',
+        sendGrid: sendGridEmailService.default.transporter ? 'INITIALIZED' : 'NOT INITIALIZED',
+        smtpFallback: smtpFallbackService.default.transporter ? 'INITIALIZED' : 'NOT INITIALIZED'
+      }
+    });
+  } catch (error) {
+    console.error('Error in email test endpoint:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 app.delete('/api/orders/cleanup', async (req, res) => {
   try {
     // This should only be used in development or by authorized admins
