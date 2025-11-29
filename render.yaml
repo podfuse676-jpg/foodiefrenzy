@@ -27,7 +27,7 @@ services:
         sync: false
       - key: CLOUDINARY_API_SECRET
         sync: false
-      - key: EMAIL_USER
+      - key: RESEND_API_KEY
         sync: false
-      - key: EMAIL_PASS
-        sync: false
+      - key: FROM_EMAIL
+        value: noreply@lakeshoreconvenience.com
