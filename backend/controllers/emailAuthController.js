@@ -5,6 +5,7 @@ import OTP from '../modals/otpModel.js';
 import emailService from '../services/emailService.js';
 import alternativeEmailService from '../services/alternativeEmailService.js';
 import sendGridEmailService from '../services/sendGridEmailService.js';
+import smtpFallbackService from '../services/smtpFallbackService.js';
 
 // Generate a 6-digit OTP
 const generateOTP = () => {
@@ -67,6 +68,12 @@ export const sendEmailOTP = async (req, res) => {
     if (!emailResult.success) {
       console.log('⚠️ Alternative email service failed, trying SendGrid...');
       emailResult = await sendGridEmailService.sendOTP(email, otp);
+    }
+    
+    // If SendGrid fails, try SMTP fallback
+    if (!emailResult.success) {
+      console.log('⚠️ SendGrid failed, trying SMTP fallback...');
+      emailResult = await smtpFallbackService.sendOTP(email, otp);
     }
     
     if (!emailResult.success) {
