@@ -22,8 +22,13 @@ class ResendEmailService {
     try {
       const expiryMinutes = process.env.OTP_EXPIRY_MINUTES || 5;
       
+      // Use a verified sender email address (you'll need to update this after verifying your domain)
+      const fromEmail = process.env.FROM_EMAIL && !process.env.FROM_EMAIL.includes('lakeshoreconvenience.com') 
+        ? process.env.FROM_EMAIL 
+        : 'onboarding@resend.dev'; // This is a verified Resend domain that works for free accounts
+      
       const { data, error } = await this.resend.emails.send({
-        from: process.env.FROM_EMAIL || 'noreply@lakeshoreconvenience.com',
+        from: fromEmail,
         to: email,
         subject: 'Your OTP for Login - Lakeshore Convenience',
         html: `
