@@ -107,24 +107,44 @@ const Orders = () => {
                       </td>
                       <td className={tableClasses.cellBase}>
                         <div className="space-y-1 max-h-52 overflow-auto">
-                          {order.items.map((itm, idx) => (
-                            <div key={idx} className="flex items-center gap-3 p-2 rounded-lg">
-                              <img 
-                                src={(itm.item?.imageUrl || itm.imageUrl) ? ((itm.item?.imageUrl || itm.imageUrl).startsWith('http') ? (itm.item?.imageUrl || itm.imageUrl) : `${url}${itm.item?.imageUrl || itm.imageUrl}`) : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2RkZCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4='}
-                                alt={itm.item?.name || itm.name || 'Item Image'} 
-                                className="w-10 h-10 object-cover rounded-lg"
-                                onError={(e) => {
-                                  e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2RkZCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZSBFcnJvcjwvdGV4dD48L3N2Zz4=';
-                                }}
-                              />
-                              <div className="flex-1">
-                                <span className="text-green-100/80 text-sm block truncate">{itm.item?.name || itm.name || 'Unknown Item'}</span>
-                                <div className="flex items-center gap-2 text-xs text-green-400/60">
-                                  <span>${(itm.item?.price || itm.price || 0).toFixed(2)} CAD</span><span>•</span><span>x{itm.quantity || 0}</span>
+                          {order.items.map((itm, idx) => {
+                            // Optimize image URL construction
+                            const imageUrl = itm.item?.imageUrl || itm.imageUrl;
+                            const fullImageUrl = imageUrl 
+                              ? (imageUrl.startsWith('http') ? imageUrl : `${url}${imageUrl}`)
+                              : null;
+                            
+                            // Fallback SVG as data URI
+                            const fallbackSvg = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2RkZCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZSBFcnJvcjwvdGV4dD48L3N2Zz4=';
+                            
+                            // Debug: Log image URLs
+                            console.log('Image processing:', { imageUrl, fullImageUrl, fallbackSvg });
+                            
+                            return (
+                              <div key={idx} className="flex items-center gap-3 p-2 rounded-lg">
+                                <img 
+                                  src={fullImageUrl || fallbackSvg}
+                                  alt={itm.item?.name || itm.name || 'Item Image'} 
+                                  className="w-10 h-10 object-cover rounded-lg"
+                                  loading="lazy"
+                                  onError={(e) => {
+                                    console.log('Image error:', e.target.src);
+                                    if (e.target.src !== fallbackSvg) {
+                                      e.target.src = fallbackSvg;
+                                    }
+                                  }}
+                                />
+                                <div className="flex-1">
+                                  <span className="text-green-100/80 text-sm block truncate">{itm.item?.name || itm.name || 'Unknown Item'}</span>
+                                  <div className="flex items-center gap-2 text-xs text-green-400/60">
+                                    <span>${(itm.item?.price || itm.price || 0).toFixed(2)} CAD</span>
+                                    <span>•</span>
+                                    <span>x{itm.quantity || 0}</span>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </td>
                       <td className={tableClasses.cellBase + ' text-center'}>

@@ -38,6 +38,7 @@ const AddItems = () => {
   ]);
   const [hoverRating, setHoverRating] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [onItemAdded, setOnItemAdded] = useState(null);
 
   const handleInputChange = e => {
     const { name, value } = e.target;
@@ -136,6 +137,9 @@ const AddItems = () => {
       const fileInput = document.querySelector('input[type="file"]');
       if (fileInput) fileInput.value = '';
       
+      // Notify parent component that an item was added
+      if (onItemAdded) onItemAdded(res.data);
+      
     } catch (err) {
       console.error('Error details:', err);
       
@@ -151,6 +155,11 @@ const AddItems = () => {
       } else {
         // Error in request setup
         errorMessage += err.message || 'Unknown error occurred';
+      }
+      
+      // Show more detailed error in development
+      if (process.env.NODE_ENV === 'development') {
+        errorMessage += '\n\nTechnical details:\n' + JSON.stringify(err, null, 2);
       }
       
       alert(errorMessage);

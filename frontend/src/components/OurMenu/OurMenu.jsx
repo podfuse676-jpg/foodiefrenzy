@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { FiShoppingCart, FiSearch, FiX } from 'react-icons/fi';
 import MenuItem from './MenuItem';
@@ -7,7 +7,7 @@ import './Om.css';
 import { useCart } from '../../CartContext/CartContext';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
-import { getItems } from '../../utils/api';
+import { getItems, clearCache } from '../../utils/api';
 import SEO from '../../components/SEO/SEO';
 
 const OurMenu = () => {
@@ -88,6 +88,60 @@ const OurMenu = () => {
   const handleScroll = useCallback(() => {
     // This is handled by the Intersection Observer hook
   }, []);
+
+  // Function to refresh menu data
+  const refreshMenu = useCallback(async () => {
+    try {
+      // Clear cache and fetch fresh data
+      clearCache('/api/items');
+      setLoading(true);
+      setError(null);
+      
+      const items = await getItems();
+      console.log('Refreshed items from API:', items.length);
+      
+      // Organize items by category
+      const organizedData = {};
+      
+      items.forEach(item => {
+        const cat = item.category || 'Uncategorized';
+        organizedData[cat] = organizedData[cat] || [];
+        organizedData[cat].push(item);
+      });
+      
+      setMenuData(organizedData);
+      
+      // Extract all categories from the data
+      const allCategories = Object.keys(organizedData).filter(cat => cat !== 'Uncategorized');
+      // Put grocery categories first, then other categories
+      const groceryCategories = ['Fruits', 'Vegetables', 'Dairy', 'Beverages', 'Snacks', 'Essentials'];
+      const otherCategories = allCategories.filter(c => !groceryCategories.includes(c)).sort();
+      const sortedCategories = [
+        ...groceryCategories.filter(c => organizedData[c] && organizedData[c].length > 0),
+        ...otherCategories
+      ].filter(cat => organizedData[cat] && organizedData[cat].length > 0);
+
+      // If no categories found, use default grocery categories
+      const finalCategories = sortedCategories.length > 0 ? sortedCategories : ['Fruits', 'Vegetables', 'Dairy', 'Snacks', 'Beverages', 'Essentials'];
+
+      setCategories(finalCategories);
+
+      // Set active category to the first available one if current active category doesn't exist
+      if (!organizedData[activeCategory] || organizedData[activeCategory].length === 0) {
+        setActiveCategory(finalCategories[0] || 'Fruits');
+      }
+      
+      console.log('Successfully refreshed items from API:', {
+        categories: finalCategories,
+        totalItems: items.length
+      });
+    } catch (err) {
+      console.error('Failed to refresh menu items from API:', err);
+      setError('Failed to refresh menu items. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  }, [activeCategory]);
 
   // helper: find cart entry by product ID or item id
   const getCartEntry = id => cartItems.find(ci => ci.item && (ci.item._id === id || ci.item.id === id));
@@ -183,6 +237,12 @@ const OurMenu = () => {
             Discover our carefully curated selection of imported candies, refreshing drinks, 
             and everyday essentials from around the world.
           </p>
+          <button 
+            onClick={refreshMenu}
+            className="mt-4 px-4 py-2 bg-[#4CAF50] text-white rounded-lg hover:bg-[#45a049] transition-colors"
+          >
+            Refresh Menu
+          </button>
         </div>
 
         {/* Search Bar - improved for mobile */}

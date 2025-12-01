@@ -2,7 +2,11 @@ import React from 'react';
 import {
     FiPlusCircle,
     FiList,
-    FiPackage,FiTruck, FiCheckCircle, FiClock,
+    FiPackage,
+    FiUsers,
+    FiTruck, 
+    FiCheckCircle, 
+    FiClock,
 } from 'react-icons/fi';
 
 
@@ -10,6 +14,7 @@ export const navLinks = [
     { name: 'Add Items', href: '/', icon: <FiPlusCircle /> },
     { name: 'List Items', href: '/list', icon: <FiList /> },
     { name: 'Orders', href: '/orders', icon: <FiPackage /> },
+    { name: 'Users', href: '/users', icon: <FiUsers /> },
 ];
 
 
@@ -38,7 +43,7 @@ export const styles = {
     deleteBtn: "text-red-400 hover:text-red-300 transition-colors p-2 rounded-lg hover:bg-red-900/20",
     editBtn: "text-green-400 hover:text-green-300 transition-colors p-2 rounded-lg hover:bg-green-900/20",
     emptyState: "text-center py-12 text-green-100/60 text-xl",
-
+    
     // AddItems styles with green colors
     formWrapper: "min-h-screen bg-gradient-to-br from-[#1a2c1a] via-[#2a422a] to-[#0f1c0f] py-10 px-4 sm:px-6 lg:px-8",
     formCard: "bg-[#2b3a2b]/80 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-2xl border-2 border-green-900/30",
@@ -53,7 +58,7 @@ export const styles = {
     relativeInput: "relative",
     rupeeIcon: "absolute left-4 top-1/2 -translate-y-1/2 text-green-500 text-lg sm:text-xl",
     actionBtn: "w-full bg-gradient-to-r from-green-500 to-green-700 text-[#1a2c1a] px-6 sm:px-8 py-4 sm:py-5 rounded-2xl font-bold text-base sm:text-lg transition-all hover:shadow-2xl hover:shadow-green-500/30 hover:scale-[1.02] active:scale-95 mt-6",
-
+    
     // AdminNavbar styles with green colors
     navWrapper: "bg-[#1a2c1a] border-b-8 border-green-900/40 shadow-[0_25px_50px_-12px] shadow-green-900/30 sticky top-0 z-50 font-vibes",
     navContainer: "max-w-7xl mx-auto px-4 flex justify-between items-center h-20",

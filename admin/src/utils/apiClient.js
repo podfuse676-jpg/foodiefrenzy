@@ -50,9 +50,13 @@ apiClient.interceptors.response.use(
       case 404:
         return Promise.reject(new Error('Resource not found.'));
       case 500:
-        return Promise.reject(new Error('Internal server error. Please try again later.'));
+        // Try to get more detailed error message from server
+        const serverMessage = error.response.data?.message || 'Internal server error. Please try again later.';
+        return Promise.reject(new Error(serverMessage));
       default:
-        return Promise.reject(new Error(error.response.data?.message || 'An unexpected error occurred.'));
+        // Try to get more detailed error message from server
+        const defaultMessage = error.response.data?.message || 'An unexpected error occurred.';
+        return Promise.reject(new Error(defaultMessage));
     }
   }
 );

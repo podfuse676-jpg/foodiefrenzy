@@ -113,10 +113,72 @@ userRouter.get("/admin/users", authMiddleware, adminMiddleware, async (req, res)
     }
 })
 
+// Add search users endpoint (admin only)
+userRouter.get("/admin/users/search", authMiddleware, adminMiddleware, async (req, res) => {
+    try {
+        const { query } = req.query;
+        
+        // If no query provided, return all users
+        if (!query) {
+            const users = await userModel.find({}).select('-password').sort({ createdAt: -1 });
+            return res.json({ 
+                success: true, 
+                users,
+                count: users.length
+            });
+        }
+        
+        // Search by name, email, phone number
+        const users = await userModel.find({
+            $or: [
+                { username: { $regex: query, $options: 'i' } },
+                { email: { $regex: query, $options: 'i' } },
+                { phoneNumber: { $regex: query, $options: 'i' } }
+            ]
+        }).select('-password').sort({ createdAt: -1 });
+        
+        // Also search for orders with matching order IDs
+        // Only do this if the query looks like it could be an ObjectId
+        let additionalUsers = [];
+        if (/^[0-9a-fA-F]{24}$/.test(query)) {
+            try {
+                const orders = await Order.find({
+                    _id: query
+                }).populate('user', 'username email phoneNumber');
+                
+                // Combine users from both searches, avoiding duplicates
+                const userIds = new Set(users.map(user => user._id.toString()));
+                additionalUsers = orders
+                    .map(order => order.user)
+                    .filter(user => user && !userIds.has(user._id.toString()));
+            } catch (orderError) {
+                console.error("Order search error:", orderError);
+                // Continue with just user results if order search fails
+            }
+        }
+            
+        const allUsers = [...users, ...additionalUsers];
+        
+        res.json({ 
+            success: true, 
+            users: allUsers,
+            count: allUsers.length
+        });
+    } catch (error) {
+        console.error("Search error:", error);
+        res.status(500).json({ success: false, message: "Error searching users" });
+    }
+});
+
 // Get user details including orders (admin only)
 userRouter.get("/admin/users/:userId", authMiddleware, adminMiddleware, async (req, res) => {
     try {
-        const { userId } = req.params
+        const { userId } = req.params;
+        
+        // Validate userId format to prevent conflicts with "search" keyword
+        if (userId === 'search') {
+            return res.status(400).json({ success: false, message: "Invalid user ID" });
+        }
         
         // Get user details
         const user = await userModel.findById(userId).select('-password')

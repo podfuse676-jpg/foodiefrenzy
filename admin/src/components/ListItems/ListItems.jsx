@@ -18,6 +18,7 @@ const ListItems = () => {
   const [itemsPerPage] = useState(10);
   const [imagePreview, setImagePreview] = useState(null);
   const [newImage, setNewImage] = useState(null);
+  const [lastRefresh, setLastRefresh] = useState(Date.now());
 
   // Fetch items from API
   useEffect(() => {
@@ -55,7 +56,12 @@ const ListItems = () => {
       }
     };
     fetchItems();
-  }, []);
+  }, [lastRefresh]);
+
+  // Refresh items function
+  const refreshItems = () => {
+    setLastRefresh(Date.now());
+  };
 
   // Delete handler
   const handleDelete = async (itemId) => {
@@ -66,9 +72,21 @@ const ListItems = () => {
       setItems(prev => prev.filter(item => item._id !== itemId));
       console.log('Deleted item ID:', itemId);
       alert('Item deleted successfully!');
+      
+      // Refresh the item list to ensure consistency
+      refreshItems();
     } catch (err) {
       console.error('Error deleting item:', err);
-      alert('Error deleting item: ' + (err.message || 'Unknown error'));
+      
+      // Provide more detailed error message
+      let errorMessage = 'Error deleting item: ' + (err.message || 'Unknown error');
+      
+      // Show more detailed error in development
+      if (process.env.NODE_ENV === 'development') {
+        errorMessage += '\n\nTechnical details:\n' + JSON.stringify(err, null, 2);
+      }
+      
+      alert(errorMessage);
     }
   };
 
@@ -490,6 +508,9 @@ const ListItems = () => {
                     errorMessage += '\n\nDetails: ' + JSON.stringify(err.response?.data || err.message || 'Unknown error', null, 2);
                   }
                   
+                  // Refresh items after error to ensure consistency
+                  refreshItems();
+                  
                   alert(errorMessage);
                 }
               }}
@@ -506,7 +527,15 @@ const ListItems = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-3xl p-8 shadow-2xl border-2 border-[#8BC34A]/20">
-          <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">Manage Menu Items</h2>
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold text-center text-gray-800">Manage Menu Items</h2>
+            <button 
+              onClick={refreshItems}
+              className="px-4 py-2 bg-[#8BC34A] text-white rounded-lg hover:bg-[#7cb342] transition-colors"
+            >
+              Refresh Items
+            </button>
+          </div>
 
           <div className="overflow-x-auto">
             <table className="w-full">

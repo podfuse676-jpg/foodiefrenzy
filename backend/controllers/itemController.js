@@ -4,7 +4,10 @@ import { fixBrokenImageUrl } from '../utils/imageUtils.js';
 export const getItems = async (req, res, next) => {
     try {
         console.log('Fetching all items');
+        const startTime = Date.now();
         const items = await Item.find({});
+        
+        console.log(`Database query completed in ${Date.now() - startTime}ms, found ${items.length} items`);
         
         // For each item, ensure the imageUrl is correctly formatted
         const itemsWithFullUrls = items.map(item => {
@@ -30,7 +33,7 @@ export const getItems = async (req, res, next) => {
             return fixedItem;
         });
         
-        console.log(`Found ${itemsWithFullUrls.length} items`);
+        console.log(`Processed ${itemsWithFullUrls.length} items in ${Date.now() - startTime}ms`);
         res.json(itemsWithFullUrls);
     } catch (err) {
         console.error('Get items error:', err);
@@ -75,6 +78,8 @@ export const createItem = async (req, res, next) => {
         console.log('Creating new item');
         console.log('Request body:', req.body);
         console.log('Request file:', req.file);
+        
+        const startTime = Date.now();
 
         const itemData = { ...req.body };
 
@@ -117,6 +122,8 @@ export const createItem = async (req, res, next) => {
         const newItem = new Item(itemData);
         const savedItem = await newItem.save();
         
+        console.log(`Item saved to database in ${Date.now() - startTime}ms`);
+        
         // For local URLs, prefix with host
         const savedItemObj = savedItem.toObject();
         if (savedItemObj.imageUrl && !savedItemObj.imageUrl.startsWith('http')) {
@@ -157,6 +164,8 @@ export const updateItem = async (req, res, next) => {
         
         const id = req.params.id;
         const updateData = { ...req.body };
+        
+        const startTime = Date.now();
 
         console.log('Update request for item:', id);
         console.log('Raw request body:', req.body);
@@ -313,6 +322,7 @@ export const updateItem = async (req, res, next) => {
         
         // When returning the updated item, ensure the imageUrl is correctly formatted
         const updated = await Item.findByIdAndUpdate(id, updateData, { new: true });
+        console.log(`Database update completed in ${Date.now() - startTime}ms`);
         console.log('Find and update result:', updated ? 'Found' : 'Not found');
         
         if (!updated) {
@@ -323,7 +333,9 @@ export const updateItem = async (req, res, next) => {
         // For local URLs, prefix with host
         const updatedObj = updated.toObject();
         if (updatedObj.imageUrl && !updatedObj.imageUrl.startsWith('http')) {
-            const host = `${req.protocol}://${req.get('host')}`;
+            // Use HTTPS in production, HTTP in development
+            const protocol = process.env.NODE_ENV === 'production' ? 'https' : req.protocol;
+            const host = `${protocol}://${req.get('host')}`;
             updatedObj.imageUrl = host + updatedObj.imageUrl;
         }
         
