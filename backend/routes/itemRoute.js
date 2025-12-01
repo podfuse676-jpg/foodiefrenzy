@@ -7,6 +7,16 @@ dotenv.config();
 // Use local disk storage instead of Cloudinary
 import { createItem, getItems, deleteItem, updateItem, getItemById } from '../controllers/itemController.js';
 
+// Debug logging
+console.log('itemRoute.js loaded');
+
+// Test route
+const testRouter = express.Router();
+testRouter.get('/test-debug', (req, res) => {
+    console.log('Test debug route hit');
+    res.json({ message: 'Debug route working' });
+});
+
 // Configure local disk storage for multer
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -70,9 +80,14 @@ const handleUploadOptional = (req, res, next) => {
     } else {
         // No file upload, proceed to next middleware
         console.log('Skipping multer - not a multipart request');
-        // Make sure req.body is properly parsed for JSON requests
+        // Make sure req.body is properly initialized for all requests
         if (!req.body && contentType && contentType.includes('application/json')) {
             console.log('Setting empty body for JSON request');
+            req.body = {};
+        }
+        // Also initialize for non-JSON requests
+        else if (!req.body) {
+            console.log('Initializing empty body for non-JSON request');
             req.body = {};
         }
         next();
