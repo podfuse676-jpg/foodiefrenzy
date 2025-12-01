@@ -283,7 +283,7 @@ const ListItems = () => {
               <label className="block mb-2 text-sm text-gray-700">Modifier Groups (comma separated)</label>
               <input 
                 type="text" 
-                value={(editingItem.modifierGroups || []).join ? (editingItem.modifierGroups.join(', ')) : (editingItem.modifierGroups || '')} 
+                value={Array.isArray(editingItem.modifierGroups) ? editingItem.modifierGroups.join(', ') : (editingItem.modifierGroups || '')} 
                 onChange={e => setEditingItem(prev => ({ ...prev, modifierGroups: e.target.value }))} 
                 className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" 
               />
@@ -293,7 +293,7 @@ const ListItems = () => {
               <label className="block mb-2 text-sm text-gray-700">Printer Labels (comma separated)</label>
               <input 
                 type="text" 
-                value={(editingItem.printerLabels || []).join ? (editingItem.printerLabels.join(', ')) : (editingItem.printerLabels || '')} 
+                value={Array.isArray(editingItem.printerLabels) ? editingItem.printerLabels.join(', ') : (editingItem.printerLabels || '')} 
                 onChange={e => setEditingItem(prev => ({ ...prev, printerLabels: e.target.value }))} 
                 className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" 
               />
@@ -302,7 +302,7 @@ const ListItems = () => {
               <label className="block mb-2 text-sm text-gray-700">Flavour Options (comma separated)</label>
               <input 
                 type="text" 
-                value={(editingItem.flavourOptions || []).join ? (editingItem.flavourOptions.join(', ')) : (editingItem.flavourOptions || '')} 
+                value={Array.isArray(editingItem.flavourOptions) ? editingItem.flavourOptions.join(', ') : (editingItem.flavourOptions || '')} 
                 onChange={e => setEditingItem(prev => ({ ...prev, flavourOptions: e.target.value }))} 
                 className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" 
               />
@@ -400,9 +400,30 @@ const ListItems = () => {
                     // The backend will handle the new image URL from the uploaded file
                     delete dataToSend.imageUrl;
                     
-                    if (typeof dataToSend.modifierGroups === 'string') dataToSend.modifierGroups = dataToSend.modifierGroups.split(',').map(s => s.trim()).filter(Boolean);
-                    if (typeof dataToSend.printerLabels === 'string') dataToSend.printerLabels = dataToSend.printerLabels.split(',').map(s => s.trim()).filter(Boolean);
-                    if (typeof dataToSend.flavourOptions === 'string') dataToSend.flavourOptions = dataToSend.flavourOptions.split(',').map(s => s.trim()).filter(Boolean);
+                    // Handle array fields properly
+                    if (typeof dataToSend.modifierGroups === 'string') {
+                      dataToSend.modifierGroups = dataToSend.modifierGroups.split(',').map(s => s.trim()).filter(Boolean);
+                    } else if (Array.isArray(dataToSend.modifierGroups)) {
+                      // Already an array, keep as is
+                    } else {
+                      dataToSend.modifierGroups = [];
+                    }
+                    
+                    if (typeof dataToSend.printerLabels === 'string') {
+                      dataToSend.printerLabels = dataToSend.printerLabels.split(',').map(s => s.trim()).filter(Boolean);
+                    } else if (Array.isArray(dataToSend.printerLabels)) {
+                      // Already an array, keep as is
+                    } else {
+                      dataToSend.printerLabels = [];
+                    }
+                    
+                    if (typeof dataToSend.flavourOptions === 'string') {
+                      dataToSend.flavourOptions = dataToSend.flavourOptions.split(',').map(s => s.trim()).filter(Boolean);
+                    } else if (Array.isArray(dataToSend.flavourOptions)) {
+                      // Already an array, keep as is
+                    } else {
+                      dataToSend.flavourOptions = [];
+                    }
                     
                     // Handle numeric fields
                     const numericFields = ['price', 'gst', 'cost', 'quantity', 'rating', 'hearts', 'taxRate'];
@@ -440,10 +461,30 @@ const ListItems = () => {
                     // to prevent overwriting with potentially incorrect URLs
                     delete payload.imageUrl;
                     
-                    // Handle array fields
-                    if (typeof payload.modifierGroups === 'string') payload.modifierGroups = payload.modifierGroups.split(',').map(s => s.trim()).filter(Boolean);
-                    if (typeof payload.printerLabels === 'string') payload.printerLabels = payload.printerLabels.split(',').map(s => s.trim()).filter(Boolean);
-                    if (typeof payload.flavourOptions === 'string') payload.flavourOptions = payload.flavourOptions.split(',').map(s => s.trim()).filter(Boolean);
+                    // Handle array fields properly
+                    if (typeof payload.modifierGroups === 'string') {
+                      payload.modifierGroups = payload.modifierGroups.split(',').map(s => s.trim()).filter(Boolean);
+                    } else if (Array.isArray(payload.modifierGroups)) {
+                      // Already an array, keep as is
+                    } else {
+                      payload.modifierGroups = [];
+                    }
+                                      
+                    if (typeof payload.printerLabels === 'string') {
+                      payload.printerLabels = payload.printerLabels.split(',').map(s => s.trim()).filter(Boolean);
+                    } else if (Array.isArray(payload.printerLabels)) {
+                      // Already an array, keep as is
+                    } else {
+                      payload.printerLabels = [];
+                    }
+                                      
+                    if (typeof payload.flavourOptions === 'string') {
+                      payload.flavourOptions = payload.flavourOptions.split(',').map(s => s.trim()).filter(Boolean);
+                    } else if (Array.isArray(payload.flavourOptions)) {
+                      // Already an array, keep as is
+                    } else {
+                      payload.flavourOptions = [];
+                    }
                     
                     // Handle numeric fields
                     const numericFields = ['price', 'gst', 'cost', 'quantity', 'rating', 'hearts', 'taxRate'];
