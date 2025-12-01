@@ -18,18 +18,19 @@ const OrderDetail = () => {
         const token = localStorage.getItem('authToken');
         
         if (!token) {
-          setError('You must be logged in to view order details');
+          setError('Authentication required. Please log in again.');
           setLoading(false);
           return;
         }
 
-        const response = await axios.get(`${url}/api/orders/getall/${id}`, {
+        // Use the correct admin endpoint for fetching order details
+        const response = await axios.get(`${url}/api/users/admin/orders/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
 
-        setOrder(response.data);
+        setOrder(response.data.order);
         setError(null);
       } catch (err) {
         console.error('Error fetching order:', err);
@@ -46,7 +47,7 @@ const OrderDetail = () => {
     };
 
     fetchOrder();
-  }, [id]);
+  }, [id, url]);
 
   const statusStyles = {
     pending: {
@@ -254,7 +255,7 @@ const OrderDetail = () => {
                 <div className="space-y-4">
                   <div>
                     <p className="text-sm text-green-400/60">Name</p>
-                    <p className="font-medium text-green-100">{order.user?.name || order.firstName} {order.lastName}</p>
+                    <p className="font-medium text-green-100">{order.user?.username || order.firstName} {order.lastName}</p>
                   </div>
                   
                   <div>
@@ -264,7 +265,7 @@ const OrderDetail = () => {
                   
                   <div>
                     <p className="text-sm text-green-400/60">Phone</p>
-                    <p className="font-medium text-green-100">{order.user?.phone || order.phone}</p>
+                    <p className="font-medium text-green-100">{order.user?.phoneNumber || order.phone}</p>
                   </div>
                 </div>
               </div>
@@ -277,7 +278,7 @@ const OrderDetail = () => {
                 
                 <div className="space-y-4">
                   <div>
-                    <p className="font-medium text-green-100">{order.user?.name || order.firstName} {order.lastName}</p>
+                    <p className="font-medium text-green-100">{order.user?.username || order.firstName} {order.lastName}</p>
                     <p className="text-green-100/80">{order.address}</p>
                     <p className="text-green-100/80">{order.city}, {order.zipCode}</p>
                   </div>
