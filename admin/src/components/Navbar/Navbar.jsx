@@ -14,9 +14,6 @@ const AdminNavbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  // Debug: Log navLinks to see what's being imported
-  console.log('Navbar navLinks:', navLinks);
-
   const handleLogout = () => {
     // Clear admin tokens
     localStorage.removeItem('adminToken');
