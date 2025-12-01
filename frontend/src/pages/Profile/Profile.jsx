@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import apiConfig from '../../utils/apiConfig';
 import SEO from '../../components/SEO/SEO';
-import { FiUser, FiMail, FiPhone, FiKey, FiEdit, FiLock, FiLogOut, FiCalendar, FiCreditCard, FiShoppingBag, FiHeart, FiMapPin, FiAward } from 'react-icons/fi';
+import { FiUser, FiMail, FiPhone, FiKey, FiEdit, FiLock, FiLogOut, FiCalendar, FiShoppingBag, FiHeart, FiMapPin, FiAward, FiChevronRight, FiStar, FiCreditCard, FiPackage, FiShield } from 'react-icons/fi';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -154,9 +154,9 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6]">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8BC34A] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading profile...</p>
         </div>
       </div>
@@ -165,7 +165,7 @@ const Profile = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6]">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
         <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
           <div className="text-center">
             <div className="text-red-500 text-5xl mb-4">⚠️</div>
@@ -173,7 +173,7 @@ const Profile = () => {
             <p className="text-gray-600 mb-6">{error}</p>
             <button
               onClick={() => navigate('/')}
-              className="bg-[#8BC34A] text-white px-6 py-2 rounded-lg hover:bg-[#7CB342] transition-colors"
+              className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
             >
               Go Home
             </button>
@@ -191,253 +191,298 @@ const Profile = () => {
         keywords="profile, account, settings, user information"
       />
       
-      <div className="min-h-screen bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] py-8 sm:py-12">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-            {/* Profile Header with Navigation */}
-            <div className="bg-gradient-to-r from-[#8BC34A] to-[#7CB342] px-6 py-8 sm:p-10 text-white">
-              <div className="flex flex-col lg:flex-row items-center lg:items-end justify-between">
-                <div className="flex flex-col sm:flex-row items-center w-full lg:w-auto">
-                  <div className="bg-white/20 rounded-full p-4 mb-4 sm:mb-0 sm:mr-6">
-                    <FiUser className="h-16 w-16 text-white" />
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">Account Dashboard</h1>
+            <p className="mt-2 text-gray-600">Manage your profile and account settings</p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Profile Info */}
+            <div className="lg:col-span-1 space-y-6">
+              {/* Profile Card */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-8 text-white">
+                  <div className="flex flex-col items-center">
+                    <div className="bg-white/20 rounded-full p-3 mb-4">
+                      <FiUser className="h-12 w-12 text-white" />
+                    </div>
+                    <h2 className="text-2xl font-bold">{user?.username}</h2>
+                    <p className="text-indigo-100 mt-1">{user?.email}</p>
+                    {user?.phoneNumber && (
+                      <p className="text-indigo-100 mt-1">{user?.phoneNumber}</p>
+                    )}
+                    <p className="text-indigo-200 text-sm mt-3">
+                      Member since {user?.createdAt ? new Date(user.createdAt).getFullYear() : 'N/A'}
+                    </p>
                   </div>
-                  <div className="text-center sm:text-left flex-1">
-                    <h1 className="text-3xl sm:text-4xl font-bold mb-2">{user?.username}</h1>
-                    <div className="space-y-1">
-                      <p className="text-white/90 mb-1 flex items-center justify-center sm:justify-start">
-                        <FiMail className="mr-2" />
-                        {user?.email}
-                      </p>
-                      {user?.phoneNumber && (
-                        <p className="text-white/90 flex items-center justify-center sm:justify-start">
-                          <FiPhone className="mr-2" />
-                          {user?.phoneNumber}
-                        </p>
-                      )}
-                      <p className="text-white/80 text-sm flex items-center justify-center sm:justify-start mt-2">
-                        <FiCalendar className="mr-2" />
-                        Member since {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : 'N/A'}
-                      </p>
+                </div>
+                
+                <div className="px-6 py-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Account Status</h3>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                      Verified
+                    </span>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between py-2">
+                      <div className="flex items-center">
+                        <FiShield className="h-5 w-5 text-gray-400 mr-3" />
+                        <span className="text-gray-600">Security</span>
+                      </div>
+                      <span className="text-sm text-green-600 font-medium">Strong</span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between py-2">
+                      <div className="flex items-center">
+                        <FiStar className="h-5 w-5 text-gray-400 mr-3" />
+                        <span className="text-gray-600">Loyalty Points</span>
+                      </div>
+                      <span className="text-sm font-medium text-indigo-600">1,250 pts</span>
                     </div>
                   </div>
                 </div>
-                <div className="mt-6 lg:mt-0 flex flex-wrap justify-center lg:justify-end gap-3">
-                  <Link 
-                    to="/myorder" 
-                    className="bg-white/20 hover:bg-white/30 text-white px-5 py-3 rounded-lg transition-colors text-center text-sm font-medium flex items-center"
+              </div>
+              
+              {/* Quick Actions */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="px-6 py-5 border-b border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900">Quick Actions</h3>
+                </div>
+                <div className="divide-y divide-gray-100">
+                  <button
+                    onClick={() => setEditing(true)}
+                    className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-gray-50 transition-colors"
                   >
-                    <FiShoppingBag className="mr-2" />
-                    My Orders
-                  </Link>
-                  <Link 
-                    to="/" 
-                    className="bg-white/20 hover:bg-white/30 text-white px-5 py-3 rounded-lg transition-colors text-center text-sm font-medium flex items-center"
+                    <div className="flex items-center">
+                      <div className="bg-indigo-100 p-2 rounded-lg">
+                        <FiEdit className="h-5 w-5 text-indigo-600" />
+                      </div>
+                      <span className="ml-4 text-gray-700 font-medium">Edit Profile</span>
+                    </div>
+                    <FiChevronRight className="h-5 w-5 text-gray-400" />
+                  </button>
+                  
+                  <button
+                    onClick={() => setChangePassword(true)}
+                    className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-gray-50 transition-colors"
                   >
-                    <FiAward className="mr-2" />
-                    Home
-                  </Link>
+                    <div className="flex items-center">
+                      <div className="bg-indigo-100 p-2 rounded-lg">
+                        <FiLock className="h-5 w-5 text-indigo-600" />
+                      </div>
+                      <span className="ml-4 text-gray-700 font-medium">Change Password</span>
+                    </div>
+                    <FiChevronRight className="h-5 w-5 text-gray-400" />
+                  </button>
+                  
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-center">
+                      <div className="bg-red-100 p-2 rounded-lg">
+                        <FiLogOut className="h-5 w-5 text-red-600" />
+                      </div>
+                      <span className="ml-4 text-gray-700 font-medium">Logout</span>
+                    </div>
+                    <FiChevronRight className="h-5 w-5 text-gray-400" />
+                  </button>
                 </div>
               </div>
             </div>
             
-            <div className="px-6 py-8 sm:p-10">
-              {success && (
-                <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
-                  {success}
-                </div>
-              )}
-              
-              {error && (
-                <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                  {error}
-                </div>
-              )}
-              
-              {!editing && !changePassword ? (
-                <div className="space-y-8">
-                  {/* Profile Information */}
-                  <div className="border border-gray-200 rounded-xl p-6 shadow-sm">
-                    <div className="flex justify-between items-center mb-6">
-                      <h2 className="text-2xl font-semibold text-gray-900 flex items-center">
-                        <FiUser className="mr-3 text-[#8BC34A]" />
-                        Profile Information
-                      </h2>
-                      <button
-                        onClick={() => setEditing(true)}
-                        className="flex items-center bg-[#8BC34A] text-white px-5 py-2.5 rounded-lg hover:bg-[#7CB342] transition-colors text-sm font-medium"
-                      >
-                        <FiEdit className="mr-2" />
-                        Edit Profile
-                      </button>
+            {/* Right Column - Main Content */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Stats Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl shadow-sm p-6 text-white">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-indigo-100 text-sm">Total Orders</p>
+                      <p className="text-3xl font-bold mt-1">24</p>
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                      <div className="bg-gradient-to-br from-[#8BC34A]/5 to-[#7CB342]/5 p-5 rounded-xl border border-[#8BC34A]/20">
-                        <div className="flex items-center text-sm font-medium text-[#8BC34A] mb-2">
-                          <FiUser className="mr-2" />
-                          Username
-                        </div>
-                        <p className="text-lg font-semibold text-gray-900">{user?.username}</p>
+                    <div className="bg-white/20 p-3 rounded-lg">
+                      <FiPackage className="h-6 w-6 text-white" />
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <div className="flex items-center text-indigo-100 text-sm">
+                      <span>+12% from last month</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-sm p-6 text-white">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-green-100 text-sm">Saved Addresses</p>
+                      <p className="text-3xl font-bold mt-1">3</p>
+                    </div>
+                    <div className="bg-white/20 p-3 rounded-lg">
+                      <FiMapPin className="h-6 w-6 text-white" />
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <div className="flex items-center text-green-100 text-sm">
+                      <span>1 new this month</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-sm p-6 text-white">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-purple-100 text-sm">Wishlist Items</p>
+                      <p className="text-3xl font-bold mt-1">8</p>
+                    </div>
+                    <div className="bg-white/20 p-3 rounded-lg">
+                      <FiHeart className="h-6 w-6 text-white" />
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <div className="flex items-center text-purple-100 text-sm">
+                      <span>2 recently added</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Recent Activity */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="px-6 py-5 border-b border-gray-200">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-semibold text-gray-900">Recent Activity</h3>
+                    <Link to="/myorder" className="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                      View all
+                    </Link>
+                  </div>
+                </div>
+                <div className="divide-y divide-gray-100">
+                  <div className="px-6 py-4">
+                    <div className="flex items-start">
+                      <div className="bg-indigo-100 p-2 rounded-lg">
+                        <FiShoppingBag className="h-5 w-5 text-indigo-600" />
                       </div>
-                      
-                      <div className="bg-gradient-to-br from-[#8BC34A]/5 to-[#7CB342]/5 p-5 rounded-xl border border-[#8BC34A]/20">
-                        <div className="flex items-center text-sm font-medium text-[#8BC34A] mb-2">
-                          <FiMail className="mr-2" />
-                          Email
-                        </div>
-                        <p className="text-lg font-semibold text-gray-900">{user?.email}</p>
-                      </div>
-                      
-                      <div className="bg-gradient-to-br from-[#8BC34A]/5 to-[#7CB342]/5 p-5 rounded-xl border border-[#8BC34A]/20">
-                        <div className="flex items-center text-sm font-medium text-[#8BC34A] mb-2">
-                          <FiPhone className="mr-2" />
-                          Phone
-                        </div>
-                        <p className="text-lg font-semibold text-gray-900">
-                          {user?.phoneNumber || 'Not provided'}
-                        </p>
-                      </div>
-                      
-                      <div className="bg-gradient-to-br from-[#8BC34A]/5 to-[#7CB342]/5 p-5 rounded-xl border border-[#8BC34A]/20">
-                        <div className="flex items-center text-sm font-medium text-[#8BC34A] mb-2">
-                          <FiCalendar className="mr-2" />
-                          Member Since
-                        </div>
-                        <p className="text-lg font-semibold text-gray-900">
-                          {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) : 'N/A'}
-                        </p>
+                      <div className="ml-4">
+                        <h4 className="text-sm font-medium text-gray-900">Order #ORD-7842 placed</h4>
+                        <p className="text-sm text-gray-500 mt-1">2 items • $42.99</p>
+                        <p className="text-xs text-gray-400 mt-1">2 hours ago</p>
                       </div>
                     </div>
                   </div>
                   
-                  {/* Quick Actions */}
-                  <div className="border border-gray-200 rounded-xl p-6 shadow-sm">
-                    <h2 className="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
-                      <FiAward className="mr-3 text-[#8BC34A]" />
-                      Quick Actions
-                    </h2>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                      <Link 
-                        to="/myorder" 
-                        className="bg-gradient-to-br from-[#8BC34A]/10 to-[#7CB342]/10 p-5 rounded-xl border border-[#8BC34A]/30 hover:from-[#8BC34A]/20 hover:to-[#7CB342]/20 transition-all duration-300 group"
-                      >
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="bg-[#8BC34A]/10 p-3 rounded-lg">
-                            <FiShoppingBag className="h-6 w-6 text-[#8BC34A] group-hover:scale-110 transition-transform" />
-                          </div>
-                          <FiEdit className="h-5 w-5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                        <h3 className="font-semibold text-gray-900 mb-1">My Orders</h3>
-                        <p className="text-sm text-gray-600">View your order history and track deliveries</p>
-                      </Link>
-                      
-                      <button
-                        onClick={() => setChangePassword(true)}
-                        className="bg-gradient-to-br from-[#8BC34A]/10 to-[#7CB342]/10 p-5 rounded-xl border border-[#8BC34A]/30 hover:from-[#8BC34A]/20 hover:to-[#7CB342]/20 transition-all duration-300 group"
-                      >
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="bg-[#8BC34A]/10 p-3 rounded-lg">
-                            <FiLock className="h-6 w-6 text-[#8BC34A] group-hover:scale-110 transition-transform" />
-                          </div>
-                          <FiEdit className="h-5 w-5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                        <h3 className="font-semibold text-gray-900 mb-1">Change Password</h3>
-                        <p className="text-sm text-gray-600">Update your password for security</p>
-                      </button>
-                      
-                      <button
-                        onClick={handleLogout}
-                        className="bg-gradient-to-br from-red-500/10 to-red-600/10 p-5 rounded-xl border border-red-500/30 hover:from-red-500/20 hover:to-red-600/20 transition-all duration-300 group"
-                      >
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="bg-red-500/10 p-3 rounded-lg">
-                            <FiLogOut className="h-6 w-6 text-red-500 group-hover:scale-110 transition-transform" />
-                          </div>
-                          <FiLogOut className="h-5 w-5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                        <h3 className="font-semibold text-gray-900 mb-1">Logout</h3>
-                        <p className="text-sm text-gray-600">Sign out of your account</p>
-                      </button>
+                  <div className="px-6 py-4">
+                    <div className="flex items-start">
+                      <div className="bg-green-100 p-2 rounded-lg">
+                        <FiCreditCard className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div className="ml-4">
+                        <h4 className="text-sm font-medium text-gray-900">Payment method updated</h4>
+                        <p className="text-sm text-gray-500 mt-1">Visa ending in 4291</p>
+                        <p className="text-xs text-gray-400 mt-1">1 day ago</p>
+                      </div>
                     </div>
                   </div>
                   
-                  {/* Account Statistics */}
-                  <div className="border border-gray-200 rounded-xl p-6 shadow-sm">
-                    <h2 className="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
-                      <FiAward className="mr-3 text-[#8BC34A]" />
-                      Account Overview
-                    </h2>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="bg-gradient-to-br from-blue-500/5 to-blue-600/5 p-5 rounded-xl border border-blue-500/20">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm text-blue-600 font-medium">Total Orders</p>
-                            <p className="text-3xl font-bold text-gray-900 mt-1">0</p>
-                          </div>
-                          <div className="bg-blue-500/10 p-3 rounded-lg">
-                            <FiShoppingBag className="h-8 w-8 text-blue-500" />
-                          </div>
-                        </div>
+                  <div className="px-6 py-4">
+                    <div className="flex items-start">
+                      <div className="bg-purple-100 p-2 rounded-lg">
+                        <FiMapPin className="h-5 w-5 text-purple-600" />
                       </div>
-                      
-                      <div className="bg-gradient-to-br from-green-500/5 to-green-600/5 p-5 rounded-xl border border-green-500/20">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm text-green-600 font-medium">Saved Addresses</p>
-                            <p className="text-3xl font-bold text-gray-900 mt-1">0</p>
-                          </div>
-                          <div className="bg-green-500/10 p-3 rounded-lg">
-                            <FiMapPin className="h-8 w-8 text-green-500" />
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="bg-gradient-to-br from-purple-500/5 to-purple-600/5 p-5 rounded-xl border border-purple-500/20">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm text-purple-600 font-medium">Wishlist Items</p>
-                            <p className="text-3xl font-bold text-gray-900 mt-1">0</p>
-                          </div>
-                          <div className="bg-purple-500/10 p-3 rounded-lg">
-                            <FiHeart className="h-8 w-8 text-purple-500" />
-                          </div>
-                        </div>
+                      <div className="ml-4">
+                        <h4 className="text-sm font-medium text-gray-900">New address added</h4>
+                        <p className="text-sm text-gray-500 mt-1">123 Main Street</p>
+                        <p className="text-xs text-gray-400 mt-1">3 days ago</p>
                       </div>
                     </div>
                   </div>
                 </div>
-              ) : null}
+              </div>
               
-              {/* Edit Profile Form */}
-              {editing && (
-                <form onSubmit={handleUpdateProfile} className="space-y-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-semibold text-gray-900 flex items-center">
-                      <FiEdit className="mr-3 text-[#8BC34A]" />
-                      Edit Profile
-                    </h2>
+              {/* Navigation Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Link 
+                  to="/myorder" 
+                  className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">My Orders</h3>
+                      <p className="text-gray-500 text-sm mt-1">View order history</p>
+                    </div>
+                    <div className="bg-indigo-100 p-3 rounded-lg">
+                      <FiShoppingBag className="h-6 w-6 text-indigo-600" />
+                    </div>
+                  </div>
+                  <div className="mt-4 flex items-center text-indigo-600 text-sm font-medium">
+                    <span>View details</span>
+                    <FiChevronRight className="ml-1 h-4 w-4" />
+                  </div>
+                </Link>
+                
+                <Link 
+                  to="/" 
+                  className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">Home</h3>
+                      <p className="text-gray-500 text-sm mt-1">Back to shopping</p>
+                    </div>
+                    <div className="bg-indigo-100 p-3 rounded-lg">
+                      <FiAward className="h-6 w-6 text-indigo-600" />
+                    </div>
+                  </div>
+                  <div className="mt-4 flex items-center text-indigo-600 text-sm font-medium">
+                    <span>Browse products</span>
+                    <FiChevronRight className="ml-1 h-4 w-4" />
+                  </div>
+                </Link>
+              </div>
+            </div>
+          </div>
+          
+          {/* Edit Profile Modal */}
+          {editing && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+                <div className="px-6 py-5 border-b border-gray-200">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-semibold text-gray-900">Edit Profile</h3>
                     <button
-                      type="button"
                       onClick={() => {
                         setEditing(false);
                         setError('');
                         setSuccess('');
-                        // Reset form to original values
-                        setFormData({
-                          username: user?.username,
-                          email: user?.email,
-                          phoneNumber: user?.phoneNumber || ''
-                        });
                       }}
-                      className="text-gray-500 hover:text-gray-700"
+                      className="text-gray-400 hover:text-gray-500"
                     >
-                      Cancel
+                      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
                     </button>
                   </div>
+                </div>
+                
+                <form onSubmit={handleUpdateProfile} className="px-6 py-5">
+                  {success && (
+                    <div className="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
+                      {success}
+                    </div>
+                  )}
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {error && (
+                    <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                      {error}
+                    </div>
+                  )}
+                  
+                  <div className="space-y-4">
                     <div>
                       <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
                         Username
@@ -448,7 +493,7 @@ const Profile = () => {
                         name="username"
                         value={formData.username}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#8BC34A] focus:border-[#8BC34A] transition-colors shadow-sm"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                         required
                       />
                     </div>
@@ -463,12 +508,12 @@ const Profile = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#8BC34A] focus:border-[#8BC34A] transition-colors shadow-sm"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                         required
                       />
                     </div>
                     
-                    <div className="md:col-span-2">
+                    <div>
                       <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
                         Phone Number
                       </label>
@@ -478,17 +523,16 @@ const Profile = () => {
                         name="phoneNumber"
                         value={formData.phoneNumber}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#8BC34A] focus:border-[#8BC34A] transition-colors shadow-sm"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                       />
                     </div>
                   </div>
                   
-                  <div className="flex flex-wrap gap-4 pt-4">
+                  <div className="mt-6 flex flex-col sm:flex-row gap-3">
                     <button
                       type="submit"
-                      className="bg-[#8BC34A] text-white px-6 py-3 rounded-lg hover:bg-[#7CB342] transition-colors font-medium flex items-center shadow-md hover:shadow-lg"
+                      className="flex-1 bg-indigo-600 text-white px-4 py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
                     >
-                      <FiEdit className="mr-2" />
                       Save Changes
                     </button>
                     <button
@@ -497,48 +541,53 @@ const Profile = () => {
                         setEditing(false);
                         setError('');
                         setSuccess('');
-                        // Reset form to original values
-                        setFormData({
-                          username: user?.username,
-                          email: user?.email,
-                          phoneNumber: user?.phoneNumber || ''
-                        });
                       }}
-                      className="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors font-medium shadow-sm"
+                      className="flex-1 bg-gray-200 text-gray-800 px-4 py-3 rounded-lg hover:bg-gray-300 transition-colors font-medium"
                     >
                       Cancel
                     </button>
                   </div>
                 </form>
-              )}
-              
-              {/* Change Password Form */}
-              {changePassword && (
-                <form onSubmit={handleChangePassword} className="space-y-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-semibold text-gray-900 flex items-center">
-                      <FiLock className="mr-3 text-[#8BC34A]" />
-                      Change Password
-                    </h2>
+              </div>
+            </div>
+          )}
+          
+          {/* Change Password Modal */}
+          {changePassword && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+                <div className="px-6 py-5 border-b border-gray-200">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-semibold text-gray-900">Change Password</h3>
                     <button
-                      type="button"
                       onClick={() => {
                         setChangePassword(false);
                         setError('');
                         setSuccess('');
-                        setPasswordData({
-                          currentPassword: '',
-                          newPassword: '',
-                          confirmPassword: ''
-                        });
                       }}
-                      className="text-gray-500 hover:text-gray-700"
+                      className="text-gray-400 hover:text-gray-500"
                     >
-                      Cancel
+                      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
                     </button>
                   </div>
+                </div>
+                
+                <form onSubmit={handleChangePassword} className="px-6 py-5">
+                  {success && (
+                    <div className="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
+                      {success}
+                    </div>
+                  )}
                   
-                  <div className="space-y-5">
+                  {error && (
+                    <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                      {error}
+                    </div>
+                  )}
+                  
+                  <div className="space-y-4">
                     <div>
                       <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
                         Current Password
@@ -549,7 +598,7 @@ const Profile = () => {
                         name="currentPassword"
                         value={passwordData.currentPassword}
                         onChange={handlePasswordChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#8BC34A] focus:border-[#8BC34A] transition-colors shadow-sm"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                         required
                       />
                     </div>
@@ -564,10 +613,10 @@ const Profile = () => {
                         name="newPassword"
                         value={passwordData.newPassword}
                         onChange={handlePasswordChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#8BC34A] focus:border-[#8BC34A] transition-colors shadow-sm"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                         required
                       />
-                      <p className="mt-1 text-sm text-gray-500">Must be at least 8 characters long</p>
+                      <p className="mt-1 text-xs text-gray-500">Must be at least 8 characters long</p>
                     </div>
                     
                     <div>
@@ -580,18 +629,17 @@ const Profile = () => {
                         name="confirmPassword"
                         value={passwordData.confirmPassword}
                         onChange={handlePasswordChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-[#8BC34A] focus:border-[#8BC34A] transition-colors shadow-sm"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                         required
                       />
                     </div>
                   </div>
                   
-                  <div className="flex flex-wrap gap-4 pt-4">
+                  <div className="mt-6 flex flex-col sm:flex-row gap-3">
                     <button
                       type="submit"
-                      className="bg-[#8BC34A] text-white px-6 py-3 rounded-lg hover:bg-[#7CB342] transition-colors font-medium flex items-center shadow-md hover:shadow-lg"
+                      className="flex-1 bg-indigo-600 text-white px-4 py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
                     >
-                      <FiLock className="mr-2" />
                       Change Password
                     </button>
                     <button
@@ -600,21 +648,16 @@ const Profile = () => {
                         setChangePassword(false);
                         setError('');
                         setSuccess('');
-                        setPasswordData({
-                          currentPassword: '',
-                          newPassword: '',
-                          confirmPassword: ''
-                        });
                       }}
-                      className="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors font-medium shadow-sm"
+                      className="flex-1 bg-gray-200 text-gray-800 px-4 py-3 rounded-lg hover:bg-gray-300 transition-colors font-medium"
                     >
                       Cancel
                     </button>
                   </div>
                 </form>
-              )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </>
