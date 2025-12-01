@@ -84,6 +84,13 @@ export const iconMap = {
 
 // Status styles for order statuses
 export const statusStyles = {
+    pending: {
+        color: 'text-yellow-400',
+        bg: 'bg-yellow-900/20',
+        icon: 'FiClock',
+        label: 'Payment Pending',
+        hideLabel: false,
+    },
     processing: {
         color: 'text-green-400',
         bg: 'bg-green-900/20',
@@ -112,6 +119,20 @@ export const statusStyles = {
         label: 'Completed',
         hideLabel: true,
     },
+    failed: {
+        color: 'text-red-400',
+        bg: 'bg-red-900/20',
+        icon: 'FiClock',
+        label: 'Payment Failed',
+        hideLabel: false,
+    },
+    cancelled: {
+        color: 'text-red-400',
+        bg: 'bg-red-900/20',
+        icon: 'FiClock',
+        label: 'Cancelled',
+        hideLabel: false,
+    }
 };
 
 // Payment method label and classes

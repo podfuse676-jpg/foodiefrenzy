@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FiUser, FiBox } from 'react-icons/fi';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 // Removed AdminNavbar import since it's handled in App.jsx
 import { statusStyles, paymentMethodDetails, tableClasses, layoutClasses,iconMap } from '../../assets/dummyadmin';
 import apiConfig from '../../utils/apiConfig';
@@ -10,6 +11,7 @@ const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -72,6 +74,9 @@ const Orders = () => {
       <div className="max-w-7xl mx-auto">
         <div className={layoutClasses.card}>
           <h2 className={layoutClasses.heading}>Order Management</h2>
+          <div className="mb-4 text-sm text-green-100/60">
+            Click on any order row to view details
+          </div>
           <div className={tableClasses.wrapper}>
             <table className={tableClasses.table}>
               <thead className={tableClasses.headerRow}>
@@ -90,8 +95,12 @@ const Orders = () => {
                   const stat = statusStyles[order.status] || statusStyles.processing;
 
                   return (
-                    <tr key={order._id} className={tableClasses.row}>
-                      <td className={tableClasses.cellBase + ' font-mono text-sm text-green-100'}>#{order._id.slice(-8)}</td>
+                    <tr 
+                      key={order._id} 
+                      className={tableClasses.row + ' cursor-pointer hover:bg-green-900/20 transition-colors'}
+                      onClick={() => navigate(`/orders/${order._id}`)}
+                    >
+                      <td className={tableClasses.cellBase + ' font-mono text-sm text-green-100 hover:text-green-300'}>#{order._id.slice(-8)}</td>
                       <td className={tableClasses.cellBase}>
                         <div className="flex items-center gap-2">
                           <FiUser className="text-green-400" />

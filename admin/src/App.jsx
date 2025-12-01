@@ -3,6 +3,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import AddItems from './components/AddItems/AddItems';
 import Orders from './components/Orders/Orders';
+import OrderDetail from './components/Orders/OrderDetail';
 import ListItems from './components/ListItems/ListItems';
 import Users from './components/Users/Users';
 import AdminLogin from './components/Login/Login';
@@ -32,6 +33,11 @@ function App() {
         <Route path="/orders" element={
           <ProtectedRoute>
             <Orders />
+          </ProtectedRoute>
+        } />
+        <Route path="/orders/:id" element={
+          <ProtectedRoute>
+            <OrderDetail />
           </ProtectedRoute>
         } />
         <Route path="/users" element={
