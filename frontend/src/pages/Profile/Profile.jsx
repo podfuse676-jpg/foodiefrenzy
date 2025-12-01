@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
 import apiConfig from '../../utils/apiConfig';
 import SEO from '../../components/SEO/SEO';
@@ -24,6 +24,7 @@ const Profile = () => {
   });
   
   const navigate = useNavigate();
+  const location = useLocation();
   const url = apiConfig.baseURL;
 
   // Fetch user profile on component mount
@@ -219,6 +220,38 @@ const Profile = () => {
                   </span>
                 </div>
               </div>
+            </div>
+            
+            {/* Navigation Tabs */}
+            <div className="border-b border-gray-200">
+              <nav className="flex -mb-px">
+                <Link
+                  to="/profile"
+                  className={`py-4 px-6 text-center border-b-2 font-medium text-sm ${
+                    location.pathname === '/profile'
+                      ? 'border-[#8BC34A] text-[#8BC34A]'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  Profile
+                </Link>
+                <Link
+                  to="/myorder"
+                  className={`py-4 px-6 text-center border-b-2 font-medium text-sm ${
+                    location.pathname === '/myorder'
+                      ? 'border-[#8BC34A] text-[#8BC34A]'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  My Orders
+                </Link>
+                <Link
+                  to="/"
+                  className="py-4 px-6 text-center border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                >
+                  Home
+                </Link>
+              </nav>
             </div>
             
             <div className="px-6 py-8 sm:p-10">
