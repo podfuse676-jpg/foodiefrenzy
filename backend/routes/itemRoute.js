@@ -40,25 +40,32 @@ const upload = multer({
 }).single('image');
 
 // Wrapper function to handle multer errors properly
-const handleUpload = (req, res, next) => {
-    upload(req, res, (err) => {
-        if (err) {
-            return res.status(400).json({ 
-                message: 'File upload failed',
-                error: err.message,
-                details: 'Please check that your file is a valid image (JPEG, PNG, WEBP, GIF) and under 5MB'
-            });
-        }
+// This version will not throw an error if no file is uploaded for PUT requests
+const handleUploadOptional = (req, res, next) => {
+    // Only run multer if there's a file in the request
+    if (req.headers['content-type'] && req.headers['content-type'].includes('multipart/form-data')) {
+        upload(req, res, (err) => {
+            if (err) {
+                return res.status(400).json({ 
+                    message: 'File upload failed',
+                    error: err.message,
+                    details: 'Please check that your file is a valid image (JPEG, PNG, WEBP, GIF) and under 5MB'
+                });
+            }
+            next();
+        });
+    } else {
+        // No file upload, proceed to next middleware
         next();
-    });
+    }
 };
 
 const itemRouter = express.Router();
 
-itemRouter.post('/', handleUpload, createItem);
+itemRouter.post('/', handleUploadOptional, createItem);
 itemRouter.get('/', getItems);
 itemRouter.get('/:id', getItemById);
 itemRouter.delete('/:id', deleteItem);
-itemRouter.put('/:id', handleUpload, updateItem);
+itemRouter.put('/:id', handleUploadOptional, updateItem);
 
 export default itemRouter;
