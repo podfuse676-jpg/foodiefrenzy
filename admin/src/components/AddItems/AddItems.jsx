@@ -1,5 +1,5 @@
 // src/components/AddItems.jsx
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import axios from 'axios';
 import { FiUpload, FiHeart, FiStar, FiX } from 'react-icons/fi';
 import { FaRupeeSign } from 'react-icons/fa';
@@ -40,12 +40,18 @@ const AddItems = () => {
   const [showModal, setShowModal] = useState(false);
   const [onItemAdded, setOnItemAdded] = useState(null);
 
-  const handleInputChange = e => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  // Use useCallback to prevent unnecessary re-renders
+  const handleInputChange = useCallback((e) => {
+    const { name, value, type, checked } = e.target;
+    // Handle checkbox inputs differently
+    if (type === 'checkbox') {
+      setFormData(prev => ({ ...prev, [name]: checked }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  }, []);
 
-  const handleImageUpload = e => {
+  const handleImageUpload = useCallback((e) => {
     const file = e.target.files[0];
     if (file) {
       setFormData(prev => ({
@@ -54,20 +60,38 @@ const AddItems = () => {
         preview: URL.createObjectURL(file)
       }));
     }
-  };
+  }, []);
 
-  const handleRating = rating =>
+  const handleRating = useCallback((rating) => {
     setFormData(prev => ({ ...prev, rating }));
+  }, []);
 
-  const handleHearts = () =>
+  const handleHearts = useCallback(() => {
     setFormData(prev => ({ ...prev, hearts: prev.hearts + 1 }));
+  }, []);
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Validate form data
     if (!formData.image) {
       alert('Please select an image for the item');
+      return;
+    }
+    
+    // Validate required fields
+    if (!formData.name.trim()) {
+      alert('Please enter an item name');
+      return;
+    }
+    
+    if (!formData.category) {
+      alert('Please select a category');
+      return;
+    }
+    
+    if (!formData.price || parseFloat(formData.price) <= 0) {
+      alert('Please enter a valid price');
       return;
     }
     
@@ -127,7 +151,11 @@ const AddItems = () => {
       setFormData({
         name: '', description: '', category: '',
         price: '', rating: 0, hearts: 0,
-        total: 0, image: null, preview: ''
+        total: 0, image: null, preview: '',
+        priceType: '', priceUnit: '', taxRate: '', cost: '',
+        productCode: '', sku: '', modifierGroups: '',
+        quantity: 0, printerLabels: '', hidden: false,
+        nonRevenue: false, gst: '', flavourOptions: ''
       });
       
       // Close modal
@@ -176,6 +204,7 @@ const AddItems = () => {
           <button 
             onClick={() => setShowModal(false)}
             className="text-gray-500 hover:text-gray-700 transition-colors"
+            type="button"
           >
             <FiX className="text-2xl" />
           </button>
@@ -216,27 +245,67 @@ const AddItems = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block mb-2 text-sm text-gray-700">Price Type</label>
-                  <input name="priceType" value={formData.priceType} onChange={handleInputChange} className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" placeholder="e.g. fixed / variable" />
+                  <input 
+                    name="priceType" 
+                    value={formData.priceType} 
+                    onChange={handleInputChange} 
+                    className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" 
+                    placeholder="e.g. fixed / variable" 
+                  />
                 </div>
                 <div>
                   <label className="block mb-2 text-sm text-gray-700">Price Unit</label>
-                  <input name="priceUnit" value={formData.priceUnit} onChange={handleInputChange} className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" placeholder="e.g. per item / per kg" />
+                  <input 
+                    name="priceUnit" 
+                    value={formData.priceUnit} 
+                    onChange={handleInputChange} 
+                    className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" 
+                    placeholder="e.g. per item / per kg" 
+                  />
                 </div>
                 <div>
                   <label className="block mb-2 text-sm text-gray-700">GST (%)</label>
-                  <input type="number" step="0.01" name="gst" value={formData.gst} onChange={handleInputChange} className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" placeholder="0.00" />
+                  <input 
+                    type="number" 
+                    step="0.01" 
+                    name="gst" 
+                    value={formData.gst} 
+                    onChange={handleInputChange} 
+                    className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" 
+                    placeholder="0.00" 
+                  />
                 </div>
                 <div>
                   <label className="block mb-2 text-sm text-gray-700">Cost</label>
-                  <input type="number" step="0.01" name="cost" value={formData.cost} onChange={handleInputChange} className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" placeholder="0.00" />
+                  <input 
+                    type="number" 
+                    step="0.01" 
+                    name="cost" 
+                    value={formData.cost} 
+                    onChange={handleInputChange} 
+                    className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" 
+                    placeholder="0.00" 
+                  />
                 </div>
                 <div>
                   <label className="block mb-2 text-sm text-gray-700">Product Code</label>
-                  <input name="productCode" value={formData.productCode} onChange={handleInputChange} className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" placeholder="e.g. PC123456" />
+                  <input 
+                    name="productCode" 
+                    value={formData.productCode} 
+                    onChange={handleInputChange} 
+                    className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" 
+                    placeholder="e.g. PC123456" 
+                  />
                 </div>
                 <div>
                   <label className="block mb-2 text-sm text-gray-700">SKU</label>
-                  <input name="sku" value={formData.sku} onChange={handleInputChange} className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" placeholder="e.g. SKU123456" />
+                  <input 
+                    name="sku" 
+                    value={formData.sku} 
+                    onChange={handleInputChange} 
+                    className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" 
+                    placeholder="e.g. SKU123456" 
+                  />
                 </div>
               </div>
             </div>
@@ -338,13 +407,13 @@ const AddItems = () => {
                     placeholder="e.g. Spicy, Mild"
                   />
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 sm:col-span-2">
                   <label className="flex items-center gap-2">
                     <input
                       type="checkbox"
                       name="hidden"
                       checked={formData.hidden}
-                      onChange={e => setFormData(prev => ({ ...prev, hidden: e.target.checked }))}
+                      onChange={handleInputChange}
                       className="rounded text-[#8BC34A] focus:ring-[#8BC34A]"
                     />
                     <span className="text-gray-700">Hidden (do not show on frontend)</span>
@@ -354,7 +423,7 @@ const AddItems = () => {
                       type="checkbox"
                       name="nonRevenue"
                       checked={formData.nonRevenue}
-                      onChange={e => setFormData(prev => ({ ...prev, nonRevenue: e.target.checked }))}
+                      onChange={handleInputChange}
                       className="rounded text-[#8BC34A] focus:ring-[#8BC34A]"
                     />
                     <span className="text-gray-700">Non-revenue item</span>
@@ -422,6 +491,7 @@ const AddItems = () => {
             <button
               onClick={() => setShowModal(true)}
               className="px-6 py-3 bg-gradient-to-r from-[#8BC34A] to-[#FFC107] rounded-xl font-semibold text-white hover:from-[#FFC107] hover:to-[#8BC34A] transition-all duration-300 shadow-lg hover:shadow-[#FFC107]/20"
+              type="button"
             >
               Add New Item
             </button>
