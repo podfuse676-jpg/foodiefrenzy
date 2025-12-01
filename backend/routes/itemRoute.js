@@ -39,23 +39,36 @@ const upload = multer({
     }
 }).single('image');
 
-// Wrapper function to handle multer errors properly
-// This version will not throw an error if no file is uploaded for PUT requests
+// More robust wrapper function to handle multer errors properly
 const handleUploadOptional = (req, res, next) => {
-    // Only run multer if there's a file in the request
-    if (req.headers['content-type'] && req.headers['content-type'].includes('multipart/form-data')) {
+    // Check if this is a multipart/form-data request
+    const contentType = req.headers['content-type'];
+    const isMultipart = contentType && contentType.includes('multipart/form-data');
+    
+    console.log('=== HANDLE UPLOAD OPTIONAL ===');
+    console.log('Content-Type:', contentType);
+    console.log('Is multipart request:', isMultipart);
+    console.log('Request method:', req.method);
+    console.log('Request URL:', req.url);
+    
+    if (isMultipart) {
+        // Only run multer for multipart requests
         upload(req, res, (err) => {
             if (err) {
+                console.log('Multer error:', err.message);
                 return res.status(400).json({ 
                     message: 'File upload failed',
                     error: err.message,
                     details: 'Please check that your file is a valid image (JPEG, PNG, WEBP, GIF) and under 5MB'
                 });
             }
+            console.log('Multer processed successfully');
+            console.log('File in request:', req.file ? 'Yes' : 'No');
             next();
         });
     } else {
         // No file upload, proceed to next middleware
+        console.log('Skipping multer - not a multipart request');
         next();
     }
 };

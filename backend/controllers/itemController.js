@@ -163,6 +163,15 @@ export const updateItem = async (req, res, next) => {
         }
         
         const id = req.params.id;
+        console.log('=== RAW ID ANALYSIS ===');
+        console.log('Raw ID from params:', id);
+        console.log('Raw ID type:', typeof id);
+        console.log('Raw ID length:', id ? id.length : 0);
+        if (id) {
+            console.log('Raw ID char codes:', [...id].map((c, i) => ({ index: i, char: c, code: c.charCodeAt(0) })));
+            console.log('Raw ID hex validation:', /^[0-9a-fA-F]+$/.test(id));
+        }
+        
         const updateData = { ...req.body };
         
         const startTime = Date.now();
