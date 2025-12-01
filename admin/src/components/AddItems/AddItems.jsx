@@ -157,12 +157,25 @@ const AddItems = () => {
       // Prepare fields that need special serialization
       const dataToSend = { ...submitData };
       
-      // Convert arrays to JSON strings
+      // For modifierGroups, extract just the names (not the full objects)
       if (dataToSend.modifierGroups && dataToSend.modifierGroups.length > 0) {
+        // If modifierGroups contains objects, extract just the names
+        if (typeof dataToSend.modifierGroups[0] === 'object' && dataToSend.modifierGroups[0] !== null) {
+          dataToSend.modifierGroups = dataToSend.modifierGroups.map(group => 
+            typeof group === 'object' ? group.name : group
+          );
+        }
         dataToSend.modifierGroups = JSON.stringify(dataToSend.modifierGroups);
       }
       
+      // For flavourOptions, ensure it's properly formatted
       if (dataToSend.flavourOptions && dataToSend.flavourOptions.length > 0) {
+        // If flavourOptions contains objects, extract just the values
+        if (typeof dataToSend.flavourOptions[0] === 'object' && dataToSend.flavourOptions[0] !== null) {
+          dataToSend.flavourOptions = dataToSend.flavourOptions.map(option => 
+            typeof option === 'object' ? option.value : option
+          );
+        }
         dataToSend.flavourOptions = JSON.stringify(dataToSend.flavourOptions);
       }
       
