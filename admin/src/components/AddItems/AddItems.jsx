@@ -138,18 +138,24 @@ const AddItems = () => {
       return;
     }
     
+    // Prepare data with default description if needed
+    const submitData = { ...formData };
+    if (!submitData.description || submitData.description.trim() === '') {
+      submitData.description = `${submitData.name || 'Delicious item'} from our collection`;
+    }
+    
     try {
       // Create FormData object for file upload
       const payload = new FormData();
       
       // Log what's being added to payload for debugging
       console.log('Form data being submitted:', {
-        ...formData,
-        image: formData.image ? formData.image.name : 'No image'
+        ...submitData,
+        image: submitData.image ? submitData.image.name : 'No image'
       });
       
       // Prepare fields that need special serialization
-      const dataToSend = { ...formData };
+      const dataToSend = { ...submitData };
       
       // Convert arrays to JSON strings
       if (dataToSend.modifierGroups && dataToSend.modifierGroups.length > 0) {
@@ -161,7 +167,7 @@ const AddItems = () => {
       }
       
       // Append file first if exists
-      if (formData.image) payload.append('image', formData.image);
+      if (submitData.image) payload.append('image', submitData.image);
 
       // Append other fields
       Object.entries(dataToSend).forEach(([key, val]) => {
