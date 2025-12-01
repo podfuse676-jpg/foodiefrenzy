@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import apiConfig from '../../utils/apiConfig';
 import SEO from '../../components/SEO/SEO';
@@ -194,13 +194,13 @@ const Profile = () => {
       <div className="min-h-screen bg-gradient-to-br from-[#F9FFF6] via-[#FFFFFF] to-[#F9FFF6] py-8 sm:py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-            {/* Profile Header */}
+            {/* Profile Header with Navigation */}
             <div className="bg-gradient-to-r from-[#8BC34A] to-[#7CB342] px-6 py-8 sm:p-10 text-white">
               <div className="flex flex-col sm:flex-row items-center">
                 <div className="bg-white/20 rounded-full p-4 mb-4 sm:mb-0 sm:mr-6">
                   <FiUser className="h-12 w-12 text-white" />
                 </div>
-                <div className="text-center sm:text-left">
+                <div className="text-center sm:text-left flex-1">
                   <h1 className="text-2xl sm:text-3xl font-bold mb-2">{user?.username}</h1>
                   <p className="text-white/90 mb-1 flex items-center justify-center sm:justify-start">
                     <FiMail className="mr-2" />
@@ -213,10 +213,19 @@ const Profile = () => {
                     </p>
                   )}
                 </div>
-                <div className="mt-4 sm:mt-0 sm:ml-auto">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/20">
-                    {user?.role === 'admin' ? 'Administrator' : 'Customer'}
-                  </span>
+                <div className="mt-4 sm:mt-0 sm:ml-auto flex flex-col space-y-2">
+                  <Link 
+                    to="/myorder" 
+                    className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors text-center text-sm font-medium"
+                  >
+                    My Orders
+                  </Link>
+                  <Link 
+                    to="/" 
+                    className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors text-center text-sm font-medium"
+                  >
+                    Home
+                  </Link>
                 </div>
               </div>
             </div>
