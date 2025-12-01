@@ -10,13 +10,6 @@ import { createItem, getItems, deleteItem, updateItem, getItemById } from '../co
 // Debug logging
 console.log('itemRoute.js loaded');
 
-// Test route
-const testRouter = express.Router();
-testRouter.get('/test-debug', (req, res) => {
-    console.log('Test debug route hit');
-    res.json({ message: 'Debug route working' });
-});
-
 // Configure local disk storage for multer
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
