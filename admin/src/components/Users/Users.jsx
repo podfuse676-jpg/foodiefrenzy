@@ -6,6 +6,7 @@ import { styles } from '../../assets/dummyadmin';
 
 const Users = () => {
   const [users, setUsers] = useState([]);
+  const [usersWithOrderCounts, setUsersWithOrderCounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -24,7 +25,27 @@ const Users = () => {
         
         if (data.success && Array.isArray(data.users)) {
           setUsers(data.users);
-          setFilteredUsers(data.users);
+          
+          // Fetch order counts for each user
+          const usersWithCounts = await Promise.all(data.users.map(async (user) => {
+            try {
+              // Fetch user details to get order count
+              const userDetailResponse = await apiClient.get(`/api/users/admin/users/${user._id}`);
+              return {
+                ...user,
+                orderCount: userDetailResponse.data.ordersCount || userDetailResponse.data.orders?.length || 0
+              };
+            } catch (err) {
+              console.error(`Error fetching order count for user ${user._id}:`, err);
+              return {
+                ...user,
+                orderCount: 0
+              };
+            }
+          }));
+          
+          setUsersWithOrderCounts(usersWithCounts);
+          setFilteredUsers(usersWithCounts);
         }
       } catch (err) {
         console.error('Error fetching users:', err);
@@ -40,19 +61,19 @@ const Users = () => {
   // Filter users based on search query
   useEffect(() => {
     if (!searchQuery.trim()) {
-      setFilteredUsers(users);
+      setFilteredUsers(usersWithOrderCounts);
       return;
     }
     
     const query = searchQuery.toLowerCase();
-    const filtered = users.filter(user => 
+    const filtered = usersWithOrderCounts.filter(user => 
       (user.username && user.username.toLowerCase().includes(query)) ||
       (user.email && user.email.toLowerCase().includes(query)) ||
       (user.phoneNumber && user.phoneNumber.includes(query))
     );
     
     setFilteredUsers(filtered);
-  }, [searchQuery, users]);
+  }, [searchQuery, usersWithOrderCounts]);
 
   // Fetch user details and orders when a user is selected
   const fetchUserDetails = async (userId) => {
@@ -290,7 +311,7 @@ const Users = () => {
                       <td className="p-4">
                         <div className="flex items-center gap-2 text-gray-700">
                           <FiShoppingBag className="text-gray-500" />
-                          <span className="text-sm">0 orders</span>
+                          <span className="text-sm">{user.orderCount || 0} orders</span>
                         </div>
                       </td>
                       <td className="p-4">
