@@ -6,7 +6,8 @@ import {
     confirmPayment,
     getOrderById,
     updateOrder,
-    updateAnyOrder
+    updateAnyOrder,
+    deleteAnyOrder
 } from '../controllers/orderController.js';
 import { authMiddleware, adminMiddleware } from '../middleware/auth.js'
 
@@ -27,5 +28,6 @@ orderRouter.put('/:id', updateOrder);
 
 // Admin-only routes
 orderRouter.put('/getall/:id', updateAnyOrder);
+orderRouter.delete('/getall/:id', deleteAnyOrder);
 
 export default orderRouter;

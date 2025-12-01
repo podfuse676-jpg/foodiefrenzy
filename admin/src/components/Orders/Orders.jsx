@@ -17,21 +17,27 @@ const Orders = () => {
     const fetchOrders = async () => {
       try {
         const token = localStorage.getItem('authToken');
+        
+        // Use the correct admin endpoint for fetching all orders
         const response = await axios.get(
-          `${url}/api/orders/getall`,
+          `${url}/api/users/admin/orders`,
           {
-            headers: { Authorization: `Bearer ${token}` },
-            withCredentials: true
+            headers: { Authorization: `Bearer ${token}` }
           }
         );
 
-        const formatted = response.data.map(order => ({
+        // Format the response data correctly
+        const formatted = response.data.orders.map(order => ({
           ...order,
           address: order.address ?? order.shippingAddress?.address ?? '',
           city: order.city ?? order.shippingAddress?.city ?? '',
           zipCode: order.zipCode ?? order.shippingAddress?.zipCode ?? '',
-          phone: order.phone ?? '',
-          items: order.items?.map(e => ({ _id: e._id, item: e.item, quantity: e.quantity })) || [],
+          phone: order.phone ?? order.user?.phoneNumber ?? '',
+          items: order.items?.map(e => ({ 
+            _id: e._id, 
+            item: e.item || e, 
+            quantity: e.quantity 
+          })) || [],
           createdAt: new Date(order.createdAt).toLocaleDateString('en-IN', {
             year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit',
           }),
@@ -40,6 +46,7 @@ const Orders = () => {
         setOrders(formatted);
         setError(null);
       } catch (err) {
+        console.error('Error fetching orders:', err);
         setError(err.response?.data?.message || 'Failed to load orders.');
       } finally {
         setLoading(false);
@@ -50,7 +57,14 @@ const Orders = () => {
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      await axios.put(`${url}/api/orders/getall/${orderId}`, { status: newStatus });
+      const token = localStorage.getItem('authToken');
+      await axios.put(
+        `${url}/api/orders/getall/${orderId}`, 
+        { status: newStatus },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
       setOrders(orders.map(o => o._id === orderId ? { ...o, status: newStatus } : o));
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to update order status');
@@ -105,8 +119,8 @@ const Orders = () => {
                         <div className="flex items-center gap-2">
                           <FiUser className="text-green-400" />
                           <div>
-                            <p className="text-green-100">{order.user?.name || order.firstName + ' ' + order.lastName}</p>
-                            <p className="text-sm text-green-400/60">{order.user?.phone || order.phone}</p>
+                            <p className="text-green-100">{order.user?.username || order.firstName + ' ' + order.lastName}</p>
+                            <p className="text-sm text-green-400/60">{order.user?.phoneNumber || order.phone}</p>
                             <p className="text-sm text-green-400/60">{order.user?.email || order.email}</p>
                           </div>
                         </div>

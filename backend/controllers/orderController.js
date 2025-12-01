@@ -370,6 +370,19 @@ export const updateAnyOrder = async (req, res) => {
     }
 };
 
+// NEW: deleteAnyOrder — allows admins to delete any order
+export const deleteAnyOrder = async (req, res) => {
+    try {
+        const deleted = await Order.findByIdAndDelete(req.params.id);
+        if (!deleted) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+        res.json({ message: 'Order deleted successfully' });
+    } catch (error) {
+        console.error('deleteAnyOrder error:', error);
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
 
 // Get Order by ID
 export const getOrderById = async (req, res) => {
