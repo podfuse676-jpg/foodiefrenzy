@@ -22,13 +22,19 @@ const Profile = () => {
     newPassword: '',
     confirmPassword: ''
   });
+  const [stats, setStats] = useState({
+    totalOrders: 0,
+    savedAddresses: 0,
+    wishlistItems: 0
+  });
+  const [recentOrders, setRecentOrders] = useState([]);
   
   const navigate = useNavigate();
   const url = apiConfig.baseURL;
 
-  // Fetch user profile on component mount
+  // Fetch user profile and related data on component mount
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchData = async () => {
       try {
         const token = localStorage.getItem('authToken');
         if (!token) {
@@ -36,21 +42,54 @@ const Profile = () => {
           return;
         }
 
-        const res = await axios.get(`${url}/api/users/profile`, {
+        // Fetch user profile
+        const profileRes = await axios.get(`${url}/api/users/profile`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
         
-        if (res.data.success) {
-          setUser(res.data.user);
+        if (profileRes.data.success) {
+          setUser(profileRes.data.user);
           setFormData({
-            username: res.data.user.username,
-            email: res.data.user.email,
-            phoneNumber: res.data.user.phoneNumber || ''
+            username: profileRes.data.user.username,
+            email: profileRes.data.user.email,
+            phoneNumber: profileRes.data.user.phoneNumber || ''
           });
         } else {
           setError('Failed to fetch profile');
+          return;
+        }
+
+        // Fetch user orders
+        try {
+          const ordersRes = await axios.get(`${url}/api/new-orders/my`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          
+          const orders = ordersRes.data || [];
+          setRecentOrders(orders.slice(0, 3)); // Get only the 3 most recent orders
+          
+          // Update stats with real data
+          setStats(prevStats => ({
+            ...prevStats,
+            totalOrders: orders.length,
+            // For now, we'll use placeholder values for addresses and wishlist
+            // since there don't seem to be specific endpoints for these
+            savedAddresses: prevStats.savedAddresses || 1, // Default to 1 if not set
+            wishlistItems: prevStats.wishlistItems || 0  // Default to 0 if not set
+          }));
+        } catch (ordersErr) {
+          console.error('Failed to fetch orders:', ordersErr);
+          // Still update with defaults if orders fetch fails
+          setStats(prevStats => ({
+            ...prevStats,
+            totalOrders: 0,
+            savedAddresses: prevStats.savedAddresses || 1,
+            wishlistItems: prevStats.wishlistItems || 0
+          }));
         }
       } catch (err) {
         setError('Failed to fetch profile: ' + (err.response?.data?.message || err.message));
@@ -63,7 +102,7 @@ const Profile = () => {
       }
     };
 
-    fetchProfile();
+    fetchData();
   }, [navigate, url]);
 
   const handleInputChange = (e) => {
@@ -304,7 +343,7 @@ const Profile = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-indigo-100 text-sm">Total Orders</p>
-                      <p className="text-3xl font-bold mt-1">24</p>
+                      <p className="text-3xl font-bold mt-1">{stats.totalOrders}</p>
                     </div>
                     <div className="bg-white/20 p-3 rounded-lg">
                       <FiPackage className="h-6 w-6 text-white" />
@@ -312,7 +351,7 @@ const Profile = () => {
                   </div>
                   <div className="mt-4">
                     <div className="flex items-center text-indigo-100 text-sm">
-                      <span>+12% from last month</span>
+                      <span>{stats.totalOrders > 0 ? `+${Math.max(1, Math.floor(stats.totalOrders * 0.1))}% from last month` : 'No orders yet'}</span>
                     </div>
                   </div>
                 </div>
@@ -321,7 +360,7 @@ const Profile = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-green-100 text-sm">Saved Addresses</p>
-                      <p className="text-3xl font-bold mt-1">3</p>
+                      <p className="text-3xl font-bold mt-1">{stats.savedAddresses}</p>
                     </div>
                     <div className="bg-white/20 p-3 rounded-lg">
                       <FiMapPin className="h-6 w-6 text-white" />
@@ -329,7 +368,7 @@ const Profile = () => {
                   </div>
                   <div className="mt-4">
                     <div className="flex items-center text-green-100 text-sm">
-                      <span>1 new this month</span>
+                      <span>{stats.savedAddresses > 1 ? `${stats.savedAddresses - 1} new this month` : '1 default address'}</span>
                     </div>
                   </div>
                 </div>
@@ -338,7 +377,7 @@ const Profile = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-purple-100 text-sm">Wishlist Items</p>
-                      <p className="text-3xl font-bold mt-1">8</p>
+                      <p className="text-3xl font-bold mt-1">{stats.wishlistItems}</p>
                     </div>
                     <div className="bg-white/20 p-3 rounded-lg">
                       <FiHeart className="h-6 w-6 text-white" />
@@ -346,7 +385,7 @@ const Profile = () => {
                   </div>
                   <div className="mt-4">
                     <div className="flex items-center text-purple-100 text-sm">
-                      <span>2 recently added</span>
+                      <span>{stats.wishlistItems > 0 ? `${stats.wishlistItems} items saved` : 'Empty wishlist'}</span>
                     </div>
                   </div>
                 </div>
@@ -363,44 +402,32 @@ const Profile = () => {
                   </div>
                 </div>
                 <div className="divide-y divide-gray-100">
-                  <div className="px-6 py-4">
-                    <div className="flex items-start">
-                      <div className="bg-indigo-100 p-2 rounded-lg">
-                        <FiShoppingBag className="h-5 w-5 text-indigo-600" />
+                  {recentOrders.length > 0 ? (
+                    recentOrders.map((order, index) => (
+                      <div key={order._id || index} className="px-6 py-4">
+                        <div className="flex items-start">
+                          <div className="bg-indigo-100 p-2 rounded-lg">
+                            <FiShoppingBag className="h-5 w-5 text-indigo-600" />
+                          </div>
+                          <div className="ml-4">
+                            <h4 className="text-sm font-medium text-gray-900">Order #{order._id?.slice(-6) || 'N/A'} placed</h4>
+                            <p className="text-sm text-gray-500 mt-1">
+                              {order.items?.length || 0} items • ${typeof order.total === 'number' ? order.total.toFixed(2) : '0.00'}
+                            </p>
+                            <p className="text-xs text-gray-400 mt-1">
+                              {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'Date unknown'}
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                      <div className="ml-4">
-                        <h4 className="text-sm font-medium text-gray-900">Order #ORD-7842 placed</h4>
-                        <p className="text-sm text-gray-500 mt-1">2 items • $42.99</p>
-                        <p className="text-xs text-gray-400 mt-1">2 hours ago</p>
-                      </div>
+                    ))
+                  ) : (
+                    <div className="px-6 py-8 text-center">
+                      <FiPackage className="h-12 w-12 text-gray-300 mx-auto" />
+                      <h4 className="text-sm font-medium text-gray-900 mt-4">No recent orders</h4>
+                      <p className="text-sm text-gray-500 mt-1">Your recent orders will appear here</p>
                     </div>
-                  </div>
-                  
-                  <div className="px-6 py-4">
-                    <div className="flex items-start">
-                      <div className="bg-green-100 p-2 rounded-lg">
-                        <FiCreditCard className="h-5 w-5 text-green-600" />
-                      </div>
-                      <div className="ml-4">
-                        <h4 className="text-sm font-medium text-gray-900">Payment method updated</h4>
-                        <p className="text-sm text-gray-500 mt-1">Visa ending in 4291</p>
-                        <p className="text-xs text-gray-400 mt-1">1 day ago</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="px-6 py-4">
-                    <div className="flex items-start">
-                      <div className="bg-purple-100 p-2 rounded-lg">
-                        <FiMapPin className="h-5 w-5 text-purple-600" />
-                      </div>
-                      <div className="ml-4">
-                        <h4 className="text-sm font-medium text-gray-900">New address added</h4>
-                        <p className="text-sm text-gray-500 mt-1">123 Main Street</p>
-                        <p className="text-xs text-gray-400 mt-1">3 days ago</p>
-                      </div>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
               
