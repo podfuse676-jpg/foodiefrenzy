@@ -14,28 +14,26 @@ const AddItems = () => {
     description: '',
     category: '',
     price: '',
-    priceType: '',
-    priceUnit: '',
-    taxRate: '',
-    cost: '',
-    productCode: '',
-    sku: '',
-    modifierGroups: '',
-    quantity: 0,
-    printerLabels: '',
-    hidden: false,
-    nonRevenue: false,
-    gst: '',
-    flavourOptions: '',
+    imageUrl: '',
     rating: 0,
     hearts: 0,
-    total: 0,
-    image: null,
-    preview: ''
+    hidden: false
   });
+  
+  // Simplified categories list with the actual categories used in the app
   const [categories] = useState([
-    'Breakfast', 'Lunch', 'Dinner', 'Mexican', 'Italian', 'Desserts', 'Drinks'
+    'Hot Beverages',
+    'Cold Beverages', 
+    'Hot Food',
+    'Exotic Chips',
+    'Exotic Drinks',
+    'Grocery',
+    'Novelties',
+    'Car Accessories',
+    'Smokes & Vapes',
+    'Drinks'
   ]);
+  
   const [hoverRating, setHoverRating] = useState(0);
   const [showModal, setShowModal] = useState(false);
 
@@ -72,8 +70,8 @@ const AddItems = () => {
     e.preventDefault();
     
     // Validate form data
-    if (!formData.image) {
-      alert('Please select an image for the item');
+    if (!formData.image && !formData.imageUrl) {
+      alert('Please select an image for the item or provide an image URL');
       return;
     }
     
@@ -105,28 +103,14 @@ const AddItems = () => {
       
       // Prepare fields that need special serialization
       const dataToSend = { ...formData };
-      // Convert comma-separated strings to arrays
-      if (dataToSend.modifierGroups && typeof dataToSend.modifierGroups === 'string') {
-        dataToSend.modifierGroups = dataToSend.modifierGroups.split(',').map(s => s.trim()).filter(Boolean);
-      }
-      if (dataToSend.printerLabels && typeof dataToSend.printerLabels === 'string') {
-        dataToSend.printerLabels = dataToSend.printerLabels.split(',').map(s => s.trim()).filter(Boolean);
-      }
-      if (dataToSend.flavourOptions && typeof dataToSend.flavourOptions === 'string') {
-        dataToSend.flavourOptions = dataToSend.flavourOptions.split(',').map(s => s.trim()).filter(Boolean);
-      }
-
-      // Append file first
+      
+      // Append file first if exists
       if (formData.image) payload.append('image', formData.image);
 
-      // Append other fields; arrays should be sent as JSON strings
+      // Append other fields
       Object.entries(dataToSend).forEach(([key, val]) => {
         if (key === 'preview' || key === 'image') return;
-        if (Array.isArray(val)) {
-          payload.append(key, JSON.stringify(val));
-        } else {
-          payload.append(key, val === undefined || val === null ? '' : String(val));
-        }
+        payload.append(key, val === undefined || val === null ? '' : String(val));
       });
       
       // Make the API request with proper configuration
@@ -147,13 +131,16 @@ const AddItems = () => {
       
       // Reset form after successful submission
       setFormData({
-        name: '', description: '', category: '',
-        price: '', rating: 0, hearts: 0,
-        total: 0, image: null, preview: '',
-        priceType: '', priceUnit: '', taxRate: '', cost: '',
-        productCode: '', sku: '', modifierGroups: '',
-        quantity: 0, printerLabels: '', hidden: false,
-        nonRevenue: false, gst: '', flavourOptions: ''
+        name: '',
+        description: '',
+        category: '',
+        price: '',
+        imageUrl: '',
+        rating: 0,
+        hearts: 0,
+        hidden: false,
+        image: null,
+        preview: ''
       });
       
       // Close modal
@@ -235,95 +222,24 @@ const AddItems = () => {
                         accept="image/*"
                         onChange={handleImageUpload}
                         className="hidden"
-                        required
                       />
                     </label>
+                    <p className="text-sm text-gray-500 mt-2">Or provide image URL below</p>
                   </div>
 
                   <div className="space-y-6">
-                    {/* Section 1: Convenience Store fields */}
-                    <div className="p-4 bg-gradient-to-br from-[#F9FFF6] to-[#FFFFFF] rounded-xl border border-[#8BC34A]/20 shadow-sm">
-                      <h3 className="text-lg text-gray-800 mb-3 font-medium">Convenience Store / Item</h3>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block mb-2 text-sm text-gray-700">Price Type</label>
-                          <input 
-                            name="priceType" 
-                            value={formData.priceType} 
-                            onChange={handleInputChange} 
-                            className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" 
-                            placeholder="e.g. fixed / variable" 
-                          />
-                        </div>
-                        <div>
-                          <label className="block mb-2 text-sm text-gray-700">Price Unit</label>
-                          <input 
-                            name="priceUnit" 
-                            value={formData.priceUnit} 
-                            onChange={handleInputChange} 
-                            className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" 
-                            placeholder="e.g. per item / per kg" 
-                          />
-                        </div>
-                        <div>
-                          <label className="block mb-2 text-sm text-gray-700">GST (%)</label>
-                          <input 
-                            type="number" 
-                            step="0.01" 
-                            name="gst" 
-                            value={formData.gst} 
-                            onChange={handleInputChange} 
-                            className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" 
-                            placeholder="0.00" 
-                          />
-                        </div>
-                        <div>
-                          <label className="block mb-2 text-sm text-gray-700">Cost</label>
-                          <input 
-                            type="number" 
-                            step="0.01" 
-                            name="cost" 
-                            value={formData.cost} 
-                            onChange={handleInputChange} 
-                            className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" 
-                            placeholder="0.00" 
-                          />
-                        </div>
-                        <div>
-                          <label className="block mb-2 text-sm text-gray-700">Product Code</label>
-                          <input 
-                            name="productCode" 
-                            value={formData.productCode} 
-                            onChange={handleInputChange} 
-                            className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" 
-                            placeholder="e.g. PC123456" 
-                          />
-                        </div>
-                        <div>
-                          <label className="block mb-2 text-sm text-gray-700">SKU</label>
-                          <input 
-                            name="sku" 
-                            value={formData.sku} 
-                            onChange={handleInputChange} 
-                            className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors" 
-                            placeholder="e.g. SKU123456" 
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Section 2: Food Menu fields */}
+                    {/* Basic Item Information */}
                     <div className="p-4 bg-gradient-to-br from-[#FFF8E1] to-[#FFFDE7] rounded-xl border border-[#FFC107]/20 shadow-sm">
-                      <h3 className="text-lg text-gray-800 mb-3 font-medium">Food Menu Item</h3>
+                      <h3 className="text-lg text-gray-800 mb-3 font-medium">Basic Item Information</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
+                        <div className="sm:col-span-2">
                           <label className="block mb-2 text-sm text-gray-700">Item Name *</label>
                           <input
                             name="name"
                             value={formData.name}
                             onChange={handleInputChange}
                             className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors"
-                            placeholder="e.g. Margherita Pizza"
+                            placeholder="e.g. Red Bull Energy Drink"
                             required
                           />
                         </div>
@@ -358,17 +274,6 @@ const AddItems = () => {
                             />
                           </div>
                         </div>
-                        <div>
-                          <label className="block mb-2 text-sm text-gray-700">Quantity</label>
-                          <input
-                            type="number"
-                            name="quantity"
-                            value={formData.quantity}
-                            onChange={handleInputChange}
-                            className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors"
-                            placeholder="0"
-                          />
-                        </div>
                         <div className="sm:col-span-2">
                           <label className="block mb-2 text-sm text-gray-700">Description</label>
                           <textarea
@@ -379,37 +284,24 @@ const AddItems = () => {
                             placeholder="Describe the item..."
                           />
                         </div>
-                        <div>
-                          <label className="block mb-2 text-sm text-gray-700">Modifier Groups (comma separated)</label>
+                        <div className="sm:col-span-2">
+                          <label className="block mb-2 text-sm text-gray-700">Image URL (optional if uploading)</label>
                           <input
-                            name="modifierGroups"
-                            value={formData.modifierGroups}
+                            name="imageUrl"
+                            value={formData.imageUrl}
                             onChange={handleInputChange}
                             className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors"
-                            placeholder="e.g. Toppings, Sauces"
+                            placeholder="https://example.com/image.jpg"
                           />
                         </div>
-                        <div>
-                          <label className="block mb-2 text-sm text-gray-700">Printer Labels (comma separated)</label>
-                          <input
-                            name="printerLabels"
-                            value={formData.printerLabels}
-                            onChange={handleInputChange}
-                            className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors"
-                            placeholder="e.g. Kitchen, Bar"
-                          />
-                        </div>
-                        <div>
-                          <label className="block mb-2 text-sm text-gray-700">Flavour Options (comma separated)</label>
-                          <input
-                            name="flavourOptions"
-                            value={formData.flavourOptions}
-                            onChange={handleInputChange}
-                            className="w-full bg-white border-2 border-[#8BC34A]/20 rounded-xl py-3 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors"
-                            placeholder="e.g. Spicy, Mild"
-                          />
-                        </div>
-                        <div className="flex items-center gap-4 sm:col-span-2">
+                      </div>
+                    </div>
+
+                    {/* Display Settings */}
+                    <div className="p-4 bg-gradient-to-br from-[#F9FFF6] to-[#FFFFFF] rounded-xl border border-[#8BC34A]/20 shadow-sm">
+                      <h3 className="text-lg text-gray-800 mb-3 font-medium">Display Settings</h3>
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-4">
                           <label className="flex items-center gap-2">
                             <input
                               type="checkbox"
@@ -420,43 +312,42 @@ const AddItems = () => {
                             />
                             <span className="text-gray-700">Hidden (do not show on frontend)</span>
                           </label>
-                          <label className="flex items-center gap-2">
-                            <input
-                              type="checkbox"
-                              name="nonRevenue"
-                              checked={formData.nonRevenue}
-                              onChange={handleInputChange}
-                              className="rounded text-[#8BC34A] focus:ring-[#8BC34A]"
-                            />
-                            <span className="text-gray-700">Non-revenue item</span>
-                          </label>
                         </div>
-                      </div>
-                    </div>
-
-                    {/* Rating and Hearts */}
-                    <div className="p-4 bg-gradient-to-br from-[#FFF8E1] to-[#FFFDE7] rounded-xl border border-[#FFC107]/20 shadow-sm">
-                      <h3 className="text-lg text-gray-800 mb-3 font-medium">Item Rating</h3>
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-1">
-                          {[1, 2, 3, 4, 5].map(star => (
-                            <FiStar
-                              key={star}
-                              className={`text-2xl cursor-pointer ${star <= (hoverRating || formData.rating) ? 'text-[#FFC107] fill-current' : 'text-gray-300'}`}
-                              onMouseEnter={() => setHoverRating(star)}
-                              onMouseLeave={() => setHoverRating(0)}
-                              onClick={() => handleRating(star)}
-                            />
-                          ))}
+                        
+                        {/* Rating Section */}
+                        <div>
+                          <label className="block mb-2 text-sm text-gray-700">Initial Rating</label>
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-1">
+                              {[1, 2, 3, 4, 5].map(star => (
+                                <FiStar
+                                  key={star}
+                                  className={`text-2xl cursor-pointer ${star <= (hoverRating || formData.rating) ? 'text-[#FFC107] fill-current' : 'text-gray-300'}`}
+                                  onMouseEnter={() => setHoverRating(star)}
+                                  onMouseLeave={() => setHoverRating(0)}
+                                  onClick={() => handleRating(star)}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-gray-700">{formData.rating} stars</span>
+                          </div>
                         </div>
-                        <button
-                          type="button"
-                          onClick={handleHearts}
-                          className="flex items-center gap-2 px-3 py-1 bg-rose-50 rounded-lg border border-rose-200 text-rose-500 hover:bg-rose-100 transition-colors"
-                        >
-                          <FiHeart className="fill-current" />
-                          <span>{formData.hearts} Hearts</span>
-                        </button>
+                        
+                        {/* Hearts Section */}
+                        <div>
+                          <label className="block mb-2 text-sm text-gray-700">Initial Hearts</label>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={handleHearts}
+                              className="flex items-center gap-2 px-3 py-1 bg-rose-50 rounded-lg border border-rose-200 text-rose-500 hover:bg-rose-100 transition-colors"
+                            >
+                              <FiHeart className="fill-current" />
+                              <span>Add Heart</span>
+                            </button>
+                            <span className="text-gray-700">{formData.hearts} hearts</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
