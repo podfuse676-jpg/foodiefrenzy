@@ -27,7 +27,8 @@ const OrderDetail = () => {
         const response = await axios.get(`${url}/api/users/admin/orders/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`
-          }
+          },
+          withCredentials: true
         });
 
         setOrder(response.data.order);
@@ -35,7 +36,7 @@ const OrderDetail = () => {
       } catch (err) {
         console.error('Error fetching order:', err);
         if (err.response?.status === 401 || err.response?.status === 403) {
-          setError('Access denied. Please try logging in again.');
+          setError('Authentication required. Please log in again.');
         } else if (err.response?.status === 404) {
           setError('Order not found.');
         } else {

@@ -18,11 +18,19 @@ const Orders = () => {
       try {
         const token = localStorage.getItem('authToken');
         
+        // Check if token exists
+        if (!token) {
+          setError('Authentication required. Please log in again.');
+          setLoading(false);
+          return;
+        }
+        
         // Use the correct admin endpoint for fetching all orders
         const response = await axios.get(
           `${url}/api/users/admin/orders`,
           {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true
           }
         );
 
@@ -47,7 +55,12 @@ const Orders = () => {
         setError(null);
       } catch (err) {
         console.error('Error fetching orders:', err);
-        setError(err.response?.data?.message || 'Failed to load orders.');
+        // Check if it's an authentication error
+        if (err.response?.status === 401 || err.response?.status === 403) {
+          setError('Authentication required. Please log in again.');
+        } else {
+          setError(err.response?.data?.message || 'Failed to load orders.');
+        }
       } finally {
         setLoading(false);
       }
