@@ -34,7 +34,7 @@ const UserOrdersPage = () => {
         }
         
         // Use the new endpoint for fetching user's orders
-        const response = await axios.get(`${url}/api/orders/my`, {
+        const response = await axios.get(`${url}/api/new-orders/my`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

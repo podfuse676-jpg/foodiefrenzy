@@ -1616,6 +1616,10 @@ app.post('/api/fix-item-images', async (req, res) => {
       {
         itemName: 'Car Perfume',
         correctUrl: 'https://res.cloudinary.com/dfjypp016/image/upload/v1761670308/foodiefrenzy_items/foodiefrenzy_items/Car_Perfume_1761670306659.webp'
+      },
+      {
+        itemName: 'Red Bull',
+        correctUrl: '/uploads/images/Red Rain Energy Drink.webp'
       }
     ];
     
@@ -1684,6 +1688,35 @@ app.post('/api/fix-item-images', async (req, res) => {
       }
     }
     
+    // Special fix for Red Bull item with specific ID
+    try {
+      const redBullItemId = '6928a15a987c1ba6abc22445';
+      const redBullItem = await Item.findById(redBullItemId);
+      if (redBullItem && redBullItem.imageUrl.includes('res.cloudinary.com')) {
+        const correctUrl = '/uploads/images/Red Rain Energy Drink.webp';
+        const updatedItem = await Item.findByIdAndUpdate(
+          redBullItemId,
+          { imageUrl: correctUrl },
+          { new: true }
+        );
+        console.log('  ✓ Updated Red Bull item by ID');
+        results.push({
+          item: 'Red Bull (by ID)',
+          status: 'updated',
+          oldUrl: redBullItem.imageUrl,
+          newUrl: updatedItem.imageUrl
+        });
+        updatedCount++;
+      }
+    } catch (error) {
+      console.log('  ✗ Failed to update Red Bull item by ID: ' + error.message);
+      results.push({
+        item: 'Red Bull (by ID)',
+        status: 'error',
+        message: error.message
+      });
+    }
+    
     console.log('=== SUMMARY ===');
     console.log('Successfully updated ' + updatedCount + ' items');
     
@@ -1699,6 +1732,66 @@ app.post('/api/fix-item-images', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to fix item images',
+      error: error.message
+    });
+  }
+});
+
+// Add a specific endpoint to fix the Red Bull item
+app.post('/api/fix-redbull-image', async (req, res) => {
+  try {
+    console.log('=== FIX RED BULL IMAGE REQUEST ===');
+    
+    // Import the Item model
+    const Item = (await import('./modals/item.js')).default;
+    
+    const redBullItemId = '6928a15a987c1ba6abc22445';
+    const redBullItem = await Item.findById(redBullItemId);
+    
+    if (!redBullItem) {
+      return res.status(404).json({
+        success: false,
+        message: 'Red Bull item not found'
+      });
+    }
+    
+    const correctUrl = '/uploads/images/Red Rain Energy Drink.webp';
+    
+    // Check if the item already has the correct URL
+    if (redBullItem.imageUrl === correctUrl) {
+      return res.json({
+        success: true,
+        message: 'Red Bull item already has correct URL',
+        item: redBullItem
+      });
+    }
+    
+    // Show what will be changed
+    console.log('Current Red Bull URL: ' + redBullItem.imageUrl);
+    console.log('Correct Red Bull URL: ' + correctUrl);
+    
+    // Update the item
+    const updatedItem = await Item.findByIdAndUpdate(
+      redBullItemId,
+      { imageUrl: correctUrl },
+      { new: true }
+    );
+    
+    console.log('✓ Updated Red Bull item');
+    
+    res.json({
+      success: true,
+      message: 'Red Bull image URL updated successfully',
+      oldUrl: redBullItem.imageUrl,
+      newUrl: updatedItem.imageUrl,
+      item: updatedItem
+    });
+    
+  } catch (error) {
+    console.error('Fix Red Bull error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fix Red Bull image',
       error: error.message
     });
   }
