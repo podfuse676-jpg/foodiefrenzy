@@ -39,7 +39,7 @@ const upload = multer({
     }
 }).single('image');
 
-// More robust wrapper function to handle multer errors properly
+// Even more robust wrapper function to handle multer errors properly
 const handleUploadOptional = (req, res, next) => {
     // Check if this is a multipart/form-data request
     const contentType = req.headers['content-type'];
@@ -50,6 +50,7 @@ const handleUploadOptional = (req, res, next) => {
     console.log('Is multipart request:', isMultipart);
     console.log('Request method:', req.method);
     console.log('Request URL:', req.url);
+    console.log('Request params:', req.params);
     
     if (isMultipart) {
         // Only run multer for multipart requests
@@ -69,6 +70,11 @@ const handleUploadOptional = (req, res, next) => {
     } else {
         // No file upload, proceed to next middleware
         console.log('Skipping multer - not a multipart request');
+        // Make sure req.body is properly parsed for JSON requests
+        if (!req.body && contentType && contentType.includes('application/json')) {
+            console.log('Setting empty body for JSON request');
+            req.body = {};
+        }
         next();
     }
 };
