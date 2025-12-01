@@ -55,6 +55,12 @@ const handleUploadOptional = (req, res, next) => {
     console.log('Request URL:', req.url);
     console.log('Request params:', req.params);
     
+    // Always initialize req.body to ensure it exists
+    if (!req.body) {
+        console.log('Initializing empty body');
+        req.body = {};
+    }
+    
     if (isMultipart) {
         // Only run multer for multipart requests
         upload(req, res, (err) => {
@@ -68,21 +74,12 @@ const handleUploadOptional = (req, res, next) => {
             }
             console.log('Multer processed successfully');
             console.log('File in request:', req.file ? 'Yes' : 'No');
+            console.log('Body after multer:', req.body);
             next();
         });
     } else {
         // No file upload, proceed to next middleware
         console.log('Skipping multer - not a multipart request');
-        // Make sure req.body is properly initialized for all requests
-        if (!req.body && contentType && contentType.includes('application/json')) {
-            console.log('Setting empty body for JSON request');
-            req.body = {};
-        }
-        // Also initialize for non-JSON requests
-        else if (!req.body) {
-            console.log('Initializing empty body for non-JSON request');
-            req.body = {};
-        }
         next();
     }
 };
