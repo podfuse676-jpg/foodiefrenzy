@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { FaCheck } from 'react-icons/fa';
 
 const FlavorSelection = ({ 
-  flavors = [], 
+  flavors: propFlavors = [], 
   selectedFlavors = [], 
   onFlavorChange, 
   multipleSelection = true,
   title = "Flavor Options"
 }) => {
+  // Ensure flavors is always an array
+  const flavors = Array.isArray(propFlavors) ? propFlavors : [];
   const [animatingFlavors, setAnimatingFlavors] = useState([]);
 
   // Handle flavor selection with animation

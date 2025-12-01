@@ -31,12 +31,16 @@ const ItemDetailView = ({ item, onClose, onAddToCart }) => {
     }
     
     // Initialize modifiers if available
-    if (item.modifierGroups && item.modifierGroups.length > 0) {
+    if (item.modifierGroups && Array.isArray(item.modifierGroups) && item.modifierGroups.length > 0) {
       const initialModifiers = {};
       item.modifierGroups.forEach(group => {
-        if (group.options && group.options.length > 0) {
+        // Handle both string and object formats for modifier groups
+        if (typeof group === 'string') return; // Skip string groups as they don't have options
+        
+        if (group.options && Array.isArray(group.options) && group.options.length > 0) {
           // Select first option by default
-          initialModifiers[group.name] = group.options[0];
+          const groupName = group.name || 'Customization';
+          initialModifiers[groupName] = group.options[0];
         }
       });
       setSelectedModifiers(initialModifiers);
@@ -144,7 +148,10 @@ const ItemDetailView = ({ item, onClose, onAddToCart }) => {
 
   // Check if item has customization options
   const hasCustomizationOptions = (item.variants && item.variants.length > 0) || 
-                                 (item.modifierGroups && item.modifierGroups.length > 0) ||
+                                 (item.modifierGroups && (
+                                   Array.isArray(item.modifierGroups) ? item.modifierGroups.length > 0 :
+                                   typeof item.modifierGroups === 'string' && item.modifierGroups.length > 0
+                                 )) ||
                                  (item.flavourOptions && item.flavourOptions.length > 0);
 
   // Handle review submission
@@ -279,38 +286,57 @@ const ItemDetailView = ({ item, onClose, onAddToCart }) => {
               )}
               
               {/* Modifier Groups (Flavors, Extras, etc.) */}
-              {item.modifierGroups && item.modifierGroups.length > 0 ? (
-                <div className="mb-6">
-                  {item.modifierGroups.map((group, groupIndex) => (
-                    <div key={groupIndex} className="mb-4">
-                      <h3 className="font-dancingscript text-xl text-gray-800 mb-3">{group.name}</h3>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                        {group.options && group.options.map((option, optionIndex) => (
-                          <button
-                            key={optionIndex}
-                            className={`px-3 py-2 border-2 rounded-lg font-cinzel transition-all text-left transform hover:scale-105 ${
-                              selectedModifiers[group.name] === option 
-                                ? 'border-[#8BC34A] bg-[#8BC34A]/10 text-gray-800 shadow-sm' 
-                                : 'border-gray-800/20 text-gray-800 hover:border-[#8BC34A]/50 hover:bg-[#8BC34A]/5'
-                            }`}
-                            onClick={() => handleModifierChange(group.name, option)}
-                          >
-                            <div className="font-medium text-sm">{option.name || option}</div>
-                            {option.price && option.price > 0 && (
-                              <div className="text-[#8BC34A] text-xs">+${option.price.toFixed(2)}</div>
-                            )}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="mb-6 p-4 bg-gradient-to-r from-[#F9FFF6] to-[#FFFFFF] rounded-2xl border border-[#8BC34A]/20 shadow-sm">
-                  <p className="text-gray-800 font-cinzel italic">
-                    No flavours or customization options available for this item.
-                  </p>
-                </div>
+              {item.modifierGroups && (
+                Array.isArray(item.modifierGroups) && item.modifierGroups.length > 0 ? (
+                  <div className="mb-6">
+                    {item.modifierGroups.map((group, groupIndex) => {
+                      // Handle both string and object formats for modifier groups
+                      const groupName = typeof group === 'string' ? group : (group.name || 'Customization');
+                      const groupOptions = typeof group === 'string' ? [] : 
+                                         (group.options && Array.isArray(group.options) ? group.options : 
+                                         (group.options ? [group.options] : []));
+                      
+                      // Skip empty groups
+                      if (groupOptions.length === 0) return null;
+                      
+                      return (
+                        <div key={groupIndex} className="mb-4">
+                          <h3 className="font-dancingscript text-xl text-gray-800 mb-3">{groupName}</h3>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            {groupOptions.map((option, optionIndex) => {
+                              // Handle both string and object formats for options
+                              const optionName = typeof option === 'string' ? option : (option.name || option);
+                              const optionPrice = typeof option === 'object' && option.price ? option.price : 0;
+                              
+                              return (
+                                <button
+                                  key={optionIndex}
+                                  className={`px-3 py-2 border-2 rounded-lg font-cinzel transition-all text-left transform hover:scale-105 ${
+                                    selectedModifiers[groupName] === option 
+                                      ? 'border-[#8BC34A] bg-[#8BC34A]/10 text-gray-800 shadow-sm' 
+                                      : 'border-gray-800/20 text-gray-800 hover:border-[#8BC34A]/50 hover:bg-[#8BC34A]/5'
+                                  }`}
+                                  onClick={() => handleModifierChange(groupName, option)}
+                                >
+                                  <div className="font-medium text-sm">{optionName}</div>
+                                  {optionPrice > 0 && (
+                                    <div className="text-[#8BC34A] text-xs">+${optionPrice.toFixed(2)}</div>
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="mb-6 p-4 bg-gradient-to-r from-[#F9FFF6] to-[#FFFFFF] rounded-2xl border border-[#8BC34A]/20 shadow-sm">
+                    <p className="text-gray-800 font-cinzel italic">
+                      No flavours or customization options available for this item.
+                    </p>
+                  </div>
+                )
               )}
               
               {/* Quantity and Add to Cart */}
