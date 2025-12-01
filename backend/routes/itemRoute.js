@@ -26,11 +26,11 @@ const storage = multer.diskStorage({
 
 // Add file filter to only accept images
 const fileFilter = (req, file, cb) => {
-    // Check if the file has a mimetype and if it starts with 'image/'
-    if (file.mimetype && file.mimetype.startsWith('image/')) {
+    console.log('File filter checking file:', file.mimetype);
+    if (file.mimetype.startsWith('image/')) {
         cb(null, true);
     } else {
-        cb(new Error(`Invalid file type: ${file.mimetype || 'unknown'}. Only image files are allowed.`), false);
+        cb(new Error('Only image files are allowed'), false);
     }
 };
 
@@ -88,6 +88,12 @@ const handleUploadOptional = (req, res, next) => {
 };
 
 const itemRouter = express.Router();
+
+// Add a simple test route to verify the router is working
+itemRouter.get('/debug-test', (req, res) => {
+    console.log('DEBUG TEST ROUTE HIT');
+    res.json({ message: 'Item routes are working', timestamp: new Date().toISOString() });
+});
 
 itemRouter.post('/', handleUploadOptional, createItem);
 itemRouter.get('/', getItems);
