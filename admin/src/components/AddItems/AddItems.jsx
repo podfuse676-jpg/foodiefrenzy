@@ -1,7 +1,7 @@
 // src/components/AddItems.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
-import { FiUpload, FiHeart, FiStar, FiX } from 'react-icons/fi';
+import { FiUpload, FiHeart, FiStar, FiX, FiPlus, FiTrash2 } from 'react-icons/fi';
 import { FaRupeeSign } from 'react-icons/fa';
 // Removed AdminNavbar import since it's handled in App.jsx
 import { styles } from '../../assets/dummyadmin';
@@ -17,7 +17,9 @@ const AddItems = () => {
     imageUrl: '',
     rating: 0,
     hearts: 0,
-    hidden: false
+    hidden: false,
+    modifierGroups: [], // Array of modifier groups
+    flavourOptions: []  // Array of flavor options
   });
   
   // Simplified categories list with the actual categories used in the app
@@ -36,6 +38,8 @@ const AddItems = () => {
   
   const [hoverRating, setHoverRating] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [newModifierGroup, setNewModifierGroup] = useState({ name: '', options: '' });
+  const [newFlavor, setNewFlavor] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -64,6 +68,49 @@ const AddItems = () => {
 
   const handleHearts = () => {
     setFormData(prev => ({ ...prev, hearts: prev.hearts + 1 }));
+  };
+
+  // Modifier group functions
+  const addModifierGroup = () => {
+    if (newModifierGroup.name.trim() && newModifierGroup.options.trim()) {
+      const optionsArray = newModifierGroup.options.split(',').map(opt => opt.trim()).filter(opt => opt);
+      const newGroup = {
+        name: newModifierGroup.name.trim(),
+        options: optionsArray
+      };
+      
+      setFormData(prev => ({
+        ...prev,
+        modifierGroups: [...prev.modifierGroups, newGroup]
+      }));
+      
+      setNewModifierGroup({ name: '', options: '' });
+    }
+  };
+
+  const removeModifierGroup = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      modifierGroups: prev.modifierGroups.filter((_, i) => i !== index)
+    }));
+  };
+
+  // Flavor functions
+  const addFlavor = () => {
+    if (newFlavor.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        flavourOptions: [...prev.flavourOptions, newFlavor.trim()]
+      }));
+      setNewFlavor('');
+    }
+  };
+
+  const removeFlavor = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      flavourOptions: prev.flavourOptions.filter((_, i) => i !== index)
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -104,6 +151,15 @@ const AddItems = () => {
       // Prepare fields that need special serialization
       const dataToSend = { ...formData };
       
+      // Convert arrays to JSON strings
+      if (dataToSend.modifierGroups && dataToSend.modifierGroups.length > 0) {
+        dataToSend.modifierGroups = JSON.stringify(dataToSend.modifierGroups);
+      }
+      
+      if (dataToSend.flavourOptions && dataToSend.flavourOptions.length > 0) {
+        dataToSend.flavourOptions = JSON.stringify(dataToSend.flavourOptions);
+      }
+      
       // Append file first if exists
       if (formData.image) payload.append('image', formData.image);
 
@@ -140,8 +196,13 @@ const AddItems = () => {
         hearts: 0,
         hidden: false,
         image: null,
-        preview: ''
+        preview: '',
+        modifierGroups: [],
+        flavourOptions: []
       });
+      
+      setNewModifierGroup({ name: '', options: '' });
+      setNewFlavor('');
       
       // Close modal
       setShowModal(false);
@@ -294,6 +355,98 @@ const AddItems = () => {
                             placeholder="https://example.com/image.jpg"
                           />
                         </div>
+                      </div>
+                    </div>
+
+                    {/* Flavors/Customization Options */}
+                    <div className="p-4 bg-gradient-to-br from-[#F0F8FF] to-[#F8F8FF] rounded-xl border border-[#4A90E2]/20 shadow-sm">
+                      <h3 className="text-lg text-gray-800 mb-3 font-medium">Flavors & Customization</h3>
+                      
+                      {/* Flavor Options */}
+                      <div className="mb-4">
+                        <label className="block mb-2 text-sm text-gray-700">Flavor Options</label>
+                        <div className="flex gap-2 mb-2">
+                          <input
+                            type="text"
+                            value={newFlavor}
+                            onChange={(e) => setNewFlavor(e.target.value)}
+                            className="flex-1 bg-white border-2 border-[#8BC34A]/20 rounded-xl py-2 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors"
+                            placeholder="e.g. Original, Sugar Free, Blue Edition"
+                          />
+                          <button
+                            type="button"
+                            onClick={addFlavor}
+                            className="px-3 py-2 bg-[#4A90E2] text-white rounded-xl hover:bg-[#3A7BC8] transition-colors flex items-center gap-1"
+                          >
+                            <FiPlus /> Add
+                          </button>
+                        </div>
+                        {formData.flavourOptions.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {formData.flavourOptions.map((flavor, index) => (
+                              <div key={index} className="flex items-center bg-[#E3F2FD] rounded-full px-3 py-1">
+                                <span className="text-[#4A90E2] text-sm">{flavor}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => removeFlavor(index)}
+                                  className="ml-2 text-[#4A90E2] hover:text-[#D32F2F]"
+                                >
+                                  <FiX size={14} />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Modifier Groups */}
+                      <div>
+                        <label className="block mb-2 text-sm text-gray-700">Modifier Groups</label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+                          <input
+                            type="text"
+                            value={newModifierGroup.name}
+                            onChange={(e) => setNewModifierGroup({...newModifierGroup, name: e.target.value})}
+                            className="bg-white border-2 border-[#8BC34A]/20 rounded-xl py-2 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors"
+                            placeholder="e.g. Size, Temperature"
+                          />
+                          <input
+                            type="text"
+                            value={newModifierGroup.options}
+                            onChange={(e) => setNewModifierGroup({...newModifierGroup, options: e.target.value})}
+                            className="bg-white border-2 border-[#8BC34A]/20 rounded-xl py-2 px-4 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#FFC107] focus:ring-2 focus:ring-[#FFC107]/20 transition-colors"
+                            placeholder="Options separated by commas"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={addModifierGroup}
+                          className="px-3 py-2 bg-[#4A90E2] text-white rounded-xl hover:bg-[#3A7BC8] transition-colors flex items-center gap-1 mb-3"
+                        >
+                          <FiPlus /> Add Modifier Group
+                        </button>
+                        
+                        {formData.modifierGroups.length > 0 && (
+                          <div className="space-y-2">
+                            {formData.modifierGroups.map((group, index) => (
+                              <div key={index} className="flex items-center justify-between bg-[#E3F2FD] rounded-xl p-3">
+                                <div>
+                                  <div className="font-medium text-[#4A90E2]">{group.name}</div>
+                                  <div className="text-sm text-gray-600">
+                                    {group.options.join(', ')}
+                                  </div>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => removeModifierGroup(index)}
+                                  className="text-[#D32F2F] hover:text-[#B71C1C]"
+                                >
+                                  <FiTrash2 />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
 
