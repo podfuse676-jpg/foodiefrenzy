@@ -185,9 +185,14 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                quantity > 1
-                  ? updateQuantity(cartEntry._id, quantity - 1)
-                  : removeFromCart(cartEntry._id);
+                // Add safety check for cartEntry
+                if (cartEntry && cartEntry._id) {
+                  quantity > 1
+                    ? updateQuantity(cartEntry._id, quantity - 1)
+                    : removeFromCart(cartEntry._id);
+                } else {
+                  console.warn('Cart entry missing _id, cannot update quantity');
+                }
               }}
               className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#8BC34A]/40 flex items-center justify-center hover:bg-[#8BC34A]/50 transition duration-200 active:scale-95 shadow-sm quantity-counter btn-press-feedback"
               aria-label="Decrease quantity"
@@ -200,7 +205,14 @@ const MenuItem = ({ item, cartEntry, quantity, addToCart, updateQuantity, remove
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                updateQuantity(cartEntry._id, quantity + 1);
+                // Add safety check for cartEntry
+                if (cartEntry && cartEntry._id) {
+                  updateQuantity(cartEntry._id, quantity + 1);
+                } else {
+                  console.warn('Cart entry missing _id, cannot update quantity');
+                  // Fallback to adding to cart
+                  handleAddToCart();
+                }
               }}
               className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#8BC34A]/40 flex items-center justify-center hover:bg-[#8BC34A]/50 transition duration-200 active:scale-95 shadow-sm quantity-counter btn-press-feedback"
               aria-label="Increase quantity"
