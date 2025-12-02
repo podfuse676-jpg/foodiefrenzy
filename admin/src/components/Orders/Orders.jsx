@@ -18,6 +18,11 @@ const Orders = () => {
       try {
         const token = localStorage.getItem('adminToken');
         
+        // Debugging logs
+        console.log('Fetching orders with token:', token ? 'Present' : 'Missing');
+        console.log('API URL:', url);
+        console.log('Full endpoint:', `${url}/api/users/admin/orders`);
+        
         // Check if token exists
         if (!token) {
           setError('Authentication required. Please log in again.');
@@ -33,6 +38,8 @@ const Orders = () => {
             withCredentials: true
           }
         );
+        
+        console.log('Orders response:', response.data);
 
         // Format the response data correctly - the admin route returns { success: true, orders: [...] }
         const formatted = response.data.orders.map(order => ({
@@ -55,6 +62,7 @@ const Orders = () => {
         setError(null);
       } catch (err) {
         console.error('Error fetching orders:', err);
+        console.error('Error response:', err.response);
         // Check if it's an authentication error
         if (err.response?.status === 401 || err.response?.status === 403) {
           setError('Authentication required. Please log in again.');
