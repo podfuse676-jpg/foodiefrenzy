@@ -95,13 +95,18 @@ const Orders = () => {
     try {
       const token = localStorage.getItem('adminToken');
       console.log('Updating order status with token:', token ? 'Present' : 'Missing');
-      await axios.put(
+      console.log('Update URL:', `${url}/api/users/admin/orders/${orderId}`);
+      console.log('Update data:', { status: newStatus });
+      
+      const response = await axios.put(
         `${url}/api/users/admin/orders/${orderId}`, 
         { status: newStatus },
         {
           headers: { Authorization: `Bearer ${token}` }
         }
       );
+      
+      console.log('Update response:', response.data);
       setOrders(orders.map(o => o._id === orderId ? { ...o, status: newStatus } : o));
     } catch (err) {
       console.error('Error updating order status:', err);
@@ -199,7 +204,7 @@ const Orders = () => {
                               if (imageUrl.startsWith('http')) {
                                 fullImageUrl = imageUrl;
                               } else if (imageUrl.startsWith('/')) {
-                                // Handle absolute paths
+                                // Handle absolute paths - remove leading slash to avoid double slashes
                                 fullImageUrl = `${url}${imageUrl}`;
                               } else {
                                 // Handle relative paths
