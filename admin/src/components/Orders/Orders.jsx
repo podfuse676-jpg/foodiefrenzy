@@ -34,7 +34,7 @@ const Orders = () => {
           }
         );
 
-        // Format the response data correctly
+        // Format the response data correctly - the admin route returns { success: true, orders: [...] }
         const formatted = response.data.orders.map(order => ({
           ...order,
           address: order.address ?? order.shippingAddress?.address ?? '',
@@ -46,9 +46,9 @@ const Orders = () => {
             item: e.item || e, 
             quantity: e.quantity 
           })) || [],
-          createdAt: new Date(order.createdAt).toLocaleDateString('en-IN', {
+          createdAt: order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-IN', {
             year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit',
-          }),
+          }) : 'Unknown Date',
         }));
 
         setOrders(formatted);
@@ -72,7 +72,7 @@ const Orders = () => {
     try {
       const token = localStorage.getItem('authToken');
       await axios.put(
-        `${url}/api/orders/getall/${orderId}`, 
+        `${url}/api/users/admin/orders/${orderId}`, 
         { status: newStatus },
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -145,7 +145,7 @@ const Orders = () => {
                         <div className="space-y-1 max-h-52 overflow-auto">
                           {order.items.map((itm, idx) => {
                             // Optimize image URL construction
-                            const imageUrl = itm.item?.imageUrl || itm.imageUrl;
+                            const imageUrl = itm.item?.image || itm.image;
                             const fullImageUrl = imageUrl 
                               ? (imageUrl.startsWith('http') ? imageUrl : `${url}${imageUrl}`)
                               : null;
@@ -188,7 +188,7 @@ const Orders = () => {
                           <FiBox className="text-green-400" /><span className="text-green-300 text-lg">{totalItems}</span>
                         </div>
                       </td>
-                      <td className={tableClasses.cellBase + ' text-green-300 text-lg'}>${totalPrice.toFixed(2)} CAD</td>
+                      <td className={tableClasses.cellBase + ' text-green-300 text-lg'}>${(order.total || totalPrice).toFixed(2)} CAD</td>
                       <td className={tableClasses.cellBase}>
                         <div className="flex flex-col gap-2">
                           <div className={`${payMethod.class} px-3 py-1.5 rounded-lg border text-sm`}>{payMethod.label}</div>

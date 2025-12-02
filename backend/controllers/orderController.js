@@ -141,7 +141,8 @@ export const createOrder = async (req, res) => {
                     items: orderItems,
                     paymentIntentId: session.payment_intent,
                     sessionId: session.id,
-                    paymentStatus: 'pending'
+                    paymentStatus: 'pending',
+                    status: 'pending'
                 });
 
                 await newOrder.save();
@@ -173,7 +174,8 @@ export const createOrder = async (req, res) => {
             shipping: shippingCost,
             codFee: totalCodFee,
             items: orderItems,
-            paymentStatus: 'pending'
+            paymentStatus: 'pending',
+            status: 'pending'
         });
 
         await newOrder.save();
@@ -316,6 +318,7 @@ export const getAllOrders = async (req, res) => {
     try {
         const raw = await Order
             .find({})
+            .populate('user', 'username email phoneNumber')
             .sort({ createdAt: -1 })
             .lean();
 

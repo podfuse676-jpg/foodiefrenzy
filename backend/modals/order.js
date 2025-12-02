@@ -52,6 +52,11 @@ const orderSchema = new mongoose.Schema({
     enum: ['pending', 'succeeded', 'failed', 'cancelled'],
     default: 'pending'
   },
+  status: {
+    type: String,
+    enum: ['pending', 'processing', 'outForDelivery', 'delivered', 'cancelled'],
+    default: 'pending'
+  },
   
   // Timestamps
   createdAt: { type: Date, default: Date.now }
