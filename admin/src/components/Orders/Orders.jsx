@@ -34,8 +34,7 @@ const Orders = () => {
         const response = await axios.get(
           `${url}/api/users/admin/orders`,
           {
-            headers: { Authorization: `Bearer ${token}` },
-            withCredentials: true
+            headers: { Authorization: `Bearer ${token}` }
           }
         );
         
@@ -79,6 +78,7 @@ const Orders = () => {
   const handleStatusChange = async (orderId, newStatus) => {
     try {
       const token = localStorage.getItem('adminToken');
+      console.log('Updating order status with token:', token ? 'Present' : 'Missing');
       await axios.put(
         `${url}/api/users/admin/orders/${orderId}`, 
         { status: newStatus },
@@ -88,6 +88,8 @@ const Orders = () => {
       );
       setOrders(orders.map(o => o._id === orderId ? { ...o, status: newStatus } : o));
     } catch (err) {
+      console.error('Error updating order status:', err);
+      console.error('Error response:', err.response);
       alert(err.response?.data?.message || 'Failed to update order status');
     }
   };
