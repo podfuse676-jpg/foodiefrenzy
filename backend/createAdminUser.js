@@ -32,11 +32,18 @@ const createAdminUser = async () => {
     const existingAdmin = await User.findOne({ email: 'admin@foodiefrenzy.com' });
     
     if (existingAdmin) {
-      console.log('Admin user already exists');
-      console.log('Email:', existingAdmin.email);
-      console.log('Username:', existingAdmin.username);
-      console.log('Role:', existingAdmin.role);
-      console.log('ID:', existingAdmin._id);
+      console.log('Admin user already exists, updating password...');
+      // Hash password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash('AdminPassword123!', salt);
+      
+      // Update admin user password
+      existingAdmin.password = hashedPassword;
+      await existingAdmin.save();
+      
+      console.log('Admin user password updated successfully');
+      console.log('Email: admin@foodiefrenzy.com');
+      console.log('Password: AdminPassword123!');
       process.exit(0);
     }
     

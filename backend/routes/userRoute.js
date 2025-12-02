@@ -210,6 +210,7 @@ userRouter.get("/admin/orders", authMiddleware, adminMiddleware, async (req, res
             count: orders.length
         })
     } catch (error) {
+        console.error('Error fetching orders:', error);
         res.status(500).json({ success: false, message: "Error fetching orders" })
     }
 })
@@ -229,6 +230,7 @@ userRouter.get("/admin/orders/:orderId", authMiddleware, adminMiddleware, async 
             order
         })
     } catch (error) {
+        console.error('Error fetching order details:', error);
         res.status(500).json({ success: false, message: "Error fetching order details" })
     }
 })
