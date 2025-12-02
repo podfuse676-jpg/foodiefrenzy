@@ -235,4 +235,36 @@ userRouter.get("/admin/orders/:orderId", authMiddleware, adminMiddleware, async 
     }
 })
 
+// Update order status (admin only)
+userRouter.put("/admin/orders/:orderId", authMiddleware, adminMiddleware, async (req, res) => {
+    try {
+        const { orderId } = req.params
+        const { status } = req.body
+        
+        // Validate status
+        const validStatuses = ['pending', 'processing', 'outForDelivery', 'delivered', 'cancelled'];
+        if (status && !validStatuses.includes(status)) {
+            return res.status(400).json({ success: false, message: "Invalid status value" })
+        }
+        
+        const order = await Order.findByIdAndUpdate(
+            orderId, 
+            { status },
+            { new: true }
+        ).populate('user', 'username email phoneNumber')
+        
+        if (!order) {
+            return res.status(404).json({ success: false, message: "Order not found" })
+        }
+        
+        res.json({ 
+            success: true, 
+            order
+        })
+    } catch (error) {
+        console.error('Error updating order:', error);
+        res.status(500).json({ success: false, message: "Error updating order" })
+    }
+})
+
 export default userRouter

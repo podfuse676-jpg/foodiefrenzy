@@ -192,9 +192,20 @@ const Orders = () => {
                           {order.items.map((itm, idx) => {
                             // Optimize image URL construction
                             const imageUrl = itm.item?.image || itm.image;
-                            const fullImageUrl = imageUrl 
-                              ? (imageUrl.startsWith('http') ? imageUrl : `${url}${imageUrl}`)
-                              : null;
+                            let fullImageUrl = null;
+                            
+                            // More robust URL construction
+                            if (imageUrl) {
+                              if (imageUrl.startsWith('http')) {
+                                fullImageUrl = imageUrl;
+                              } else if (imageUrl.startsWith('/')) {
+                                // Handle absolute paths
+                                fullImageUrl = `${url}${imageUrl}`;
+                              } else {
+                                // Handle relative paths
+                                fullImageUrl = `${url}/${imageUrl}`;
+                              }
+                            }
                             
                             // Fallback SVG as data URI
                             const fallbackSvg = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2RkZCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZSBFcnJvcjwvdGV4dD48L3N2Zz4=';
