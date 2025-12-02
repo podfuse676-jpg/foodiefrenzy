@@ -143,9 +143,22 @@ const OrderDetail = () => {
     </div>
   );
 
+  // Validate order data
+  if (!order._id) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center text-red-400 text-xl gap-4">
+        <p>Invalid order data.</p>
+        <Link to="/orders" className="flex items-center gap-2 text-green-400 hover:text-green-300">
+          <FiArrowLeft className="text-xl" />
+          <span>Back to Orders</span>
+        </Link>
+      </div>
+    );
+  }
+
   const paymentMethod = getPaymentMethodDetails(order.paymentMethod);
   const status = statusStyles[order.status] || statusStyles.processing;
-  const totalItems = order.items.reduce((sum, item) => sum + (item.quantity || 0), 0);
+  const totalItems = order.items?.reduce((sum, item) => sum + (item.quantity || 0), 0) || 0;
 
   return (
     <div className="min-h-screen bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
@@ -189,9 +202,9 @@ const OrderDetail = () => {
                 <div className="space-y-4">
                   {order.items.map((item, index) => (
                     <div key={index} className="flex items-center gap-4 p-4 bg-gray-700 rounded-xl border border-green-500/20">
-                      {item.item?.imageUrl ? (
+                      {item.item?.image ? (
                         <img
-                          src={item.item.imageUrl.startsWith('http') ? item.item.imageUrl : `${url}${item.item.imageUrl}`}
+                          src={item.item.image.startsWith('http') ? item.item.image : `${url}${item.item.image}`}
                           alt={item.item?.name || 'Product Image'}
                           className="w-16 h-16 object-cover rounded-lg"
                           onError={(e) => {
@@ -205,13 +218,13 @@ const OrderDetail = () => {
                       )}
                       
                       <div className="flex-1">
-                        <h4 className="font-medium text-green-100">{item.item?.name || 'Unknown Product'}</h4>
+                        <h4 className="font-medium text-green-100">{item.item?.name || item.name || 'Unknown Product'}</h4>
                         <p className="text-sm text-green-400/60">Qty: {item.quantity || 0}</p>
                       </div>
                       
                       <div className="text-right">
-                        <p className="font-medium text-green-300">${typeof item.item?.price === 'number' && typeof item.quantity === 'number' ? (item.item.price * item.quantity).toFixed(2) : '0.00'} CAD</p>
-                        <p className="text-sm text-green-400/60">${typeof item.item?.price === 'number' ? item.item.price.toFixed(2) : '0.00'} each</p>
+                        <p className="font-medium text-green-300">${typeof (item.item?.price || item.price) === 'number' && typeof item.quantity === 'number' ? ((item.item?.price || item.price) * item.quantity).toFixed(2) : '0.00'} CAD</p>
+                        <p className="text-sm text-green-400/60">${typeof (item.item?.price || item.price) === 'number' ? (item.item?.price || item.price).toFixed(2) : '0.00'} each</p>
                       </div>
                     </div>
                   ))}
@@ -255,17 +268,17 @@ const OrderDetail = () => {
                 <div className="space-y-4">
                   <div>
                     <p className="text-sm text-green-400/60">Name</p>
-                    <p className="font-medium text-green-100">{order.user?.username || order.firstName} {order.lastName}</p>
+                    <p className="font-medium text-green-100">{order.user?.username || `${order.firstName} ${order.lastName}` || 'Unknown Customer'}</p>
                   </div>
                   
                   <div>
                     <p className="text-sm text-green-400/60">Email</p>
-                    <p className="font-medium text-green-100">{order.user?.email || order.email}</p>
+                    <p className="font-medium text-green-100">{order.user?.email || order.email || 'No email provided'}</p>
                   </div>
                   
                   <div>
                     <p className="text-sm text-green-400/60">Phone</p>
-                    <p className="font-medium text-green-100">{order.user?.phoneNumber || order.phone}</p>
+                    <p className="font-medium text-green-100">{order.user?.phoneNumber || order.phone || 'No phone provided'}</p>
                   </div>
                 </div>
               </div>
@@ -279,8 +292,8 @@ const OrderDetail = () => {
                 <div className="space-y-4">
                   <div>
                     <p className="font-medium text-green-100">{order.user?.username || order.firstName} {order.lastName}</p>
-                    <p className="text-green-100/80">{order.address}</p>
-                    <p className="text-green-100/80">{order.city}, {order.zipCode}</p>
+                    <p className="text-green-100/80">{order.address || 'No address provided'}</p>
+                    <p className="text-green-100/80">{order.city || 'Unknown City'}, {order.zipCode || 'Unknown ZIP'}</p>
                   </div>
                 </div>
               </div>
