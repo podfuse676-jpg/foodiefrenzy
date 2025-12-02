@@ -15,7 +15,7 @@ const OrderDetail = () => {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('adminToken');
         
         if (!token) {
           setError('Authentication required. Please log in again.');
@@ -27,8 +27,7 @@ const OrderDetail = () => {
         const response = await axios.get(`${url}/api/users/admin/orders/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`
-          },
-          withCredentials: true
+          }
         });
 
         setOrder(response.data.order);
