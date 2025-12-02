@@ -40,23 +40,34 @@ const Orders = () => {
         
         console.log('Orders response:', response.data);
 
+        // Add debugging for data structure
+        console.log('Raw orders data:', response.data.orders);
+        
         // Format the response data correctly - the admin route returns { success: true, orders: [...] }
-        const formatted = response.data.orders.map(order => ({
-          ...order,
-          address: order.address ?? order.shippingAddress?.address ?? '',
-          city: order.city ?? order.shippingAddress?.city ?? '',
-          zipCode: order.zipCode ?? order.shippingAddress?.zipCode ?? '',
-          phone: order.phone ?? order.user?.phoneNumber ?? '',
-          items: order.items?.map(e => ({ 
-            _id: e._id, 
-            item: e.item || e, 
-            quantity: e.quantity 
-          })) || [],
-          createdAt: order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-IN', {
-            year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit',
-          }) : 'Unknown Date',
-        }));
+        const formatted = response.data.orders.map((order, index) => {
+          console.log(`Processing order ${index}:`, order);
+          
+          const processedOrder = {
+            ...order,
+            address: order.address ?? order.shippingAddress?.address ?? '',
+            city: order.city ?? order.shippingAddress?.city ?? '',
+            zipCode: order.zipCode ?? order.shippingAddress?.zipCode ?? '',
+            phone: order.phone ?? order.user?.phoneNumber ?? '',
+            items: order.items?.map(e => ({ 
+              _id: e._id, 
+              item: e.item || e, 
+              quantity: e.quantity 
+            })) || [],
+            createdAt: order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-IN', {
+              year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit',
+            }) : 'Unknown Date',
+          };
+          
+          console.log(`Processed order ${index}:`, processedOrder);
+          return processedOrder;
+        });
 
+        console.log('Formatted orders:', formatted);
         setOrders(formatted);
         setError(null);
       } catch (err) {
@@ -124,9 +135,22 @@ const Orders = () => {
                 </tr>
               </thead>
               <tbody>
+                {console.log('Rendering orders:', orders)}
                 {orders.map(order => {
-                  const totalItems = order.items.reduce((s, i) => s + (i.quantity || 0), 0);
-                  const totalPrice = order.total ?? order.items.reduce((s, i) => s + ((i.item?.price || i.price || 0) * (i.quantity || 0)), 0);
+                  console.log('Rendering order:', order);
+                  const totalItems = order.items.reduce((s, i) => {
+                    const result = s + (i.quantity || 0);
+                    console.log('Calculating total items:', s, i.quantity, 'result:', result);
+                    return result;
+                  }, 0);
+                  const totalPrice = order.total ?? order.items.reduce((s, i) => {
+                    const price = (i.item?.price || i.price || 0);
+                    const quantity = (i.quantity || 0);
+                    const itemTotal = price * quantity;
+                    const result = s + itemTotal;
+                    console.log('Calculating total price:', s, price, quantity, 'item total:', itemTotal, 'result:', result);
+                    return result;
+                  }, 0);
                   const payMethod = paymentMethodDetails[order.paymentMethod?.toLowerCase()] || paymentMethodDetails.default;
                   const payStatusStyle = statusStyles[order.paymentStatus] || statusStyles.processing;
                   const stat = statusStyles[order.status] || statusStyles.processing;
