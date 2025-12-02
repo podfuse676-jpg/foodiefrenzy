@@ -27,16 +27,27 @@ export const AuthProvider = ({ children }) => {
       
       if (token && role === 'admin') {
         try {
-          // Verify token with backend
-          console.log('Verifying token with backend:', `${url}/api/users/admin/users`);
-          const response = await axios.get(`${url}/api/users/admin/users`, {
+          // Verify token with backend using the profile endpoint which is lighter
+          console.log('Verifying token with backend:', `${url}/api/users/profile`);
+          const response = await axios.get(`${url}/api/users/profile`, {
             headers: {
               Authorization: `Bearer ${token}`
             }
           });
           console.log('Token verification response:', response.data);
-          setIsAuthenticated(true);
-          setIsAdmin(true);
+          
+          // Check if the user is actually an admin
+          if (response.data?.user?.role === 'admin') {
+            setIsAuthenticated(true);
+            setIsAdmin(true);
+          } else {
+            // Not an admin, clear tokens
+            console.log('User is not admin, clearing tokens');
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminRole');
+            setIsAuthenticated(false);
+            setIsAdmin(false);
+          }
         } catch (error) {
           // Token is invalid, clear it
           console.log('Token verification failed:', error.response?.status, error.response?.data);
