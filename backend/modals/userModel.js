@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema({
 // Index on phone verification fields for faster verification queries
 userSchema.index({ phoneVerificationCode: 1, phoneVerificationExpires: 1 });
 
-const userModel = mongoose.models.user || mongoose.model("user", userSchema);
+// Ensure the model is registered with the correct name
+const userModel = mongoose.models.User || mongoose.model("User", userSchema);
 
 export default userModel;
