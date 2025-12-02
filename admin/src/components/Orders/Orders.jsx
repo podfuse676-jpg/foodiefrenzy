@@ -16,7 +16,7 @@ const Orders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('adminToken');
         
         // Check if token exists
         if (!token) {
@@ -70,7 +70,7 @@ const Orders = () => {
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('adminToken');
       await axios.put(
         `${url}/api/users/admin/orders/${orderId}`, 
         { status: newStatus },
