@@ -53,11 +53,16 @@ const Orders = () => {
             city: order.city ?? order.shippingAddress?.city ?? '',
             zipCode: order.zipCode ?? order.shippingAddress?.zipCode ?? '',
             phone: order.phone ?? order.user?.phoneNumber ?? '',
-            items: order.items?.map(e => ({ 
-              _id: e._id, 
-              item: e.item || e, 
-              quantity: e.quantity 
-            })) || [],
+            items: order.items?.map(e => {
+              // More robust item handling
+              console.log('Processing item:', e);
+              const itemObj = e.item || e;
+              return {
+                _id: e._id || itemObj._id,
+                item: itemObj,
+                quantity: e.quantity || itemObj.quantity || 0
+              };
+            }) || [],
             createdAt: order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-IN', {
               year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit',
             }) : 'Unknown Date',
@@ -154,6 +159,13 @@ const Orders = () => {
                   const payMethod = paymentMethodDetails[order.paymentMethod?.toLowerCase()] || paymentMethodDetails.default;
                   const payStatusStyle = statusStyles[order.paymentStatus] || statusStyles.processing;
                   const stat = statusStyles[order.status] || statusStyles.processing;
+                  
+                  console.log('Order status styling:', { 
+                    status: order.status, 
+                    paymentStatus: order.paymentStatus,
+                    stat,
+                    payStatusStyle
+                  });
 
                   return (
                     <tr 
@@ -166,9 +178,9 @@ const Orders = () => {
                         <div className="flex items-center gap-2">
                           <FiUser className="text-green-400" />
                           <div>
-                            <p className="text-green-100">{order.user?.username || order.firstName + ' ' + order.lastName}</p>
-                            <p className="text-sm text-green-400/60">{order.user?.phoneNumber || order.phone}</p>
-                            <p className="text-sm text-green-400/60">{order.user?.email || order.email}</p>
+                            <p className="text-green-100">{order.user?.username || `${order.firstName} ${order.lastName}` || 'Unknown Customer'}</p>
+                            <p className="text-sm text-green-400/60">{order.user?.phoneNumber || order.phone || 'No phone'}</p>
+                            <p className="text-sm text-green-400/60">{order.user?.email || order.email || 'No email'}</p>
                           </div>
                         </div>
                       </td>
